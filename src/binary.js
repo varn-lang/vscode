@@ -34,8 +34,8 @@ function getBinaryCandidates(context, binName) {
         }
     }
 
-    // 3. Extension root (for development)
-    const extRoot = path.resolve(context.extensionPath, "..");
+    // 3. Sibling varn-lang (for development)
+    const extRoot = path.resolve(context.extensionPath, "..", "varn-lang");
     if (mode === "release") {
         candidates.push(path.join(extRoot, "target", "release", binName));
         candidates.push(path.join(extRoot, "target", "debug",   binName));
