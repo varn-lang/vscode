@@ -6,8 +6,10 @@ const { resolveCliPath } = require("../binary");
 const { stripAnsi } = require("../utils");
 const path = require("path");
 
+const { getClient } = require("../client");
+
 class AstNodeItem extends vscode.TreeItem {
-    constructor(label, line, children) {
+    constructor(label, line, children, kind) {
         const hasChildren = children && children.length > 0;
         super(
             label,
@@ -18,28 +20,38 @@ class AstNodeItem extends vscode.TreeItem {
         this.children = children || [];
         this.line = line;
 
-        // Set native icons based on the node category
+        // Set native icons based on kind or label category
         const cleanLabel = label.toLowerCase();
-        if (cleanLabel.includes("functiondecl")) {
+        const nodeKind = (kind || "").toLowerCase();
+
+        if (nodeKind === "function" || cleanLabel.includes("functiondecl") || cleanLabel.startsWith("fn ")) {
             this.iconPath = new vscode.ThemeIcon("symbol-function");
-        } else if (cleanLabel.includes("variabledecl") || cleanLabel.startsWith("var ")) {
+        } else if (nodeKind === "variable" || cleanLabel.includes("variabledecl") || cleanLabel.startsWith("var ") || cleanLabel.startsWith("let ") || cleanLabel.startsWith("const ")) {
             this.iconPath = new vscode.ThemeIcon("symbol-variable");
-        } else if (cleanLabel.includes("classdecl")) {
+        } else if (nodeKind === "class" || cleanLabel.includes("classdecl")) {
             this.iconPath = new vscode.ThemeIcon("symbol-class");
-        } else if (cleanLabel.includes("interfacedecl")) {
+        } else if (nodeKind === "interface" || cleanLabel.includes("interfacedecl")) {
             this.iconPath = new vscode.ThemeIcon("symbol-interface");
-        } else if (cleanLabel.includes("enumdecl")) {
+        } else if (nodeKind === "enum" || cleanLabel.includes("enumdecl")) {
             this.iconPath = new vscode.ThemeIcon("symbol-enum");
-        } else if (cleanLabel.includes("structdecl")) {
+        } else if (nodeKind === "enum_member" || cleanLabel.includes("variant ")) {
+            this.iconPath = new vscode.ThemeIcon("symbol-enum-member");
+        } else if (nodeKind === "struct" || cleanLabel.includes("structdecl")) {
             this.iconPath = new vscode.ThemeIcon("symbol-struct");
-        } else if (cleanLabel.includes("stmt")) {
+        } else if (nodeKind === "method" || cleanLabel.includes("method ")) {
             this.iconPath = new vscode.ThemeIcon("symbol-method");
-        } else if (cleanLabel.includes("literal")) {
-            this.iconPath = new vscode.ThemeIcon("symbol-constant");
-        } else if (cleanLabel.includes("call")) {
-            this.iconPath = new vscode.ThemeIcon("symbol-keyword");
-        } else if (cleanLabel.includes("member")) {
+        } else if (nodeKind === "property" || cleanLabel.includes("prop ") || cleanLabel.includes("field ")) {
             this.iconPath = new vscode.ThemeIcon("symbol-property");
+        } else if (nodeKind === "parameter" || cleanLabel.startsWith("param:")) {
+            this.iconPath = new vscode.ThemeIcon("symbol-parameter");
+        } else if (nodeKind === "constant" || cleanLabel.includes("literal")) {
+            this.iconPath = new vscode.ThemeIcon("symbol-constant");
+        } else if (nodeKind === "operator") {
+            this.iconPath = new vscode.ThemeIcon("symbol-operator");
+        } else if (nodeKind === "import") {
+            this.iconPath = new vscode.ThemeIcon("symbol-module");
+        } else if (nodeKind === "keyword" || cleanLabel.includes("stmt") || cleanLabel.includes("ifstmt") || cleanLabel.includes("whilestmt") || cleanLabel.includes("forstmt") || cleanLabel.includes("match")) {
+            this.iconPath = new vscode.ThemeIcon("symbol-keyword");
         } else {
             this.iconPath = new vscode.ThemeIcon("symbol-field");
         }
@@ -47,14 +59,48 @@ class AstNodeItem extends vscode.TreeItem {
         if (line !== undefined) {
             this.command = {
                 title: "Select Editor Range",
-                command: "Varn.selectEditorRange",
+                command: "varn.selectEditorRange",
                 arguments: [line]
             };
         }
     }
 }
 
-function getAstForFile(context, filePath) {
+function convertJsonNode(jsonNode) {
+    if (!jsonNode) return null;
+    const label = jsonNode.label || "Node";
+    const line = typeof jsonNode.line === "number" ? jsonNode.line : undefined;
+    const kind = jsonNode.kind || "statement";
+    const rawChildren = Array.isArray(jsonNode.children) ? jsonNode.children : [];
+    const children = rawChildren.map(convertJsonNode).filter(Boolean);
+
+    const item = new AstNodeItem(label, line, children, kind);
+    return item;
+}
+
+async function getAstFromLsp(uriStr) {
+    const client = getClient();
+    if (!client) return null;
+
+    try {
+        const res = await client.sendRequest("workspace/executeCommand", {
+            command: "varn.syntaxTree",
+            arguments: [uriStr]
+        });
+        if (Array.isArray(res)) {
+            const rootNodes = res.map(convertJsonNode).filter(Boolean);
+            for (const r of rootNodes) {
+                r.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
+            }
+            return rootNodes;
+        }
+    } catch {
+        return null;
+    }
+    return null;
+}
+
+function getAstForFileCli(context, filePath) {
     return new Promise((resolve, reject) => {
         const cliPath = resolveCliPath(context);
         if (!cliPath) {
@@ -87,10 +133,10 @@ function getAstForFile(context, filePath) {
     });
 }
 
-function parseAst(stdout) {
+function parseAstCli(stdout) {
     const lines = stdout.split(/\r?\n/);
     const rootNodes = [];
-    const stack = []; // Stack of { node: AstNodeItem, depth: number }
+    const stack = [];
 
     for (const rawLine of lines) {
         const lineText = stripAnsi(rawLine);
@@ -99,7 +145,6 @@ function parseAst(stdout) {
             continue;
         }
 
-        // Match prefix containing tree markers
         const match = lineText.match(/^([│├└─\s]*)(.*)$/);
         if (!match) continue;
 
@@ -107,17 +152,15 @@ function parseAst(stdout) {
         const content = match[2].trim();
         if (!content) continue;
 
-        // Depth (1-indexed) determined by indent level of 4 characters
         const depth = Math.floor(prefix.length / 4);
         if (depth === 0) continue;
 
-        // Parse line coordinate suffix "[L...]"
         const lineMatch = content.match(/^(.*?)\s*\[L(\d+)\]$/);
         let line = undefined;
         let label = content;
         if (lineMatch) {
             label = lineMatch[1].trim();
-            line = parseInt(lineMatch[2], 10) - 1; // 0-indexed for VS Code
+            line = parseInt(lineMatch[2], 10) - 1;
         }
 
         const node = new AstNodeItem(label, line);
@@ -127,7 +170,6 @@ function parseAst(stdout) {
         }
 
         if (stack.length === 0) {
-            // Roots default to Expanded to show top level statements immediately
             node.collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
             rootNodes.push(node);
         } else {
@@ -152,7 +194,7 @@ class VarnAstProvider {
         this.loading = false;
     }
 
-    refresh() {
+    async refresh() {
         const editor = vscode.window.activeTextEditor;
         if (!editor || !editor.document.fileName.endsWith(".vn")) {
             this.rootNodes = [];
@@ -164,25 +206,36 @@ class VarnAstProvider {
 
         this.loading = true;
         this.errorItem = null;
-        this._onDidChangeTreeData.fire(); // Show loading hint
+        this._onDidChangeTreeData.fire();
 
+        const uriStr = editor.document.uri.toString();
         const filePath = editor.document.fileName;
-        getAstForFile(this.context, filePath)
-            .then((stdout) => {
-                this.rootNodes = parseAst(stdout);
-                this.loading = false;
-                this._onDidChangeTreeData.fire();
-            })
-            .catch((err) => {
-                this.rootNodes = [];
-                this.errorItem = new vscode.TreeItem(
-                    `Error parsing AST: ${err.message || err}`,
-                    vscode.TreeItemCollapsibleState.None
-                );
-                this.errorItem.iconPath = new vscode.ThemeIcon("error");
-                this.loading = false;
-                this._onDidChangeTreeData.fire();
-            });
+
+        // Try memory-fast LSP first
+        const lspNodes = await getAstFromLsp(uriStr);
+        if (lspNodes && lspNodes.length > 0) {
+            this.rootNodes = lspNodes;
+            this.loading = false;
+            this._onDidChangeTreeData.fire();
+            return;
+        }
+
+        // Fallback to CLI
+        try {
+            const stdout = await getAstForFileCli(this.context, filePath);
+            this.rootNodes = parseAstCli(stdout);
+            this.loading = false;
+            this._onDidChangeTreeData.fire();
+        } catch (err) {
+            this.rootNodes = [];
+            this.errorItem = new vscode.TreeItem(
+                `Error parsing AST: ${err.message || err}`,
+                vscode.TreeItemCollapsibleState.None
+            );
+            this.errorItem.iconPath = new vscode.ThemeIcon("error");
+            this.loading = false;
+            this._onDidChangeTreeData.fire();
+        }
     }
 
     getTreeItem(element) {
@@ -204,8 +257,7 @@ class VarnAstProvider {
         if (this.rootNodes.length === 0) {
             const editor = vscode.window.activeTextEditor;
             if (editor && editor.document.fileName.endsWith(".vn")) {
-                const item = new vscode.TreeItem("Loading AST...", vscode.TreeItemCollapsibleState.None);
-                item.iconPath = new vscode.ThemeIcon("sync~spin");
+                const item = new vscode.TreeItem("No AST nodes found", vscode.TreeItemCollapsibleState.None);
                 return [item];
             } else {
                 return [new vscode.TreeItem("No active Varn file open", vscode.TreeItemCollapsibleState.None)];
@@ -218,3 +270,4 @@ class VarnAstProvider {
 module.exports = {
     VarnAstProvider
 };
+

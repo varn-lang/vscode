@@ -1,25 +1,4 @@
 {
-	"information_for_contributors": [
-		"Hand-written, expressive grammar for Varn. Organized as small, single-purpose",
-		"repository rules composed via includes (scalable), using deterministic begin/end",
-		"contexts and keyword/':'/'<'/'.'-anchored matches. It intentionally avoids the",
-		"speculative look-ahead heuristics (arrow-fn detection, var-expr state machines,",
-		"regex-vs-division detection) that made the old TypeScript-derived grammar",
-		"mis-classify tokens.",
-		"",
-		"In a live .vn buffer the varn-lsp semantic tokens provider is authoritative and",
-		"overrides this grammar for identifiers it classifies. This grammar is what colors",
-		"hover signatures (rendered as ```Varn fences, where semantic tokens never apply)",
-		"and the brief window before the LSP responds.",
-		"",
-		"Token/keyword sets are mirrored from the authoritative sources, NOT guessed:",
-		"  - keywords:  crates/varn-lexer/src/keywords.rs (keyword_kind)",
-		"  - operators: crates/varn-core/src/token.rs (TokenKind)",
-		"  - builtin types: crates/varn-base/src/lib.rs (TypeTag::from_str)",
-		"Words that are NOT in keyword_kind (e.g. `spawn`, `parallel`, `start`, `method`,",
-		"`prop`) are plain identifiers and must never be colored as keywords.",
-		"The previous grammar is preserved at vn.tmLanguage.full.backup.json."
-	],
 	"name": "Varn",
 	"scopeName": "source.vn",
 	"patterns": [
@@ -297,18 +276,36 @@
 		"variable-declaration": {
 			"patterns": [
 				{
-					"match": "(?<![._$[:alnum:]])(const)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*)",
-					"captures": {
-						"1": { "name": "storage.type.vn" },
-						"2": { "name": "variable.other.constant.vn" }
-					}
+					"name": "meta.var.expr.const.vn",
+					"begin": "(?<![._$[:alnum:]])(const)(?![_$[:alnum:]])",
+					"beginCaptures": {
+						"1": { "name": "storage.type.vn" }
+					},
+					"end": "(?=[;=},)]|\\b(of|in)\\b|$)",
+					"patterns": [
+						{ "include": "#comment" },
+						{ "include": "#type-annotation" },
+						{
+							"match": "([_$[:alpha:]][_$[:alnum:]]*)",
+							"name": "variable.other.constant.vn"
+						}
+					]
 				},
 				{
-					"match": "(?<![._$[:alnum:]])(let|var|using)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*)",
-					"captures": {
-						"1": { "name": "storage.type.vn" },
-						"2": { "name": "variable.other.readwrite.vn" }
-					}
+					"name": "meta.var.expr.mut.vn",
+					"begin": "(?<![._$[:alnum:]])(let|var|using)(?![_$[:alnum:]])",
+					"beginCaptures": {
+						"1": { "name": "storage.type.vn" }
+					},
+					"end": "(?=[;=},)]|\\b(of|in)\\b|$)",
+					"patterns": [
+						{ "include": "#comment" },
+						{ "include": "#type-annotation" },
+						{
+							"match": "([_$[:alpha:]][_$[:alnum:]]*)",
+							"name": "variable.other.readwrite.vn"
+						}
+					]
 				}
 			]
 		},
@@ -354,7 +351,7 @@
 			"beginCaptures": {
 				"1": { "name": "punctuation.separator.annotation.vn" }
 			},
-			"end": "(?=[,)=;{}\\]]|=>|$)",
+			"end": "(?=[,)=;{}]|=>|$)",
 			"patterns": [ { "include": "#type" } ]
 		},
 
@@ -416,14 +413,14 @@
 
 		"builtin-type-primitive": {
 			"comment": "Scalar primitives — mirror of varn-base TypeTag scalar tags.",
-			"name": "support.type.primitive.vn",
+			"name": "support.type.primitive.vn entity.name.type.primitive.vn",
 			"match": "(?<![._$[:alnum:]])(int|float|bool|str|char|bigint|decimal|symbol|void|never|dynamic)(?![_$[:alnum:]])"
 		},
 
 		"builtin-type-object": {
 			"comment": "Built-in reference/container & error types — mirror of varn-base TypeTag reference tags (plus stdlib Result).",
-			"name": "support.type.builtin.vn",
-			"match": "(?<![._$[:alnum:]])(Object|Array|Map|Set|Tuple|Generator|Iterator|Range|Task|Result|Symbol|Error|TypeError|RangeError)(?![_$[:alnum:]])"
+			"name": "support.class.builtin.vn entity.name.type.class.vn",
+			"match": "(?<![._$[:alnum:]])(Object|Array|Map|Set|Tuple|Generator|AsyncGenerator|Iterator|AsyncIterator|Range|Task|Result|Symbol|Error|TypeError|RangeError)(?![_$[:alnum:]])"
 		},
 
 		"___________________KEYWORDS___________________": { "comment": "section marker" },
@@ -451,7 +448,7 @@
 		"word-operator": {
 			"comment": "keyword_kind operator-like keywords used in expressions.",
 			"name": "keyword.operator.expression.vn",
-			"match": "(?<![._$[:alnum:]])(typeof|instanceof|delete|is|in|of)(?![_$[:alnum:]])"
+			"match": "(?<![._$[:alnum:]])(typeof|instanceof|delete|is|in|of|as)(?![_$[:alnum:]])"
 		},
 
 		"variable-language": {
@@ -565,7 +562,8 @@
 				{ "include": "#builtin-type-object" },
 				{ "include": "#type-name-reference" },
 				{ "include": "#operator" },
-				{ "include": "#punctuation" }
+				{ "include": "#punctuation" },
+				{ "include": "#variable-reference" }
 			]
 		},
 
@@ -609,6 +607,12 @@
 			"comment": "Capitalized identifier used as a value (class/enum referenced as a value, e.g. Direction.North). Dotted members handled earlier.",
 			"match": "(?<![._$[:alnum:]])([[:upper:]][_$[:alnum:]]*)(?![_$[:alnum:]])",
 			"name": "entity.name.type.vn"
+		},
+
+		"variable-reference": {
+			"comment": "Plain variable or identifier reference in an expression.",
+			"match": "(?<![._$[:alnum:]])([_$[:alpha:]][_$[:alnum:]]*)(?![_$[:alnum:]])",
+			"name": "variable.other.readwrite.vn"
 		},
 
 		"___________________OPERATORS & PUNCTUATION___________________": { "comment": "section marker" },

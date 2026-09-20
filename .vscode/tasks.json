@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Cargo Build CLI (debug)",
+            "type": "shell",
+            "command": "cargo build --bin vn",
+            "options": {
+                "cwd": "${workspaceFolder}/../varn-lang"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "never",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

@@ -2,7 +2,7 @@
 
 const vscode = require("vscode");
 const { getLspStatus } = require("../status");
-const { resolveCliPath, resolveLspPath } = require("../binary");
+const { resolveCliPath } = require("../binary");
 
 class StatusTreeItem extends vscode.TreeItem {
     constructor(label, description, iconName, command) {
@@ -72,25 +72,14 @@ class VarnStatusProvider {
             )
         );
 
-        // 3. CLI Binary Path
+        // 3. Binary path — the language server is `vn lsp`, same binary.
         const cliPath = resolveCliPath(this.context);
         const cliDesc = cliPath ? cliPath : "Not found";
         items.push(
             new StatusTreeItem(
-                "CLI path",
+                "Binary path",
                 cliDesc,
                 "terminal"
-            )
-        );
-
-        // 4. LSP Binary Path
-        const lspPath = resolveLspPath(this.context);
-        const lspPathDesc = lspPath ? lspPath : "Not found";
-        items.push(
-            new StatusTreeItem(
-                "LSP path",
-                lspPathDesc,
-                "server"
             )
         );
 

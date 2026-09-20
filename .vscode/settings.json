@@ -1,0 +1,20 @@
+{
+    "Varn.buildMode": "debug",
+    "Varn.codeLens.enabled": true,
+    "Varn.hotReload.enabled": true,
+    "editor.semanticHighlighting.enabled": true,
+    "[varn]": {
+        "editor.semanticHighlighting.enabled": true
+    },
+    "files.watcherExclude": {
+        "**/.git/**": true,
+        "**/node_modules/**": true,
+        "**/target/**": true
+    },
+    "editor.semanticTokenColorCustomizations": {
+        "rules": {
+            "keyword": "#c678dd",
+            "keyword.operator": "#56B6C2"
+        }
+    }
+}

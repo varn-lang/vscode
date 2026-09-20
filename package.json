@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/varn-lang/varn"
   },
+  "scripts": {
+    "build": "vsce package --allow-missing-repository"
+  },
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.82.0"
@@ -32,7 +35,9 @@
     "onCommand:Varn.doctor",
     "onCommand:Varn.installRuntime",
     "onCommand:Varn.runWithPhases",
-    "onCommand:Varn.toggleBuildMode"
+    "onCommand:Varn.toggleBuildMode",
+    "onCommand:Varn.reloadExtension",
+    "onCommand:Varn.showActionsHub"
   ],
   "main": "./extension.js",
   "contributes": {
@@ -83,6 +88,23 @@
         "language": "varn",
         "scopeName": "source.vn",
         "path": "./syntaxes/vn.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "varn",
+        "scopes": {
+          "type": ["entity.name.type", "support.type.primitive.vn"],
+          "class": ["entity.name.type.class", "support.class.vn"],
+          "variable": ["variable.other.readwrite.vn"],
+          "parameter": ["variable.parameter.vn"],
+          "property": ["variable.other.property.vn"],
+          "function": ["entity.name.function.vn"],
+          "enumMember": ["variable.other.enummember.vn"],
+          "namespace": ["entity.name.namespace.vn"],
+          "interface": ["entity.name.type.interface.vn"],
+          "typeParameter": ["entity.name.type.parameter.vn"]
+        }
       }
     ],
     "iconThemes": [
@@ -338,8 +360,83 @@
         "category": "Varn"
       },
       {
+        "command": "Varn.reloadExtension",
+        "title": "Reload Extension",
+        "category": "Varn",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "Varn.showActionsHub",
+        "title": "Show Actions Hub",
+        "category": "Varn",
+        "icon": "$(symbol-menu)"
+      },
+      {
         "command": "Varn.selectEditorRange",
         "title": "Select Editor Range"
+      },
+      {
+        "command": "varn.openBytecodeViewer",
+        "title": "Open Bytecode Viewer (Side-by-Side)",
+        "category": "Varn",
+        "icon": "$(file-binary)"
+      },
+      {
+        "command": "varn.openSSAViewer",
+        "title": "Open SSA Viewer (Side-by-Side)",
+        "category": "Varn",
+        "icon": "$(symbol-structure)"
+      },
+      {
+        "command": "varn.openVisualInspector",
+        "title": "Open Graphical CFG & Debug Inspector",
+        "category": "Varn",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "varn.runMain",
+        "title": "Run Main Function",
+        "category": "Varn",
+        "icon": "$(play)"
+      },
+      {
+        "command": "varn.runTest",
+        "title": "Run Test",
+        "category": "Varn",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "varn.runBenchmark",
+        "title": "Run Benchmark",
+        "category": "Varn",
+        "icon": "$(dashboard)"
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "varn",
+        "owner": "varn",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*?):(\\d+):(\\d+):\\s+(error|warning|info):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "varn",
+        "required": ["task"],
+        "properties": {
+          "task": {
+            "type": "string",
+            "description": "The Varn task to execute (build, check, test)"
+          }
+        }
       }
     ],
     "keybindings": [
@@ -417,6 +514,18 @@
           "command": "Varn.doctor",
           "when": "resourceLangId == varn",
           "group": "Varn@7"
+        },
+        {
+          "command": "varn.openVisualInspector",
+          "when": "resourceLangId == varn",
+          "group": "Varn@8"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "varn.openVisualInspector",
+          "when": "resourceLangId == varn",
+          "group": "navigation@10"
         }
       ],
       "explorer/context": [
@@ -456,11 +565,6 @@
     "configuration": {
       "title": "Varn",
       "properties": {
-        "Varn.server.path": {
-          "type": "string",
-          "default": "",
-          "description": "Absolute path to the varn-lsp binary. Leave empty to auto-detect from varn_HOME/bin, workspace target/{release,debug}, or PATH."
-        },
         "Varn.cli.path": {
           "type": "string",
           "default": "",
@@ -504,13 +608,18 @@
           "default": true,
           "description": "Show Varn CodeLens actions (Run, Bench, Disasm, AST) at the top of .Varn files."
         },
+        "Varn.hotReload.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically reload the extension when source files change (requires restart for package.json contributes changes)."
+        },
         "Varn.buildMode": {
           "type": "string",
           "enum": [
             "debug",
             "release"
           ],
-          "default": "debug",
+          "default": "release",
           "description": "Preferred build mode for Varn binaries when auto-detecting from the workspace target directory."
         }
       }

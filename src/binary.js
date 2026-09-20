@@ -57,37 +57,23 @@ function resolveCliPath(context) {
     if (override && fs.existsSync(override)) return override;
 
     const binName = `vn${BIN_EXT}`;
-    const candidates = getBinaryCandidates(context, binName);
-    
-    // Add legacy name as fallback
-    const legacyName = `vn${BIN_EXT}`;
-    candidates.push(...getBinaryCandidates(context, legacyName));
-
-    const found = candidates.find((p) => fs.existsSync(p));
+    const found = getBinaryCandidates(context, binName).find((p) => fs.existsSync(p));
     if (found) return found;
 
-    return findOnPath(binName) ?? findOnPath("vn") ?? findOnPath("vn");
+    return findOnPath(binName);
 }
 
 /**
- * Resolve the Varn LSP binary.
- * @param {vscode.ExtensionContext} context
- * @returns {string | undefined}
+ * Arguments that turn the Varn CLI into a language server on stdio.
+ *
+ * The server ships inside `vn` rather than as its own binary: the stdlib
+ * bundle is fingerprint-locked to the compiler that built it, so two
+ * binaries could disagree about which std is valid. One binary makes that
+ * impossible.
  */
-function resolveLspPath(context) {
-    const override = vscode.workspace.getConfiguration("Varn").get("server.path");
-    if (override && fs.existsSync(override)) return override;
-
-    const binName = `vn-lsp${BIN_EXT}`;
-    const candidates = getBinaryCandidates(context, binName);
-
-    const found = candidates.find((p) => fs.existsSync(p));
-    if (found) return found;
-
-    return findOnPath(binName) ?? findOnPath("vn-lsp") ?? findOnPath("vn-lsp");
-}
+const LSP_ARGS = ["lsp"];
 
 module.exports = {
     resolveCliPath,
-    resolveLspPath,
+    LSP_ARGS,
 };

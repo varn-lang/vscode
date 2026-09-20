@@ -153,15 +153,113 @@ async function runWithPhases(context, uri) {
 }
 
 /**
- * Toggle build mode setting.
+ * Open live synchronized Bytecode Viewer beside current editor.
+ * @param {vscode.ExtensionContext} _context
+ * @param {vscode.Uri | string | undefined} uri
+ */
+async function openBytecodeViewer(_context, uri) {
+    const file = resolveTargetFile(uri);
+    if (!file) return;
+
+    const fileUri = typeof uri === "string" ? uri : (uri ? uri.toString() : vscode.Uri.file(file).toString());
+    const virtualUri = vscode.Uri.parse(`varn-bytecode:${path.basename(file)}.varn-bc?${encodeURIComponent(fileUri)}`);
+    const doc = await vscode.workspace.openTextDocument(virtualUri);
+    await vscode.window.showTextDocument(doc, {
+        viewColumn: vscode.ViewColumn.Beside,
+        preview: true,
+        preserveFocus: true
+    });
+}
+
+/**
+ * Open live synchronized SSA / HIR Viewer beside current editor.
+ * @param {vscode.ExtensionContext} _context
+ * @param {vscode.Uri | string | undefined} uri
+ */
+async function openSSAViewer(_context, uri) {
+    const file = resolveTargetFile(uri);
+    if (!file) return;
+
+    const fileUri = typeof uri === "string" ? uri : (uri ? uri.toString() : vscode.Uri.file(file).toString());
+    const virtualUri = vscode.Uri.parse(`varn-ssa:${path.basename(file)}.varn-ssa?${encodeURIComponent(fileUri)}`);
+    const doc = await vscode.workspace.openTextDocument(virtualUri);
+    await vscode.window.showTextDocument(doc, {
+        viewColumn: vscode.ViewColumn.Beside,
+        preview: true,
+        preserveFocus: true
+    });
+}
+
+/**
+ * Run a specific test function (via vn test or vn run).
+ * @param {vscode.ExtensionContext} context
+ * @param {vscode.Uri | string | undefined} uri
+ * @param {string} [testName]
+ */
+function runTest(context, uri, testName) {
+    const file = resolveTargetFile(uri);
+    if (!file) return;
+
+    const cliPath = resolveCliPath(context);
+    if (!cliPath) {
+        vscode.window.showErrorMessage("Varn binary not found.");
+        return;
+    }
+
+    const args = ["test", file];
+    if (testName) {
+        args.push("--filter", testName);
+    }
+
+    runInOutputChannel(cliPath, args, path.dirname(file), `Test ${testName || path.basename(file)}`);
+}
+
+/**
+ * Run benchmark on a file or specific bench function.
+ * @param {vscode.ExtensionContext} context
+ * @param {vscode.Uri | string | undefined} uri
+ * @param {string} [benchName]
+ */
+function runBenchmark(context, uri, benchName) {
+    const file = resolveTargetFile(uri);
+    if (!file) return;
+
+    const cliPath = resolveCliPath(context);
+    if (!cliPath) {
+        vscode.window.showErrorMessage("Varn binary not found.");
+        return;
+    }
+
+    const args = ["bench", file];
+    if (benchName) {
+        args.push("--filter", benchName);
+    }
+
+    runInOutputChannel(cliPath, args, path.dirname(file), `Benchmark ${benchName || path.basename(file)}`);
+}
+
+/**
+ * Toggle build mode between debug and release.
  */
 async function toggleBuildMode() {
-    const config = vscode.workspace.getConfiguration("Varn");
-    const current = config.get("buildMode", "debug");
-    const next = current === "debug" ? "release" : "debug";
-    const target = vscode.workspace.workspaceFolders ? vscode.ConfigurationTarget.Workspace : vscode.ConfigurationTarget.Global;
-    await config.update("buildMode", next, target);
+    const cfg = vscode.workspace.getConfiguration("Varn");
+    const current = cfg.get("buildMode", "debug");
+    const next = current === "release" ? "debug" : "release";
+    await cfg.update("buildMode", next, vscode.ConfigurationTarget.Global);
     updateBuildModeStatusBar();
+    vscode.window.showInformationMessage(`Varn build mode switched to: ${next.toUpperCase()}`);
+}
+
+/**
+ * Open Graphical CFG & Interactive Debug Inspector.
+ * @param {vscode.ExtensionContext} context
+ * @param {vscode.Uri | string | undefined} uri
+ */
+function openVisualInspector(context, uri) {
+    const { VarnVisualInspectorPanel } = require("../views/visual_debugger");
+    const file = resolveTargetFile(uri);
+    const fileUri = file ? vscode.Uri.file(file) : vscode.window.activeTextEditor?.document.uri;
+    VarnVisualInspectorPanel.createOrShow(context.extensionUri, fileUri);
 }
 
 module.exports = {
@@ -172,5 +270,11 @@ module.exports = {
     runBytecode,
     runBench,
     runWithPhases,
-    toggleBuildMode
+    toggleBuildMode,
+    openBytecodeViewer,
+    openSSAViewer,
+    openVisualInspector,
+    runTest,
+    runBenchmark
 };
+
