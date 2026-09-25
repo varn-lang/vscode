@@ -186,7 +186,7 @@ class ExtensionManager {
         const ctx = this._context;
 
         // Register testing and virtual doc providers
-        const virtualDocs = registerVirtualDocumentProviders(ctx);
+        const virtualDocs = registerVirtualDocumentProviders();
         const taskProvider = registerTaskProvider(ctx);
         const testController = registerTestController(ctx);
 
@@ -201,6 +201,7 @@ class ExtensionManager {
 
         this._pushDisposable(
             virtualDocs,
+            taskProvider,
             testController,
 
             ...registerCmd("varn.reloadExtension", async () => {

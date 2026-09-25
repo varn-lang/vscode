@@ -49,10 +49,10 @@ class VarnVirtualDocumentProvider {
     }
 }
 
-function registerVirtualDocumentProviders(context) {
+function registerVirtualDocumentProviders() {
     const provider = new VarnVirtualDocumentProvider();
 
-    context.subscriptions.push(
+    return vscode.Disposable.from(
         vscode.workspace.registerTextDocumentContentProvider("varn-bytecode", provider),
         vscode.workspace.registerTextDocumentContentProvider("varn-ssa", provider),
         vscode.workspace.onDidSaveTextDocument((doc) => {
@@ -66,8 +66,6 @@ function registerVirtualDocumentProviders(context) {
             }
         })
     );
-
-    return provider;
 }
 
 module.exports = {

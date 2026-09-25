@@ -68,10 +68,7 @@ class VarnTaskProvider {
 
 function registerTaskProvider(context) {
     const provider = new VarnTaskProvider(context);
-    context.subscriptions.push(
-        vscode.tasks.registerTaskProvider("varn", provider)
-    );
-    return provider;
+    return vscode.tasks.registerTaskProvider("varn", provider);
 }
 
 module.exports = {

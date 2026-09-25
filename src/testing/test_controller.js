@@ -38,7 +38,7 @@ class VarnTestController {
             false
         );
 
-        context.subscriptions.push(
+        this._disposables = [
             this.ctrl,
             vscode.workspace.onDidSaveTextDocument((doc) => {
                 if (doc.fileName.endsWith(".vn")) {
@@ -50,7 +50,7 @@ class VarnTestController {
                     this.discoverDocumentTests(doc.uri);
                 }
             })
-        );
+        ];
 
         // Initial scan of active editor
         if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.fileName.endsWith(".vn")) {
@@ -200,6 +200,13 @@ class VarnTestController {
         }
 
         run.end();
+    }
+
+    dispose() {
+        for (const d of this._disposables) {
+            try { d.dispose(); } catch {}
+        }
+        this._disposables.length = 0;
     }
 }
 
