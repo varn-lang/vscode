@@ -324,16 +324,6 @@ class ExtensionManager {
                 runRepl(ctx);
             }),
 
-            ...registerCmd("varn.evalSelection", async (code) => {
-                const client = getClient();
-                if (client && code) {
-                    await client.sendRequest("workspace/executeCommand", {
-                        command: "varn.evalSelection",
-                        arguments: [code]
-                    });
-                }
-            }),
-
             ...registerCmd("varn.doctor", () => {
                 runDoctor(ctx);
             }),
