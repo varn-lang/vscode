@@ -67,7 +67,7 @@
 			"beginCaptures": {
 				"1": { "name": "keyword.control.import.vn" }
 			},
-			"end": "(?=;)|$",
+			"end": "(?=;)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#string" },
@@ -108,7 +108,7 @@
 				"3": { "name": "keyword.generator.asterisk.vn" },
 				"4": { "name": "entity.name.function.vn" }
 			},
-			"end": "(?=[{;])|(?=$)",
+			"end": "(?=[{;])",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -141,7 +141,7 @@
 			"beginCaptures": {
 				"1": { "name": "storage.modifier.vn" }
 			},
-			"end": "(?=[{=;])|$",
+			"end": "(?=[{=;])",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "match": ",", "name": "punctuation.separator.comma.vn" },
@@ -179,7 +179,7 @@
 				"1": { "name": "keyword.generator.asterisk.vn" },
 				"2": { "name": "entity.name.function.vn" }
 			},
-			"end": "(?=[{;,}])|(?=$)",
+			"end": "(?=[{;,}])",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -209,7 +209,7 @@
 				"1": { "name": "storage.type.vn" },
 				"2": { "name": "entity.name.type.vn" }
 			},
-			"end": "(?=[;])|$",
+			"end": "(?=[;])",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -281,7 +281,7 @@
 					"beginCaptures": {
 						"1": { "name": "storage.type.vn" }
 					},
-					"end": "(?=[;=},)]|\\b(of|in)\\b|$)",
+					"end": "(?=[;=},)]|\\b(of|in)\\b)",
 					"patterns": [
 						{ "include": "#comment" },
 						{ "include": "#type-annotation" },
@@ -297,7 +297,7 @@
 					"beginCaptures": {
 						"1": { "name": "storage.type.vn" }
 					},
-					"end": "(?=[;=},)]|\\b(of|in)\\b|$)",
+					"end": "(?=[;=},)]|\\b(of|in)\\b)",
 					"patterns": [
 						{ "include": "#comment" },
 						{ "include": "#type-annotation" },
@@ -351,7 +351,7 @@
 			"beginCaptures": {
 				"1": { "name": "punctuation.separator.annotation.vn" }
 			},
-			"end": "(?=[,)=;{}]|=>|$)",
+			"end": "(?=[,)=;{}]|=>)",
 			"patterns": [ { "include": "#type" } ]
 		},
 
