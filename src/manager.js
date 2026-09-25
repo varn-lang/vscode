@@ -134,6 +134,7 @@ class ExtensionManager {
             );
             return;
         }
+        this._lspPath = lspPath;
 
         const client = createClient(lspPath, this._lspOutputChannel, LSP_ARGS);
         client.onDidChangeState(({ newState }) => {
@@ -370,32 +371,49 @@ class ExtensionManager {
     _startHotReload() {
         this._stopWatchers();
 
-        const enabled = vscode.workspace.getConfiguration("Varn")
-            .get("hotReload.enabled", true);
-        if (!enabled) return;
+        const config = vscode.workspace.getConfiguration("Varn");
 
-        const extPath = this._context.extensionPath;
-        const srcPath = path.join(extPath, "src");
+        if (config.get("hotReload.enabled", true)) {
+            const extPath = this._context.extensionPath;
+            const srcPath = path.join(extPath, "src");
 
-        const reloadFilter = (filename) => {
-            if (!filename) return false;
-            if (filename.endsWith(".js")) return true;
-            return false;
-        };
+            const reloadFilter = (filename) => {
+                if (!filename) return false;
+                if (filename.endsWith(".js")) return true;
+                return false;
+            };
 
-        try {
-            const extWatcher = fs.watch(extPath, (eventType, filename) => {
-                if (reloadFilter(filename)) this._scheduleReload();
-            });
-            this._watchers.push(extWatcher);
-        } catch {}
+            try {
+                const extWatcher = fs.watch(extPath, (eventType, filename) => {
+                    if (reloadFilter(filename)) this._scheduleReload();
+                });
+                this._watchers.push(extWatcher);
+            } catch {}
 
-        try {
-            const srcWatcher = fs.watch(srcPath, { recursive: true }, (eventType, filename) => {
-                if (reloadFilter(filename)) this._scheduleReload();
-            });
-            this._watchers.push(srcWatcher);
-        } catch {}
+            try {
+                const srcWatcher = fs.watch(srcPath, { recursive: true }, (eventType, filename) => {
+                    if (reloadFilter(filename)) this._scheduleReload();
+                });
+                this._watchers.push(srcWatcher);
+            } catch {}
+        }
+
+        // Rebuilding `vn` (e.g. via scripts/dev-build.ps1) replaces the exe
+        // the server runs from; nothing used to notice, so every rebuild
+        // needed a manual "Varn: Restart Language Server". Watching its
+        // directory and matching on the exact filename catches that the same
+        // way the .js watchers above catch a source edit — one mechanism,
+        // one debounce, reused rather than duplicated.
+        if (config.get("hotReload.watchBinary", true) && this._lspPath) {
+            const binDir = path.dirname(this._lspPath);
+            const binName = path.basename(this._lspPath);
+            try {
+                const binWatcher = fs.watch(binDir, (eventType, filename) => {
+                    if (filename === binName) this._scheduleReload();
+                });
+                this._watchers.push(binWatcher);
+            } catch {}
+        }
     }
 
     _stopWatchers() {

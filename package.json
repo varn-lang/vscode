@@ -613,6 +613,11 @@
           "default": true,
           "description": "Automatically reload the extension when source files change (requires restart for package.json contributes changes)."
         },
+        "Varn.hotReload.watchBinary": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically restart the Language Server when the resolved `vn` binary is rebuilt (e.g. by scripts/dev-build.ps1)."
+        },
         "Varn.buildMode": {
           "type": "string",
           "enum": [
