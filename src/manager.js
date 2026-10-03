@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const { State } = require("vscode-languageclient/node");
 
-const { resolveCliPath, LSP_ARGS } = require("./binary");
+const { resolveCliPath, resolveServerPath, LSP_ARGS } = require("./binary");
 const {
     initStatusBar,
     setLspStatus,
@@ -136,7 +136,7 @@ class ExtensionManager {
         }
         this._lspPath = lspPath;
 
-        const client = createClient(lspPath, this._lspOutputChannel, LSP_ARGS);
+        const client = createClient(resolveServerPath(lspPath), this._lspOutputChannel, LSP_ARGS);
         client.onDidChangeState(({ newState }) => {
             if      (newState === State.Running)  setLspStatus("running");
             else if (newState === State.Starting) setLspStatus("starting");
@@ -221,7 +221,7 @@ class ExtensionManager {
                 setLspStatus("starting");
                 const ch = this._lspOutputChannel
                     || vscode.window.createOutputChannel("Varn Language Server");
-                const client = createClient(lspPath, ch, LSP_ARGS);
+                const client = createClient(resolveServerPath(lspPath), ch, LSP_ARGS);
                 client.onDidChangeState(({ newState }) => {
                     if      (newState === State.Running)  setLspStatus("running");
                     else if (newState === State.Starting) setLspStatus("starting");
@@ -398,8 +398,8 @@ class ExtensionManager {
             } catch {}
         }
 
-        // Rebuilding `vn` (e.g. via scripts/dev-build.ps1) replaces the exe
-        // the server runs from; nothing used to notice, so every rebuild
+        // Rebuilding `vn` replaces the exe the server runs from (or the one
+        // `vn-shadow` copies on the next start); nothing used to notice, so every rebuild
         // needed a manual "Varn: Restart Language Server". Watching its
         // directory and matching on the exact filename catches that the same
         // way the .js watchers above catch a source edit — one mechanism,

@@ -64,6 +64,18 @@ function resolveCliPath(context) {
 }
 
 /**
+ * The executable that runs the language server: `vn-shadow` when it sits next
+ * to `vn`, so the server runs from a private copy and rebuilding `vn` never
+ * hits a locked exe. Falls back to `vn` itself.
+ * @param {string} cliPath
+ * @returns {string}
+ */
+function resolveServerPath(cliPath) {
+    const shadow = path.join(path.dirname(cliPath), `vn-shadow${BIN_EXT}`);
+    return fs.existsSync(shadow) ? shadow : cliPath;
+}
+
+/**
  * Arguments that turn the Varn CLI into a language server on stdio.
  *
  * The server ships inside `vn` rather than as its own binary: the stdlib
@@ -75,5 +87,6 @@ const LSP_ARGS = ["lsp"];
 
 module.exports = {
     resolveCliPath,
+    resolveServerPath,
     LSP_ARGS,
 };

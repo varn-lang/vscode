@@ -616,7 +616,7 @@
         "Varn.hotReload.watchBinary": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically restart the Language Server when the resolved `vn` binary is rebuilt (e.g. by scripts/dev-build.ps1)."
+          "description": "Automatically restart the Language Server when the resolved `vn` binary is rebuilt."
         },
         "Varn.buildMode": {
           "type": "string",
