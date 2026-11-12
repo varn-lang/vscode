@@ -327,6 +327,15 @@ test("VS Code applies the parameter underline to vn only, through language selec
     );
 });
 
+test("semantic token columns count UTF-16 units after accents and emoji", async () => {
+    await activate();
+    const tokens = await semanticTokensOf("unicode.vn");
+    assert.equal(tokenAt(tokens, 0, "total").type, "variable");
+    assert.equal(tokenAt(tokens, 0, "total").modifiers.includes("declaration"), true);
+    assert.equal(tokenAt(tokens, 1, "f").type, "function");
+    assert.equal(tokenAt(tokens, 2, "z").type, "variable");
+});
+
 test("semantic tokens carry declaration, static and readonly modifiers", async () => {
     await activate();
     const tokens = await semanticTokensOf("semantic.vn");

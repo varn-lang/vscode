@@ -1,0 +1,3 @@
+const café = "ñá 😀"; const total = café;
+function f(a: int): int { return a; } // niño
+const z = f(1);
