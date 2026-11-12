@@ -158,6 +158,43 @@ test("the sidebar views open without error", async () => {
     }
 });
 
+test("every command the server puts in a code lens is registered", async () => {
+    await activate();
+    const uri = workspaceFile("hello.vn");
+    const lenses = await until("code lenses from the server", async () => {
+        const result = await vscode.commands.executeCommand<vscode.CodeLens[]>("vscode.executeCodeLensProvider", uri);
+        return result && result.length > 0 ? result : undefined;
+    });
+    const used = new Set(lenses.flatMap((lens) => (lens.command ? [lens.command.command] : [])));
+    assert.ok(used.size > 0, "the lenses carry commands");
+    const registered = new Set(await vscode.commands.getCommands(true));
+    const missing = [...used].filter((id) => !registered.has(id));
+    assert.deepEqual(missing, [], `lens commands the extension does not register: ${missing.join(", ")}`);
+});
+
+test("a vn debug session starts and stops", async () => {
+    await activate();
+    const folder = vscode.workspace.workspaceFolders?.[0];
+    assert.ok(folder);
+    const started = new Promise<vscode.DebugSession>((resolve) => {
+        const subscription = vscode.debug.onDidStartDebugSession((session) => {
+            subscription.dispose();
+            resolve(session);
+        });
+    });
+    const accepted = await vscode.debug.startDebugging(folder, {
+        type: "vn",
+        request: "launch",
+        name: "Debug hello.vn",
+        program: workspaceFile("hello.vn").fsPath,
+        stopOnEntry: true,
+    });
+    assert.equal(accepted, true, "VS Code accepted the vn launch configuration");
+    const session = await started;
+    assert.equal(session.type, "vn");
+    await vscode.debug.stopDebugging(session);
+});
+
 export async function run(): Promise<void> {
     let failed = 0;
     for (const { name, run: body } of cases) {
