@@ -67,7 +67,7 @@
 			"beginCaptures": {
 				"1": { "name": "keyword.control.import.vn" }
 			},
-			"end": "(?=;)",
+			"end": "(?<=[\"'])|(?=;)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#string" },
