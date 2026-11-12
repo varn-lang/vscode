@@ -506,12 +506,12 @@
 		},
 
 		"number": {
-			"comment": "Suffixes: `n` = bigint, `m` = decimal. `_` digit separators allowed.",
+			"comment": "Suffixes: `n` = bigint, `d` = decimal. `_` digit separators allowed.",
 			"patterns": [
 				{ "name": "constant.numeric.hex.vn", "match": "\\b0[xX][0-9a-fA-F_]+n?\\b" },
 				{ "name": "constant.numeric.octal.vn", "match": "\\b0[oO][0-7_]+n?\\b" },
 				{ "name": "constant.numeric.binary.vn", "match": "\\b0[bB][01_]+n?\\b" },
-				{ "name": "constant.numeric.decimal.vn", "match": "\\b[0-9][0-9_]*(\\.[0-9_]+)?([eE][+-]?[0-9_]+)?[nm]?\\b" }
+				{ "name": "constant.numeric.decimal.vn", "match": "\\b[0-9][0-9_]*(\\.[0-9_]+)?([eE][+-]?[0-9_]+)?[nd]?\\b" }
 			]
 		},
 
