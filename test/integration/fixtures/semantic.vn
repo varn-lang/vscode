@@ -47,3 +47,6 @@ interface Opt { label?: str }
 const out = 1;
 print(out);
 function apply(run: (x: int) => int, v: int): int { return run(v); }
+const matched = match (id) { Some(val) => val, Other => 0 };
+class Gen { *items(): int { yield 1 } }
+const field = Person::name;

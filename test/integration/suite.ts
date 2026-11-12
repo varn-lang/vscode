@@ -336,6 +336,17 @@ test("semantic token columns count UTF-16 units after accents and emoji", async 
     assert.equal(tokenAt(tokens, 2, "z").type, "variable");
 });
 
+test("semantic tokens classify match patterns, generator methods and reflection members", async () => {
+    await activate();
+    const tokens = await semanticTokensOf("semantic.vn");
+    assert.equal(tokenAt(tokens, 49, "Some").type, "enumMember");
+    assert.equal(tokenAt(tokens, 49, "val").type, "variable");
+    assert.ok(tokenAt(tokens, 49, "val").modifiers.includes("declaration"), "a pattern binding declares a variable");
+    assert.equal(tokenAt(tokens, 49, "Other").type, "enumMember");
+    assert.equal(tokenAt(tokens, 50, "items").type, "method");
+    assert.equal(tokenAt(tokens, 51, "name").type, "property");
+});
+
 test("semantic tokens carry declaration, static and readonly modifiers", async () => {
     await activate();
     const tokens = await semanticTokensOf("semantic.vn");
