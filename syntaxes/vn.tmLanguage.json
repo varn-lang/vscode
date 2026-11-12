@@ -110,7 +110,7 @@
 				"3": { "name": "keyword.generator.asterisk.vn" },
 				"4": { "name": "entity.name.function.vn" }
 			},
-			"end": "(?=[{;])|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"end": "(?=[{;])|(?:(?<=[A-Za-z0-9_$\\]>)}\"'`])|(?<=[A-Za-z0-9_$\\]>)]\\?))(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -187,6 +187,7 @@
 			"end": "(?=[{=;])",
 			"patterns": [
 				{ "include": "#comment" },
+				{ "match": "(?<![._$[:alnum:]])(extends|implements)(?![_$[:alnum:]])", "name": "storage.modifier.vn" },
 				{ "match": ",", "name": "punctuation.separator.comma.vn" },
 				{ "include": "#type" }
 			]
@@ -234,7 +235,7 @@
 			"beginCaptures": {
 				"1": { "name": "storage.type.function.constructor.vn" }
 			},
-			"end": "(?=[{;,}])|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"end": "(?=[{;,}])|(?:(?<=[A-Za-z0-9_$\\]>)}\"'`])|(?<=[A-Za-z0-9_$\\]>)]\\?))(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -253,7 +254,7 @@
 				"1": { "name": "keyword.generator.asterisk.vn" },
 				"2": { "name": "entity.name.function.vn" }
 			},
-			"end": "(?=[{;,}])|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"end": "(?=[{;,}])|(?:(?<=[A-Za-z0-9_$\\]>)}\"'`])|(?<=[A-Za-z0-9_$\\]>)]\\?))(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -293,7 +294,7 @@
 					"comment": "The type itself. It ends at the end of the line once the type is complete; a following line that starts with | or & continues it.",
 					"begin": "=(?!>)",
 					"beginCaptures": { "0": { "name": "keyword.operator.assignment.vn" } },
-					"end": "(?=;)|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+					"end": "(?=;)|(?:(?<=[A-Za-z0-9_$\\]>)}\"'`])|(?<=[A-Za-z0-9_$\\]>)]\\?))(?<!=>)(?=\\s*(?://.*)?$)",
 					"patterns": [ { "include": "#type" } ]
 				},
 				{ "include": "#type" }
@@ -481,7 +482,7 @@
 					"end": "(?=[,)])",
 					"patterns": [ { "include": "#type" } ]
 				},
-				{ "include": "#type-annotation" },
+				{ "include": "#variable-type-annotation" },
 				{ "include": "#constant" },
 				{ "include": "#string" },
 				{ "include": "#number" },
@@ -494,7 +495,7 @@
 			"comment": "The type of a const/let/var: unlike a return type, a { here starts an object type, not a body.",
 			"begin": "(:)",
 			"beginCaptures": { "1": { "name": "punctuation.separator.annotation.vn" } },
-			"end": "(?=[,)=;}]|=>)|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"end": "(?=[,)=;}]|=>)|(?:(?<=[A-Za-z0-9_$\\]>)}\"'`])|(?<=[A-Za-z0-9_$\\]>)]\\?))(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [ { "include": "#type" } ]
 		},
 
@@ -503,7 +504,7 @@
 			"beginCaptures": {
 				"1": { "name": "punctuation.separator.annotation.vn" }
 			},
-			"end": "(?=[,)=;{}]|=>)|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"end": "(?=[,)=;{}]|=>)|(?:(?<=[A-Za-z0-9_$\\]>)}\"'`])|(?<=[A-Za-z0-9_$\\]>)]\\?))(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [ { "include": "#type" } ]
 		},
 
@@ -690,6 +691,14 @@
 
 		"string": {
 			"patterns": [
+				{
+					"comment": "Raw string: no escapes, may span lines.",
+					"name": "string.quoted.triple.vn",
+					"begin": "\"\"\"",
+					"beginCaptures": { "0": { "name": "punctuation.definition.string.begin.vn" } },
+					"end": "\"\"\"",
+					"endCaptures": { "0": { "name": "punctuation.definition.string.end.vn" } }
+				},
 				{
 					"name": "string.quoted.double.vn",
 					"begin": "\"",
