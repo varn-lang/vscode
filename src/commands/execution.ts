@@ -142,22 +142,26 @@ async function diffBytecode(_context: vscode.ExtensionContext, uri: TargetUri): 
     await vscode.commands.executeCommand("vscode.diff", fileUri, virtualUri, `Diff ${name} ↔ Bytecode`);
 }
 
-/** Run a specific test function, or every test in the file (vn test). */
+/**
+ * Run the tests of a file (vn test). The CLI selects test files, not test
+ * functions, so a test name only labels the output.
+ */
 function runTest(context: vscode.ExtensionContext, uri: TargetUri, testName?: string): void {
     const run = prepare(context, uri);
     if (!run) return;
-    const args = ["test", run.file];
-    if (testName) args.push("--filter", testName);
-    runInOutputChannel(run.cliPath, args, run.cwd, `Test ${testName || run.name}`);
+    const label = testName ? `${testName} (whole file)` : run.name;
+    runInOutputChannel(run.cliPath, ["test", run.file], run.cwd, `Test ${label}`);
 }
 
-/** Run a benchmark on a file or on one bench function. */
+/**
+ * Benchmark a file (vn bench). The CLI benchmarks whole files, so a benchmark
+ * name only labels the output.
+ */
 function runBenchmark(context: vscode.ExtensionContext, uri: TargetUri, benchName?: string): void {
     const run = prepare(context, uri);
     if (!run) return;
-    const args = ["bench", run.file];
-    if (benchName) args.push("--filter", benchName);
-    runInOutputChannel(run.cliPath, args, run.cwd, `Benchmark ${benchName || run.name}`);
+    const label = benchName ? `${benchName} (whole file)` : run.name;
+    runInOutputChannel(run.cliPath, ["bench", run.file], run.cwd, `Benchmark ${label}`);
 }
 
 /** Toggle the build mode between debug and release. */
