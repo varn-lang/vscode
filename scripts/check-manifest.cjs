@@ -30,6 +30,27 @@ for (const [where, id] of referenced) {
     if (isOwn && !declared.includes(id)) problems.push(`${where} references an undeclared command: ${id}`);
 }
 
+for (const walkthrough of contributes.walkthroughs ?? []) {
+    for (const step of walkthrough.steps) {
+        const where = `walkthrough ${walkthrough.id} step ${step.id}`;
+        const media = step.media?.markdown;
+        if (!media || !fs.existsSync(path.join(root, media))) problems.push(`${where}: missing media file ${media}`);
+        const linked = [...step.description.matchAll(/command:([A-Za-z0-9.]+)/g)].map((match) => match[1]);
+        const events = (step.completionEvents ?? []).filter((e) => e.startsWith("onCommand:")).map((e) => e.slice(10));
+        for (const id of [...linked, ...events]) {
+            if (id.startsWith("vn.") && !declared.includes(id)) problems.push(`${where}: references undeclared command ${id}`);
+        }
+    }
+}
+
+for (const welcome of contributes.viewsWelcome ?? []) {
+    for (const match of welcome.contents.matchAll(/command:([A-Za-z0-9.]+)/g)) {
+        if (match[1].startsWith("vn.") && !declared.includes(match[1])) {
+            problems.push(`welcome view ${welcome.view} references undeclared command ${match[1]}`);
+        }
+    }
+}
+
 if (problems.length > 0) {
     for (const problem of problems) console.error(problem);
     process.exit(1);

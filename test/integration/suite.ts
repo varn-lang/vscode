@@ -158,6 +158,11 @@ test("the sidebar views open without error", async () => {
     }
 });
 
+test("the Get Started walkthrough opens", async () => {
+    await activate();
+    await vscode.commands.executeCommand("vn.openWalkthrough");
+});
+
 test("every command the server puts in a code lens is registered", async () => {
     await activate();
     const uri = workspaceFile("hello.vn");

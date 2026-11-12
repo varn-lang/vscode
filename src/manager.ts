@@ -228,6 +228,9 @@ export class ExtensionManager {
             stdlibFeatures,
 
             registerCmd("vn.openStdModule", () => openStdModule()),
+            registerCmd("vn.openWalkthrough", () =>
+                vscode.commands.executeCommand("workbench.action.openWalkthrough", `${ctx.extension.id}#vn.getStarted`, false),
+            ),
             registerCmd("vn.openInstallGuide", () => vscode.env.openExternal(vscode.Uri.parse(INSTALL_GUIDE))),
 
             registerCmd("vn.reloadExtension", async () => {

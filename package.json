@@ -422,6 +422,12 @@
         "title": "Open Install Guide",
         "category": "Varn",
         "icon": "$(book)"
+      },
+      {
+        "command": "vn.openWalkthrough",
+        "title": "Get Started",
+        "category": "Varn",
+        "icon": "$(rocket)"
       }
     ],
     "problemMatchers": [
@@ -687,6 +693,85 @@
       {
         "view": "vn-actions",
         "contents": "The `vn` binary was not found, so Varn cannot run, check or build your code.\n[Open Install Guide](command:vn.openInstallGuide)\n[Set vn.cli.path](command:workbench.action.openSettings?%5B%22vn.cli.path%22%5D)\nAfter installing, the actions appear here."
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "vn.getStarted",
+        "title": "Get Started with Varn",
+        "description": "Install Varn, run a file, inspect the compiler output and debug.",
+        "steps": [
+          {
+            "id": "vn.install",
+            "title": "Install Varn",
+            "description": "The extension drives the `vn` program.\n[Open Install Guide](command:vn.openInstallGuide)\n[Set vn.cli.path](command:workbench.action.openSettings?%5B%22vn.cli.path%22%5D)",
+            "media": {
+              "markdown": "media/walkthrough/install.md"
+            },
+            "completionEvents": [
+              "onCommand:vn.openInstallGuide",
+              "onSettingChanged:vn.cli.path"
+            ]
+          },
+          {
+            "id": "vn.create",
+            "title": "Start a project",
+            "description": "Create a `vn.toml` and a first file.\n[Init Project](command:vn.initProject)",
+            "media": {
+              "markdown": "media/walkthrough/create.md"
+            },
+            "completionEvents": [
+              "onCommand:vn.initProject",
+              "onLanguage:vn"
+            ]
+          },
+          {
+            "id": "vn.run",
+            "title": "Run a file",
+            "description": "Run the open `.vn` file and read its output.\n[Run File](command:vn.runFile)\n[Run File in Terminal](command:vn.runFileInTerminal)",
+            "media": {
+              "markdown": "media/walkthrough/run.md"
+            },
+            "completionEvents": [
+              "onCommand:vn.runFile",
+              "onCommand:vn.runFileInTerminal"
+            ]
+          },
+          {
+            "id": "vn.check",
+            "title": "Check types",
+            "description": "Type-check without running.\n[Check File](command:vn.checkFile)",
+            "media": {
+              "markdown": "media/walkthrough/check.md"
+            },
+            "completionEvents": [
+              "onCommand:vn.checkFile"
+            ]
+          },
+          {
+            "id": "vn.inspect",
+            "title": "See what the compiler makes",
+            "description": "Bytecode, SSA, the control-flow graph and the standard library.\n[Show Bytecode](command:vn.showBytecode)\n[Open Bytecode Viewer](command:vn.openBytecodeViewer)",
+            "media": {
+              "markdown": "media/walkthrough/inspect.md"
+            },
+            "completionEvents": [
+              "onCommand:vn.showBytecode",
+              "onCommand:vn.openBytecodeViewer"
+            ]
+          },
+          {
+            "id": "vn.debug",
+            "title": "Debug",
+            "description": "Set a breakpoint and press F5.\n[Open Run and Debug](command:workbench.view.debug)",
+            "media": {
+              "markdown": "media/walkthrough/debug.md"
+            },
+            "completionEvents": [
+              "onDebugStart"
+            ]
+          }
+        ]
       }
     ]
   },
