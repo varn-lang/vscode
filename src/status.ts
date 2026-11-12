@@ -1,19 +1,19 @@
 import * as vscode from "vscode";
-import { setLanguageState, refreshLanguageStatus } from "./language.js";
+import { setLanguageState, refreshLanguageStatus, type LspState } from "./language.js";
 
-/** @type {vscode.StatusBarItem | undefined} */
-let lspStatusBar;
-/** @type {vscode.StatusBarItem | undefined} */
-let runStatusBar;
-/** @type {vscode.StatusBarItem | undefined} */
-let buildModeStatusBar;
-/** @type {vscode.StatusBarItem | undefined} */
-let actionsHubBar;
+interface Refreshable {
+    refresh(): void;
+}
 
-let currentLspState = "starting";
-let statusProvider = null;
+let lspStatusBar: vscode.StatusBarItem | undefined;
+let runStatusBar: vscode.StatusBarItem | undefined;
+let buildModeStatusBar: vscode.StatusBarItem | undefined;
+let actionsHubBar: vscode.StatusBarItem | undefined;
 
-export function initStatusBar(context) {
+let currentLspState: LspState = "starting";
+let statusProvider: Refreshable | null = null;
+
+export function initStatusBar(context: vscode.ExtensionContext): void {
     lspStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 20);
     lspStatusBar.command = "Varn.restartServer";
     setLspStatus("starting");
@@ -22,51 +22,48 @@ export function initStatusBar(context) {
     context.subscriptions.push(lspStatusBar);
 }
 
-/**
- * @param {"starting"|"running"|"stopped"|"error"} state
- */
-export function setLspStatus(state) {
+export function setLspStatus(state: LspState): void {
     currentLspState = state;
-    if (statusProvider) {
-        statusProvider.refresh();
-    }
+    statusProvider?.refresh();
     try {
         setLanguageState(state);
-    } catch {}
+    } catch {
+        // the language status item is created after the status bar
+    }
     if (!lspStatusBar) return;
     switch (state) {
         case "starting":
-            lspStatusBar.text    = "$(loading~spin) Varn";
+            lspStatusBar.text = "$(loading~spin) Varn";
             lspStatusBar.tooltip = "Varn Language Server — Starting";
             lspStatusBar.backgroundColor = undefined;
             break;
         case "running":
-            lspStatusBar.text    = "$(check) Varn";
+            lspStatusBar.text = "$(check) Varn";
             lspStatusBar.tooltip = "Varn Language Server — Running  (click to restart)";
             lspStatusBar.backgroundColor = undefined;
             break;
         case "stopped":
-            lspStatusBar.text    = "$(circle-slash) Varn";
+            lspStatusBar.text = "$(circle-slash) Varn";
             lspStatusBar.tooltip = "Varn Language Server — Stopped  (click to restart)";
             lspStatusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
             break;
         case "error":
-            lspStatusBar.text    = "$(error) Varn";
+            lspStatusBar.text = "$(error) Varn";
             lspStatusBar.tooltip = "Varn Language Server — Binary not found";
             lspStatusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
             break;
     }
 }
 
-export function updateBuildModeStatusBar() {
-    if (statusProvider) {
-        statusProvider.refresh();
-    }
+export function updateBuildModeStatusBar(): void {
+    statusProvider?.refresh();
     try {
         refreshLanguageStatus();
-    } catch {}
+    } catch {
+        // the language status item is created after the status bar
+    }
     if (!buildModeStatusBar) return;
-    const mode = vscode.workspace.getConfiguration("Varn").get("buildMode", "release");
+    const mode = vscode.workspace.getConfiguration("Varn").get<string>("buildMode", "release");
     if (mode === "release") {
         buildModeStatusBar.text = "$(zap) Release";
         buildModeStatusBar.tooltip = "Build Mode: Release (click to toggle to Debug)";
@@ -76,19 +73,17 @@ export function updateBuildModeStatusBar() {
     }
 }
 
-export function getLspStatus() {
+export function getLspStatus(): LspState {
     return currentLspState;
 }
 
-export function setStatusProvider(provider) {
+export function setStatusProvider(provider: Refreshable): void {
     statusProvider = provider;
 }
 
-export function disposeStatusBar() {
-    if (lspStatusBar) {
-        lspStatusBar.dispose();
-        lspStatusBar = undefined;
-    }
+export function disposeStatusBar(): void {
+    lspStatusBar?.dispose();
+    lspStatusBar = undefined;
     runStatusBar = undefined;
     buildModeStatusBar = undefined;
     actionsHubBar = undefined;
