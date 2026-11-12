@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import {
+    CloseAction,
+    ErrorAction,
     LanguageClient,
     TransportKind,
-    type CloseAction,
-    type ErrorAction,
     type LanguageClientOptions,
     type ServerOptions,
 } from "vscode-languageclient/node";
@@ -39,8 +39,8 @@ export function createClient(
             },
         },
         errorHandler: {
-            error: () => ({ action: 1 as ErrorAction }),
-            closed: () => ({ action: 0 as CloseAction }),
+            error: () => ({ action: ErrorAction.Continue }),
+            closed: () => ({ action: CloseAction.DoNotRestart, handled: true }),
         },
     };
 
