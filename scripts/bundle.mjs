@@ -1,7 +1,7 @@
 import { build } from "esbuild";
 
 await build({
-    entryPoints: ["extension.js"],
+    entryPoints: ["extension.ts"],
     outfile: "dist/extension.cjs",
     bundle: true,
     platform: "node",

@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const Module = require("node:module");
 
-const sources = ["extension.js", ...walk("src")];
+const sources = ["extension.ts", ...walk("src")];
 const names = new Set();
 for (const file of sources) {
     const text = fs.readFileSync(file, "utf8");
