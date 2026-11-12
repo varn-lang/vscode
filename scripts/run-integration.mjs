@@ -52,7 +52,16 @@ cpSync(join(root, "test", "integration", "fixtures"), workspace, { recursive: tr
 const vn = findVn();
 writeFileSync(
     join(workspace, ".vscode", "settings.json"),
-    JSON.stringify({ "vn.cli.path": vn, "vn.hotReload.watchBinary": false }, null, 2),
+    JSON.stringify(
+        {
+            "vn.cli.path": vn,
+            "vn.hotReload.watchBinary": false,
+            "editor.semanticHighlighting.enabled": true,
+            "[vn]": { "editor.semanticHighlighting.enabled": true, "editor.inlayHints.enabled": "off" },
+        },
+        null,
+        2,
+    ),
 );
 
 console.log(`vn binary: ${vn}`);
