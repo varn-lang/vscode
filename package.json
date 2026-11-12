@@ -2,7 +2,7 @@
   "name": "vn-language",
   "displayName": "Varn Language Support",
   "description": "Syntax highlighting, diagnostics, hover, go-to-definition, completions, rename, run and debug for the Varn language.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "publisher": "Varn",
   "license": "Apache-2.0",
   "repository": {
@@ -839,24 +839,24 @@
     ],
     "configurationDefaults": {
       "[vn]": {
-        "editor.semanticHighlighting.enabled": true,
-        "editor.semanticTokenColorCustomizations": {
-          "rules": {
-            "parameter": {
-              "underline": true
+        "editor.semanticHighlighting.enabled": true
+      },
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "parameter:vn": {
+            "underline": true
+          }
+        }
+      },
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": "variable.parameter.vn",
+            "settings": {
+              "fontStyle": "underline"
             }
           }
-        },
-        "editor.tokenColorCustomizations": {
-          "textMateRules": [
-            {
-              "scope": "variable.parameter.vn",
-              "settings": {
-                "fontStyle": "underline"
-              }
-            }
-          ]
-        }
+        ]
       }
     }
   },

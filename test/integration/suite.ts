@@ -308,17 +308,18 @@ test("every parameter is a parameter, including callbacks, and the default theme
         assert.ok(found.every((token) => token.type === "parameter"), `${name} must always be a parameter, got ${found.map((t) => t.type).join(", ")}`);
     }
     assert.equal(onLine("run").length, 2, "the declaration and the call of a callback parameter");
-    const defaults = extension.packageJSON.contributes.configurationDefaults["[vn]"];
-    assert.equal(defaults["editor.semanticTokenColorCustomizations"].rules.parameter.underline, true);
+    const defaults = extension.packageJSON.contributes.configurationDefaults;
+    assert.equal(defaults["editor.semanticTokenColorCustomizations"].rules["parameter:vn"].underline, true);
 });
 
-test("VS Code applies the underline default to vn documents", async () => {
+test("VS Code applies the parameter underline to vn only, through language selectors", async () => {
     await activate();
+    const config = vscode.workspace.getConfiguration("editor");
+    const semantic = config.get<{ rules?: Record<string, { underline?: boolean }> }>("semanticTokenColorCustomizations");
+    assert.equal(semantic?.rules?.["parameter:vn"]?.underline, true, `effective customizations: ${JSON.stringify(semantic)}`);
+    assert.equal(semantic?.rules?.["parameter"], undefined, "no rule may underline parameters of other languages");
     const document = await vscode.workspace.openTextDocument(workspaceFile("semantic.vn"));
-    const config = vscode.workspace.getConfiguration("editor", document);
-    const effective = config.get<{ rules?: Record<string, { underline?: boolean }> }>("semanticTokenColorCustomizations");
-    assert.equal(effective?.rules?.parameter?.underline, true, `effective customizations: ${JSON.stringify(effective)}`);
-    assert.equal(config.get("semanticHighlighting.enabled"), true);
+    assert.equal(vscode.workspace.getConfiguration("editor", document).get("semanticHighlighting.enabled"), true);
     const textMate = config.get<{ textMateRules?: { scope: string; settings: { fontStyle?: string } }[] }>("tokenColorCustomizations");
     assert.ok(
         textMate?.textMateRules?.some((rule) => rule.scope === "variable.parameter.vn" && rule.settings.fontStyle === "underline"),
