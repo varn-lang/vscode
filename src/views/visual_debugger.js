@@ -589,7 +589,7 @@ class VarnVisualInspectorPanel {
         </div>
     </div>
 
-    <script nonce="${nonce}>
+    <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
         let globalData = null;
         let activeFuncIndex = 0;
