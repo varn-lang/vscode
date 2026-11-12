@@ -19,7 +19,8 @@
     "scan:tests": "node scripts/check-test-scan.mjs",
     "check:naming": "node scripts/check-naming.cjs",
     "test:integration": "pnpm run bundle && node scripts/run-integration.mjs",
-    "grammar:snapshot": "node scripts/check-grammar-snapshots.cjs"
+    "grammar:snapshot": "node scripts/check-grammar-snapshots.cjs",
+    "grammar:lexer": "node scripts/check-grammar-lexer.cjs"
   },
   "icon": "icon.png",
   "engines": {
