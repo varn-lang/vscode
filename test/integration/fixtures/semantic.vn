@@ -32,3 +32,14 @@ const circle = Circle.unit();
 const shade = Color.Green;
 print(first([limit]), circle.area(), shade);
 const ready = true;
+const pattern = /ab+c/i;
+@sealed
+class Box {
+    readonly size: int = 3;
+    area(): int { return this.size; }
+}
+extension Tools on str {
+    shout(): str { return this; }
+}
+import { describe } from "std:test";
+describe("box", () => {});

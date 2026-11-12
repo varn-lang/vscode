@@ -276,7 +276,6 @@ test("semantic tokens classify declarations and references", async () => {
     await activate();
     const tokens = await semanticTokensOf("semantic.vn");
     assert.equal(tokenAt(tokens, 0, "Shape").type, "interface");
-    assert.equal(tokenAt(tokens, 4, "Color").type, "type");
     assert.equal(tokenAt(tokens, 9, "Circle").type, "class");
     assert.equal(tokenAt(tokens, 9, "class").type, "keyword");
     assert.equal(tokenAt(tokens, 12, "radius").type, "parameter");
@@ -285,9 +284,14 @@ test("semantic tokens classify declarations and references", async () => {
     assert.equal(tokenAt(tokens, 25, "items").type, "parameter");
     assert.equal(tokenAt(tokens, 29, "limit").type, "variable");
     assert.ok(tokenAt(tokens, 29, "limit").modifiers.includes("readonly"), "a const is read-only");
-    assert.equal(tokenAt(tokens, 30, "unit").type, "function");
     assert.equal(tokenAt(tokens, 31, "Green").type, "enumMember");
     assert.equal(tokenAt(tokens, 33, "true").type, "keyword");
+    assert.equal(tokenAt(tokens, 4, "Color").type, "enum");
+    assert.equal(tokenAt(tokens, 16, "area").type, "method");
+    assert.equal(tokenAt(tokens, 30, "unit").type, "method");
+    assert.equal(tokenAt(tokens, 34, "/ab+c/i").type, "regexp");
+    assert.equal(tokenAt(tokens, 35, "sealed").type, "decorator");
+    assert.equal(tokenAt(tokens, 40, "Tools").type, "class");
 });
 
 test("semantic tokens carry declaration, static and readonly modifiers", async () => {
@@ -300,6 +304,9 @@ test("semantic tokens carry declaration, static and readonly modifiers", async (
     assert.ok(!tokenAt(tokens, 16, "area").modifiers.includes("static"), "an instance method is not static");
     assert.ok(tokenAt(tokens, 29, "limit").modifiers.includes("declaration"), "a const name is a declaration");
     assert.ok(!tokenAt(tokens, 32, "print").modifiers.includes("declaration"), "a call is not a declaration");
+    assert.ok(tokenAt(tokens, 37, "size").modifiers.includes("readonly"), "a readonly field declaration is readonly");
+    assert.ok(tokenAt(tokens, 38, "size").modifiers.includes("readonly"), "a reference to a readonly field is readonly");
+    assert.ok(tokenAt(tokens, 44, "describe").modifiers.includes("defaultLibrary"), "a std symbol is defaultLibrary");
 });
 
 export async function run(): Promise<void> {

@@ -158,6 +158,30 @@
           "property.static": [
             "variable.other.property.static.vn",
             "variable.other.property.vn"
+          ],
+          "method": [
+            "entity.name.function.method.vn",
+            "entity.name.function.vn"
+          ],
+          "enum": [
+            "entity.name.type.enum.vn",
+            "entity.name.type.vn"
+          ],
+          "decorator": [
+            "entity.name.function.decorator.vn",
+            "meta.decorator.vn"
+          ],
+          "regexp": [
+            "string.regexp.vn"
+          ],
+          "*.defaultLibrary": [
+            "support.function.builtin.vn"
+          ],
+          "type.defaultLibrary": [
+            "support.type.builtin.vn"
+          ],
+          "*.deprecated": [
+            "invalid.deprecated.vn"
           ]
         }
       }
