@@ -21,7 +21,8 @@
     "test:integration": "pnpm run bundle && node scripts/run-integration.mjs",
     "grammar:snapshot": "node scripts/check-grammar-snapshots.cjs",
     "grammar:lexer": "node scripts/check-grammar-lexer.cjs",
-    "semantic:coverage": "node scripts/check-semantic-coverage.cjs"
+    "semantic:coverage": "node scripts/check-semantic-coverage.cjs",
+    "audit:completion": "node scripts/audit-completion.cjs"
   },
   "icon": "icon.png",
   "engines": {

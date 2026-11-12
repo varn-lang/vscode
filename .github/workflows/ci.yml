@@ -93,3 +93,9 @@ jobs:
         run: |
           pnpm run semantic:coverage ../varn-lang/std -- --limit 120 --min 97
           pnpm run semantic:coverage ../varn-lang/tests -- --limit 150 --min 99
+
+      - name: Completion audit across scenarios and edge cases
+        working-directory: varn-extension
+        env:
+          VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
+        run: pnpm run audit:completion
