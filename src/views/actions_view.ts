@@ -27,28 +27,28 @@ interface ActionDefinition {
 }
 
 const FILE_OPERATIONS: ActionDefinition[] = [
-    { label: "Run File", icon: "play", command: "varn.runFile" },
-    { label: "Run File in Terminal", icon: "terminal", command: "varn.runFileInTerminal" },
-    { label: "Check File (Typecheck)", icon: "checklist", command: "varn.checkFile" },
-    { label: "Build File (Compile)", icon: "package", command: "varn.buildFile" },
-    { label: "Show Bytecode", icon: "file-binary", command: "varn.showBytecode" },
-    { label: "Show AST", icon: "symbol-structure", command: "varn.showAst" },
-    { label: "Benchmark File", icon: "dashboard", command: "varn.benchFile" },
+    { label: "Run File", icon: "play", command: "vn.runFile" },
+    { label: "Run File in Terminal", icon: "terminal", command: "vn.runFileInTerminal" },
+    { label: "Check File (Typecheck)", icon: "checklist", command: "vn.checkFile" },
+    { label: "Build File (Compile)", icon: "package", command: "vn.buildFile" },
+    { label: "Show Bytecode", icon: "file-binary", command: "vn.showBytecode" },
+    { label: "Show AST", icon: "symbol-structure", command: "vn.showAst" },
+    { label: "Benchmark File", icon: "dashboard", command: "vn.benchFile" },
 ];
 
 const DEPENDENCY_MANAGEMENT: ActionDefinition[] = [
-    { label: "Add Dependency", icon: "add", command: "varn.pkgAdd" },
-    { label: "Remove Dependency", icon: "trash", command: "varn.pkgRemove" },
-    { label: "Install Dependencies", icon: "cloud-download", command: "varn.pkgInstall" },
-    { label: "Update Dependencies", icon: "refresh", command: "varn.pkgUpdate" },
+    { label: "Add Dependency", icon: "add", command: "vn.pkgAdd" },
+    { label: "Remove Dependency", icon: "trash", command: "vn.pkgRemove" },
+    { label: "Install Dependencies", icon: "cloud-download", command: "vn.pkgInstall" },
+    { label: "Update Dependencies", icon: "refresh", command: "vn.pkgUpdate" },
 ];
 
 const UTILITIES: ActionDefinition[] = [
-    { label: "Start Interactive REPL", icon: "terminal", command: "varn.runRepl" },
-    { label: "Doctor (Check Setup)", icon: "pulse", command: "varn.doctor" },
-    { label: "Init Project", icon: "new-folder", command: "varn.initProject" },
-    { label: "Clean Cache", icon: "clear-all", command: "varn.cacheClean" },
-    { label: "Install Runtime", icon: "cloud-download", command: "varn.installRuntime" },
+    { label: "Start Interactive REPL", icon: "terminal", command: "vn.runRepl" },
+    { label: "Doctor (Check Setup)", icon: "pulse", command: "vn.doctor" },
+    { label: "Init Project", icon: "new-folder", command: "vn.initProject" },
+    { label: "Clean Cache", icon: "clear-all", command: "vn.cacheClean" },
+    { label: "Install Runtime", icon: "cloud-download", command: "vn.installRuntime" },
 ];
 
 type ActionNode = ActionCategoryItem | ActionTreeItem;

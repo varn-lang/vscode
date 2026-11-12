@@ -122,7 +122,7 @@ export class ExtensionManager {
             initLanguageFeatures(this.context);
             this.pushDisposable(
                 vscode.workspace.onDidChangeConfiguration((event) => {
-                    if (event.affectsConfiguration("Varn")) refreshLanguageStatus();
+                    if (event.affectsConfiguration("vn")) refreshLanguageStatus();
                 }),
             );
         } catch {
@@ -153,7 +153,7 @@ export class ExtensionManager {
         if (!lspPath) {
             setLspStatus("error");
             void vscode.window.showErrorMessage(
-                "vn binary not found. Build with `cargo build --release --bin vn` or set Varn.cli.path.",
+                "vn binary not found. Build with `cargo build --release --bin vn` or set vn.cli.path.",
             );
             return;
         }
@@ -164,8 +164,8 @@ export class ExtensionManager {
 
     private startDebugAdapter(): void {
         this.pushDisposable(
-            vscode.debug.registerDebugAdapterDescriptorFactory("Varn", new VarnDebugAdapterFactory(this.context)),
-            vscode.debug.registerDebugConfigurationProvider("Varn", new VarnDebugConfigProvider()),
+            vscode.debug.registerDebugAdapterDescriptorFactory("vn", new VarnDebugAdapterFactory(this.context)),
+            vscode.debug.registerDebugConfigurationProvider("vn", new VarnDebugConfigProvider()),
         );
     }
 
@@ -174,15 +174,15 @@ export class ExtensionManager {
         setStatusProvider(statusProvider);
         const actionsProvider = new VarnActionsProvider(this.context);
         const astProvider = new VarnAstProvider(this.context);
-        const astView = vscode.window.createTreeView("varn-ast", {
+        const astView = vscode.window.createTreeView("vn-ast", {
             treeDataProvider: astProvider,
             showCollapseAll: true,
         });
         astProvider.attach(astView);
 
         this.pushDisposable(
-            vscode.window.registerTreeDataProvider("varn-status", statusProvider),
-            vscode.window.registerTreeDataProvider("varn-actions", actionsProvider),
+            vscode.window.registerTreeDataProvider("vn-status", statusProvider),
+            vscode.window.registerTreeDataProvider("vn-actions", actionsProvider),
             astView,
         );
 
@@ -224,20 +224,20 @@ export class ExtensionManager {
             inspectEditors,
             stdlibFeatures,
 
-            registerCmd("varn.openStdModule", () => openStdModule()),
+            registerCmd("vn.openStdModule", () => openStdModule()),
 
-            registerCmd("varn.reloadExtension", async () => {
+            registerCmd("vn.reloadExtension", async () => {
                 await this.restart();
                 void vscode.window.showInformationMessage("Varn Extension reloaded");
             }),
 
-            registerCmd("varn.showActionsHub", () => showActionsHub(ctx)),
+            registerCmd("vn.showActionsHub", () => showActionsHub(ctx)),
 
-            registerCmd("varn.restartServer", async () => {
+            registerCmd("vn.restartServer", async () => {
                 await stopClient();
                 const lspPath = resolveCliPath(ctx);
                 if (!lspPath) {
-                    void vscode.window.showErrorMessage("vn binary not found. Set Varn.cli.path.");
+                    void vscode.window.showErrorMessage("vn binary not found. Set vn.cli.path.");
                     return;
                 }
                 setLspStatus("starting");
@@ -252,47 +252,47 @@ export class ExtensionManager {
                 }
             }),
 
-            registerCmd("varn.stopServer", async () => {
+            registerCmd("vn.stopServer", async () => {
                 await stopClient();
                 setLspStatus("stopped");
             }),
 
-            registerCmd("varn.showServerLog", () => {
+            registerCmd("vn.showServerLog", () => {
                 getClient()?.outputChannel.show();
             }),
 
-            registerCmd("varn.runFile", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: false })),
-            registerCmd("varn.runFileInTerminal", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: true })),
-            registerCmd("varn.runMain", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: false })),
-            registerCmd("varn.runTest", (uri?: CommandTarget, testName?: string) => runTest(ctx, uri, testName)),
-            registerCmd("varn.runBenchmark", (uri?: CommandTarget, benchName?: string) =>
+            registerCmd("vn.runFile", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: false })),
+            registerCmd("vn.runFileInTerminal", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: true })),
+            registerCmd("vn.runMain", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: false })),
+            registerCmd("vn.runTest", (uri?: CommandTarget, testName?: string) => runTest(ctx, uri, testName)),
+            registerCmd("vn.runBenchmark", (uri?: CommandTarget, benchName?: string) =>
                 runBenchmark(ctx, uri, benchName),
             ),
-            registerCmd("varn.checkFile", (uri?: CommandTarget) => runCheck(ctx, uri)),
-            registerCmd("varn.buildFile", (uri?: CommandTarget) => runBuild(ctx, uri)),
-            registerCmd("varn.showBytecode", (uri?: CommandTarget) => runBytecode(ctx, uri)),
-            registerCmd("varn.openBytecodeViewer", (uri?: CommandTarget) => openBytecodeViewer(ctx, uri)),
-            registerCmd("varn.showSSA", (uri?: CommandTarget) => runWithDebugPhase(ctx, uri, ["bytecode"], "SSA")),
-            registerCmd("varn.openSSAViewer", (uri?: CommandTarget) => openSSAViewer(ctx, uri)),
-            registerCmd("varn.diffBytecode", (uri?: CommandTarget) => diffBytecode(ctx, uri)),
-            registerCmd("varn.openVisualInspector", (uri?: CommandTarget) => openVisualInspector(ctx, uri)),
-            registerCmd("varn.showAst", (uri?: CommandTarget) => runWithDebugPhase(ctx, uri, ["ast"], "AST")),
-            registerCmd("varn.showTokens", (uri?: CommandTarget) => runWithDebugPhase(ctx, uri, ["tokens"], "Tokens")),
-            registerCmd("varn.benchFile", (uri?: CommandTarget) => runBench(ctx, uri)),
-            registerCmd("varn.runWithPhases", (uri?: CommandTarget) => runWithPhases(ctx, uri)),
+            registerCmd("vn.checkFile", (uri?: CommandTarget) => runCheck(ctx, uri)),
+            registerCmd("vn.buildFile", (uri?: CommandTarget) => runBuild(ctx, uri)),
+            registerCmd("vn.showBytecode", (uri?: CommandTarget) => runBytecode(ctx, uri)),
+            registerCmd("vn.openBytecodeViewer", (uri?: CommandTarget) => openBytecodeViewer(ctx, uri)),
+            registerCmd("vn.showSSA", (uri?: CommandTarget) => runWithDebugPhase(ctx, uri, ["bytecode"], "SSA")),
+            registerCmd("vn.openSSAViewer", (uri?: CommandTarget) => openSSAViewer(ctx, uri)),
+            registerCmd("vn.diffBytecode", (uri?: CommandTarget) => diffBytecode(ctx, uri)),
+            registerCmd("vn.openVisualInspector", (uri?: CommandTarget) => openVisualInspector(ctx, uri)),
+            registerCmd("vn.showAst", (uri?: CommandTarget) => runWithDebugPhase(ctx, uri, ["ast"], "AST")),
+            registerCmd("vn.showTokens", (uri?: CommandTarget) => runWithDebugPhase(ctx, uri, ["tokens"], "Tokens")),
+            registerCmd("vn.benchFile", (uri?: CommandTarget) => runBench(ctx, uri)),
+            registerCmd("vn.runWithPhases", (uri?: CommandTarget) => runWithPhases(ctx, uri)),
 
-            registerCmd("varn.pkgInstall", () => runPkgInstall(ctx)),
-            registerCmd("varn.pkgUpdate", () => runPkgUpdate(ctx)),
-            registerCmd("varn.pkgAdd", () => runPkgAdd(ctx)),
-            registerCmd("varn.pkgRemove", () => runPkgRemove(ctx)),
-            registerCmd("varn.runRepl", () => runRepl(ctx)),
-            registerCmd("varn.doctor", () => runDoctor(ctx)),
-            registerCmd("varn.cacheClean", () => runCacheClean(ctx)),
-            registerCmd("varn.initProject", () => runInitProject(ctx)),
-            registerCmd("varn.installRuntime", () => runInstaller(ctx)),
-            registerCmd("varn.toggleBuildMode", () => toggleBuildMode()),
+            registerCmd("vn.pkgInstall", () => runPkgInstall(ctx)),
+            registerCmd("vn.pkgUpdate", () => runPkgUpdate(ctx)),
+            registerCmd("vn.pkgAdd", () => runPkgAdd(ctx)),
+            registerCmd("vn.pkgRemove", () => runPkgRemove(ctx)),
+            registerCmd("vn.runRepl", () => runRepl(ctx)),
+            registerCmd("vn.doctor", () => runDoctor(ctx)),
+            registerCmd("vn.cacheClean", () => runCacheClean(ctx)),
+            registerCmd("vn.initProject", () => runInitProject(ctx)),
+            registerCmd("vn.installRuntime", () => runInstaller(ctx)),
+            registerCmd("vn.toggleBuildMode", () => toggleBuildMode()),
 
-            registerCmd("varn.findReferences", async (uri?: CommandTarget, line?: number, col?: number) => {
+            registerCmd("vn.findReferences", async (uri?: CommandTarget, line?: number, col?: number) => {
                 if (line === undefined || col === undefined || !uri) return;
                 const targetUri = typeof uri === "string" ? vscode.Uri.parse(uri) : uri;
                 await vscode.commands.executeCommand(
@@ -302,7 +302,7 @@ export class ExtensionManager {
                 );
             }),
 
-            registerCmd("varn.selectEditorRange", (line: number) => {
+            registerCmd("vn.selectEditorRange", (line: number) => {
                 const editor = vscode.window.activeTextEditor;
                 if (!editor) return;
                 const range = editor.document.lineAt(line).range;
@@ -317,7 +317,7 @@ export class ExtensionManager {
     private startHotReload(): void {
         this.stopWatchers();
 
-        const config = vscode.workspace.getConfiguration("Varn");
+        const config = vscode.workspace.getConfiguration("vn");
 
         if (config.get("hotReload.watchBinary", true) && this.lspPath) {
             const binDir = path.dirname(this.lspPath);

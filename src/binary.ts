@@ -14,7 +14,7 @@ function targetCandidates(root: string, binName: string, mode: BuildMode): strin
 }
 
 export function getBinaryCandidates(context: vscode.ExtensionContext, binName: string): string[] {
-    const mode = vscode.workspace.getConfiguration("Varn").get<BuildMode>("buildMode", "release");
+    const mode = vscode.workspace.getConfiguration("vn").get<BuildMode>("buildMode", "release");
     const candidates: string[] = [];
 
     const homeBin = varnHomeBinPath(binName);
@@ -33,11 +33,11 @@ export function getBinaryCandidates(context: vscode.ExtensionContext, binName: s
 }
 
 export function resolveCliPath(context: vscode.ExtensionContext): string | undefined {
-    const override = vscode.workspace.getConfiguration("Varn").get<string>("cli.path");
+    const override = vscode.workspace.getConfiguration("vn").get<string>("cli.path");
     if (override) {
         if (fs.existsSync(override)) return override;
         void vscode.window.showWarningMessage(
-            `Varn.cli.path not found: ${override}. Falling back to auto-detect.`,
+            `vn.cli.path not found: ${override}. Falling back to auto-detect.`,
         );
     }
 
@@ -49,7 +49,7 @@ export function resolveCliPath(context: vscode.ExtensionContext): string | undef
 export function resolveServerPath(cliPath: string): string {
     try {
         const tag = fs.statSync(cliPath).mtimeMs.toString(36).replace(".", "");
-        const dir = path.join(os.tmpdir(), "varn-dev-server");
+        const dir = path.join(os.tmpdir(), "vn-dev-server");
         const dest = path.join(dir, `vn-${tag}${BIN_EXT}`);
         if (!fs.existsSync(dest)) {
             fs.mkdirSync(dir, { recursive: true });

@@ -12,7 +12,7 @@ let statusProvider: Refreshable | null = null;
 
 export function initStatusBar(context: vscode.ExtensionContext): void {
     lspStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 20);
-    lspStatusBar.command = "varn.restartServer";
+    lspStatusBar.command = "vn.restartServer";
     setLspStatus("starting");
     lspStatusBar.show();
 

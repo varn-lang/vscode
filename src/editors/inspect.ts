@@ -72,7 +72,7 @@ class VarnInspectEditor implements vscode.CustomReadonlyEditorProvider {
 export function registerInspectEditors(_context: vscode.ExtensionContext): vscode.Disposable {
     const options = { webviewOptions: { retainContextWhenHidden: false }, supportsMultipleEditorsPerDocument: true };
     return vscode.Disposable.from(
-        vscode.window.registerCustomEditorProvider("varn.bytecode", new VarnInspectEditor("varn.showBytecode", "Bytecode"), options),
-        vscode.window.registerCustomEditorProvider("varn.ssa", new VarnInspectEditor("varn.showSSA", "SSA"), options),
+        vscode.window.registerCustomEditorProvider("vn.bytecode", new VarnInspectEditor("vn.showBytecode", "Bytecode"), options),
+        vscode.window.registerCustomEditorProvider("vn.ssa", new VarnInspectEditor("vn.showSSA", "SSA"), options),
     );
 }

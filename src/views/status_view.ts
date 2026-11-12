@@ -35,18 +35,18 @@ export class VarnStatusProvider implements vscode.TreeDataProvider<StatusTreeIte
 
     getChildren(): StatusTreeItem[] {
         const lsp = LSP_PRESENTATION[getLspStatus()];
-        const mode = vscode.workspace.getConfiguration("Varn").get<string>("buildMode", "release");
+        const mode = vscode.workspace.getConfiguration("vn").get<string>("buildMode", "release");
         const isRelease = mode === "release";
         const cliPath = resolveCliPath(this.context);
 
         return [
             new StatusTreeItem("LSP Server", lsp.description, lsp.icon, {
                 title: "Restart LSP Server",
-                command: "varn.restartServer",
+                command: "vn.restartServer",
             }),
             new StatusTreeItem("Build Mode", isRelease ? "Release" : "Debug", isRelease ? "zap" : "beaker", {
                 title: "Toggle Build Mode",
-                command: "varn.toggleBuildMode",
+                command: "vn.toggleBuildMode",
             }),
             new StatusTreeItem("Binary path", cliPath ?? "Not found", "terminal"),
         ];

@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { getClient } from "../client.js";
 import { errorMessage } from "../utils.js";
 
-const SCHEME = "varn-std";
+const SCHEME = "vn-std";
 const KINDS = ["std", "core", "runtime"];
 const ZERO_STAT = { ctime: 0, mtime: 0, size: 0 };
 
@@ -22,7 +22,7 @@ export class VarnStdFileSystemProvider implements vscode.FileSystemProvider {
         if (!client) return [];
         try {
             const res: unknown = await client.sendRequest("workspace/executeCommand", {
-                command: "varn.stdList",
+                command: "vn.stdList",
                 arguments: [],
             });
             this.#specs = Array.isArray(res) ? ([...res] as string[]).sort() : [];
@@ -67,7 +67,7 @@ export class VarnStdFileSystemProvider implements vscode.FileSystemProvider {
         let res: unknown;
         try {
             res = await client.sendRequest("workspace/executeCommand", {
-                command: "varn.stdRead",
+                command: "vn.stdRead",
                 arguments: [spec],
             });
         } catch {
@@ -79,19 +79,19 @@ export class VarnStdFileSystemProvider implements vscode.FileSystemProvider {
     }
 
     writeFile(): never {
-        throw vscode.FileSystemError.NoPermissions("varn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
     }
 
     createDirectory(): never {
-        throw vscode.FileSystemError.NoPermissions("varn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
     }
 
     delete(): never {
-        throw vscode.FileSystemError.NoPermissions("varn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
     }
 
     rename(): never {
-        throw vscode.FileSystemError.NoPermissions("varn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
     }
 
     refresh(): void {
@@ -137,7 +137,7 @@ export async function openStdModule(): Promise<void> {
     let specs: string[];
     try {
         const res: unknown = await client.sendRequest("workspace/executeCommand", {
-            command: "varn.stdList",
+            command: "vn.stdList",
             arguments: [],
         });
         specs = Array.isArray(res) ? ([...res] as string[]).sort() : [];
@@ -158,6 +158,6 @@ export async function openStdModule(): Promise<void> {
 export function registerStdlibFeatures(_context: vscode.ExtensionContext, fsProvider: VarnStdFileSystemProvider): vscode.Disposable {
     return vscode.Disposable.from(
         vscode.workspace.registerFileSystemProvider(SCHEME, fsProvider, { isCaseSensitive: true, isReadonly: true }),
-        vscode.languages.registerDocumentLinkProvider({ language: "varn" }, new VarnStdLinkProvider()),
+        vscode.languages.registerDocumentLinkProvider({ language: "vn" }, new VarnStdLinkProvider()),
     );
 }

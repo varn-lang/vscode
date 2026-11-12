@@ -23,7 +23,7 @@ class VarnTestController implements vscode.Disposable {
     private readonly disposables: vscode.Disposable[];
 
     constructor(private readonly context: vscode.ExtensionContext) {
-        this.ctrl = vscode.tests.createTestController("varnTestController", "Varn Tests & Benchmarks");
+        this.ctrl = vscode.tests.createTestController("vnTestController", "Varn Tests & Benchmarks");
 
         this.ctrl.refreshHandler = async () => {
             await this.discoverAllWorkspaceTests();

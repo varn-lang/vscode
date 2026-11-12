@@ -18,8 +18,8 @@ let currentState: LspState = "starting";
 let diagCounts: DiagnosticCounts = { errors: 0, warnings: 0 };
 
 export function initLanguageFeatures(context: vscode.ExtensionContext): void {
-    langStatus = vscode.languages.createLanguageStatusItem("varn.status", { language: "varn" });
-    langStatus.command = { title: "Varn Actions", command: "varn.showActionsHub" };
+    langStatus = vscode.languages.createLanguageStatusItem("vn.status", { language: "vn" });
+    langStatus.command = { title: "Varn Actions", command: "vn.showActionsHub" };
     refreshLanguageStatus();
     context.subscriptions.push(langStatus);
 
@@ -36,17 +36,17 @@ export function initLanguageFeatures(context: vscode.ExtensionContext): void {
     context.subscriptions.push(vscode.window.registerTerminalLinkProvider(new VarnTerminalLinkProvider()));
 
     context.subscriptions.push(
-        vscode.languages.registerDocumentDropEditProvider({ language: "varn" }, new VarnDropProvider()),
+        vscode.languages.registerDocumentDropEditProvider({ language: "vn" }, new VarnDropProvider()),
     );
     context.subscriptions.push(
-        vscode.languages.registerDocumentPasteEditProvider({ language: "varn" }, new VarnPasteProvider(), {
+        vscode.languages.registerDocumentPasteEditProvider({ language: "vn" }, new VarnPasteProvider(), {
             pasteMimeTypes: ["text/plain"],
             providedPasteEditKinds: [VarnPasteProvider.kind],
         }),
     );
 
     context.subscriptions.push(
-        vscode.languages.registerInlineCompletionItemProvider({ language: "varn" }, new VarnInlineProvider()),
+        vscode.languages.registerInlineCompletionItemProvider({ language: "vn" }, new VarnInlineProvider()),
     );
 
     updateDiagCounts();
@@ -59,7 +59,7 @@ export function setLanguageState(state: LspState): void {
 
 export function refreshLanguageStatus(): void {
     if (!langStatus) return;
-    const mode = vscode.workspace.getConfiguration("Varn").get<string>("buildMode", "release");
+    const mode = vscode.workspace.getConfiguration("vn").get<string>("buildMode", "release");
     const dot =
         currentState === "running" ? "$(check)" : currentState === "starting" ? "$(loading~spin)" : "$(circle-slash)";
     langStatus.text = `${dot} Varn ${mode}`;
@@ -81,7 +81,7 @@ function updateDiagCounts(): void {
     let errors = 0;
     let warnings = 0;
     for (const doc of vscode.workspace.textDocuments) {
-        if (doc.languageId !== "varn") continue;
+        if (doc.languageId !== "vn") continue;
         for (const diagnostic of vscode.languages.getDiagnostics(doc.uri)) {
             if (diagnostic.severity === vscode.DiagnosticSeverity.Error) errors++;
             else if (diagnostic.severity === vscode.DiagnosticSeverity.Warning) warnings++;
@@ -180,7 +180,7 @@ class VarnDropProvider implements vscode.DocumentDropEditProvider {
 }
 
 class VarnPasteProvider implements vscode.DocumentPasteEditProvider {
-    static readonly kind = vscode.DocumentDropOrPasteEditKind.Empty.append("varn", "import");
+    static readonly kind = vscode.DocumentDropOrPasteEditKind.Empty.append("vn", "import");
 
     async provideDocumentPasteEdits(
         document: vscode.TextDocument,

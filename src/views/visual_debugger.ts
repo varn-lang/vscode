@@ -5,7 +5,7 @@ type InspectorMessage = { command: "goToLine"; line?: number } | { command: "ref
 
 export class VarnVisualInspectorPanel {
     static currentPanel: VarnVisualInspectorPanel | undefined;
-    static readonly viewType = "varnVisualInspector";
+    static readonly viewType = "vnVisualInspector";
 
     private documentUri: vscode.Uri | undefined;
     private readonly disposables: vscode.Disposable[] = [];
@@ -106,7 +106,7 @@ export class VarnVisualInspectorPanel {
 
         try {
             const data: unknown = await client.sendRequest("workspace/executeCommand", {
-                command: "varn.getCFG",
+                command: "vn.getCFG",
                 arguments: [this.documentUri.toString()],
             });
             if (data) void this.panel.webview.postMessage({ type: "updateData", data });

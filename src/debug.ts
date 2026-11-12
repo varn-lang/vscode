@@ -8,7 +8,7 @@ export class VarnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFac
         const cliPath = resolveCliPath(this.context);
         if (!cliPath) {
             void vscode.window.showErrorMessage(
-                "Varn binary not found. Build with `cargo build --release --bin vn` or set Varn.cli.path.",
+                "Varn binary not found. Build with `cargo build --release --bin vn` or set vn.cli.path.",
             );
             return undefined;
         }
@@ -17,7 +17,7 @@ export class VarnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFac
 }
 
 function launchConfiguration(program: string, name: string, stopOnEntry: boolean): vscode.DebugConfiguration {
-    return { type: "Varn", request: "launch", name, program, stopOnEntry };
+    return { type: "vn", request: "launch", name, program, stopOnEntry };
 }
 
 export class VarnDebugConfigProvider implements vscode.DebugConfigurationProvider {
@@ -31,7 +31,7 @@ export class VarnDebugConfigProvider implements vscode.DebugConfigurationProvide
     ): vscode.DebugConfiguration | null {
         if (!config.type && !config.request && !config.name) {
             const editor = vscode.window.activeTextEditor;
-            if (editor?.document.languageId === "varn") {
+            if (editor?.document.languageId === "vn") {
                 return launchConfiguration(editor.document.fileName, "Debug Varn File", false);
             }
             return null;

@@ -18,7 +18,7 @@ for (const id of declared) {
     if (!registered.includes(id)) problems.push(`command declared but never registered: ${id}`);
 }
 for (const id of declared) {
-    if (/^Varn\./.test(id)) problems.push(`command id must be lowercase: ${id}`);
+    if (!id.startsWith("vn.")) problems.push(`command id must start with vn.: ${id}`);
 }
 
 const referenced = [
@@ -26,7 +26,7 @@ const referenced = [
     ...(contributes.keybindings ?? []).map((entry) => ["keybinding", entry.command]),
 ];
 for (const [where, id] of referenced) {
-    const isOwn = id.toLowerCase().startsWith("varn.");
+    const isOwn = id.toLowerCase().startsWith("vn.") || id.toLowerCase().startsWith("varn.");
     if (isOwn && !declared.includes(id)) problems.push(`${where} references an undeclared command: ${id}`);
 }
 

@@ -8,7 +8,7 @@ type TargetUri = vscode.Uri | string | undefined;
 
 const BINARY_NOT_FOUND = "Varn binary not found.";
 const BINARY_NOT_FOUND_WITH_HINT =
-    "Varn binary not found. Build with `cargo build --release --bin vn` or set Varn.cli.path.";
+    "Varn binary not found. Build with `cargo build --release --bin vn` or set vn.cli.path.";
 
 const DEBUG_PHASES = [
     "tokens",
@@ -59,7 +59,7 @@ function runVarnFile(
     const run = prepare(context, uri, BINARY_NOT_FOUND_WITH_HINT);
     if (!run) return;
 
-    const verbose = opts.verbose ?? vscode.workspace.getConfiguration("Varn").get<boolean>("run.verbose") ?? false;
+    const verbose = opts.verbose ?? vscode.workspace.getConfiguration("vn").get<boolean>("run.verbose") ?? false;
     const args = ["run", run.file];
     if (verbose) args.push("--verbose");
 
@@ -125,12 +125,12 @@ async function openInViewer(uri: TargetUri, viewType: string): Promise<void> {
 
 /** Open the live synchronized Bytecode viewer beside the current editor. */
 async function openBytecodeViewer(_context: vscode.ExtensionContext, uri: TargetUri): Promise<void> {
-    await openInViewer(uri, "varn.bytecode");
+    await openInViewer(uri, "vn.bytecode");
 }
 
 /** Open the live synchronized SSA / HIR viewer beside the current editor. */
 async function openSSAViewer(_context: vscode.ExtensionContext, uri: TargetUri): Promise<void> {
-    await openInViewer(uri, "varn.ssa");
+    await openInViewer(uri, "vn.ssa");
 }
 
 async function diffBytecode(_context: vscode.ExtensionContext, uri: TargetUri): Promise<void> {
@@ -138,7 +138,7 @@ async function diffBytecode(_context: vscode.ExtensionContext, uri: TargetUri): 
     if (!file) return;
     const fileUri = toUri(uri) ?? vscode.Uri.file(file);
     const name = path.basename(file);
-    const virtualUri = vscode.Uri.parse(`varn-bytecode:${name}.varn-bc?${encodeURIComponent(fileUri.toString())}`);
+    const virtualUri = vscode.Uri.parse(`vn-bytecode:${name}.vn-bc?${encodeURIComponent(fileUri.toString())}`);
     await vscode.commands.executeCommand("vscode.diff", fileUri, virtualUri, `Diff ${name} ↔ Bytecode`);
 }
 
@@ -166,7 +166,7 @@ function runBenchmark(context: vscode.ExtensionContext, uri: TargetUri, benchNam
 
 /** Toggle the build mode between debug and release. */
 async function toggleBuildMode(): Promise<void> {
-    const cfg = vscode.workspace.getConfiguration("Varn");
+    const cfg = vscode.workspace.getConfiguration("vn");
     const next = cfg.get<string>("buildMode", "release") === "release" ? "debug" : "release";
     await cfg.update("buildMode", next, vscode.ConfigurationTarget.Global);
     updateBuildModeStatusBar();

@@ -7,7 +7,7 @@ server), so install Varn first.
 
 Requires VS Code 1.109 or newer. In an untrusted workspace it runs in limited
 mode: binaries found inside the workspace are not executed and a workspace
-`Varn.cli.path` is ignored.
+`vn.cli.path` is ignored.
 
 ## Development
 

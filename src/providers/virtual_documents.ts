@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { getClient } from "../client.js";
 import { errorMessage } from "../utils.js";
 
-const VIRTUAL_SCHEMES = ["varn-bytecode", "varn-ssa"];
+const VIRTUAL_SCHEMES = ["vn-bytecode", "vn-ssa"];
 
 export class VarnVirtualDocumentProvider implements vscode.TextDocumentContentProvider {
     private readonly changed = new vscode.EventEmitter<vscode.Uri>();
@@ -33,8 +33,8 @@ export class VarnVirtualDocumentProvider implements vscode.TextDocumentContentPr
         const sourceUri = uri.query || uri.path;
         if (!sourceUri) return "// No source file specified.";
 
-        const isSSA = uri.scheme === "varn-ssa";
-        const command = isSSA ? "varn.showSSA" : "varn.showBytecode";
+        const isSSA = uri.scheme === "vn-ssa";
+        const command = isSSA ? "vn.showSSA" : "vn.showBytecode";
 
         try {
             const res: unknown = await client.sendRequest("workspace/executeCommand", {
@@ -53,8 +53,8 @@ export function registerVirtualDocumentProviders(): vscode.Disposable {
     let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
     return vscode.Disposable.from(
-        vscode.workspace.registerTextDocumentContentProvider("varn-bytecode", provider),
-        vscode.workspace.registerTextDocumentContentProvider("varn-ssa", provider),
+        vscode.workspace.registerTextDocumentContentProvider("vn-bytecode", provider),
+        vscode.workspace.registerTextDocumentContentProvider("vn-ssa", provider),
         vscode.workspace.onDidSaveTextDocument((doc) => {
             if (doc.fileName.endsWith(".vn")) provider.refreshAll();
         }),

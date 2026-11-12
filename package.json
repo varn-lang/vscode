@@ -25,9 +25,9 @@
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
-      "description": "In an untrusted workspace Varn does not run binaries found inside the workspace and ignores a workspace-level Varn.cli.path.",
+      "description": "In an untrusted workspace Varn does not run binaries found inside the workspace and ignores a workspace-level vn.cli.path.",
       "restrictedConfigurations": [
-        "Varn.cli.path"
+        "vn.cli.path"
       ]
     },
     "virtualWorkspaces": {
@@ -41,7 +41,7 @@
     "Themes"
   ],
   "activationEvents": [
-    "onLanguage:varn"
+    "onLanguage:vn"
   ],
   "main": "./dist/extension.cjs",
   "type": "module",
@@ -49,26 +49,26 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "varn-sidebar",
+          "id": "vn-sidebar",
           "title": "Varn",
-          "icon": "icons/varn-activity.svg"
+          "icon": "icons/vn-activity.svg"
         }
       ]
     },
     "views": {
-      "varn-sidebar": [
+      "vn-sidebar": [
         {
-          "id": "varn-status",
+          "id": "vn-status",
           "name": "Status & Environment",
           "contextualTitle": "Varn"
         },
         {
-          "id": "varn-actions",
+          "id": "vn-actions",
           "name": "Quick Actions",
           "contextualTitle": "Varn"
         },
         {
-          "id": "varn-ast",
+          "id": "vn-ast",
           "name": "AST Explorer",
           "contextualTitle": "Varn"
         }
@@ -76,10 +76,9 @@
     },
     "languages": [
       {
-        "id": "varn",
+        "id": "vn",
         "aliases": [
           "Varn",
-          "varn",
           "vn"
         ],
         "extensions": [
@@ -90,14 +89,14 @@
     ],
     "grammars": [
       {
-        "language": "varn",
+        "language": "vn",
         "scopeName": "source.vn",
         "path": "./syntaxes/vn.tmLanguage.json"
       }
     ],
     "semanticTokenScopes": [
       {
-        "language": "varn",
+        "language": "vn",
         "scopes": {
           "type": [
             "entity.name.type",
@@ -136,21 +135,21 @@
     ],
     "iconThemes": [
       {
-        "id": "varn-icons",
+        "id": "vn-icons",
         "label": "Varn Icons",
-        "path": "./icons/varn-icons.json"
+        "path": "./icons/vn-icons.json"
       }
     ],
     "debuggers": [
       {
-        "type": "Varn",
+        "type": "vn",
         "label": "Varn Debug",
         "languages": [
-          "varn"
+          "vn"
         ],
         "initialConfigurations": [
           {
-            "type": "Varn",
+            "type": "vn",
             "request": "launch",
             "name": "Debug Varn File",
             "program": "${file}",
@@ -162,7 +161,7 @@
             "label": "Varn: Debug file",
             "description": "Debug the current Varn file with breakpoints and stepping",
             "body": {
-              "type": "Varn",
+              "type": "vn",
               "request": "launch",
               "name": "Debug Varn File",
               "program": "^\"\\${file}\"",
@@ -173,7 +172,7 @@
             "label": "Varn: Debug file (stop on entry)",
             "description": "Debug the current Varn file, stopping on program entry",
             "body": {
-              "type": "Varn",
+              "type": "vn",
               "request": "launch",
               "name": "Debug Varn File (entry)",
               "program": "^\"\\${file}\"",
@@ -204,7 +203,7 @@
     ],
     "customEditors": [
       {
-        "viewType": "varn.bytecode",
+        "viewType": "vn.bytecode",
         "displayName": "Varn Bytecode",
         "selector": [
           {
@@ -214,7 +213,7 @@
         "priority": "option"
       },
       {
-        "viewType": "varn.ssa",
+        "viewType": "vn.ssa",
         "displayName": "Varn SSA",
         "selector": [
           {
@@ -226,192 +225,192 @@
     ],
     "commands": [
       {
-        "command": "varn.restartServer",
+        "command": "vn.restartServer",
         "title": "Restart Language Server",
         "category": "Varn"
       },
       {
-        "command": "varn.stopServer",
+        "command": "vn.stopServer",
         "title": "Stop Language Server",
         "category": "Varn"
       },
       {
-        "command": "varn.showServerLog",
+        "command": "vn.showServerLog",
         "title": "Show Language Server Log",
         "category": "Varn"
       },
       {
-        "command": "varn.runFile",
+        "command": "vn.runFile",
         "title": "Run File",
         "category": "Varn",
         "icon": "$(play)"
       },
       {
-        "command": "varn.runFileInTerminal",
+        "command": "vn.runFileInTerminal",
         "title": "Run File in Terminal",
         "category": "Varn",
         "icon": "$(terminal)"
       },
       {
-        "command": "varn.checkFile",
+        "command": "vn.checkFile",
         "title": "Check File (Typecheck)",
         "category": "Varn",
         "icon": "$(checklist)"
       },
       {
-        "command": "varn.buildFile",
+        "command": "vn.buildFile",
         "title": "Build File (Compile)",
         "category": "Varn",
         "icon": "$(package)"
       },
       {
-        "command": "varn.showBytecode",
+        "command": "vn.showBytecode",
         "title": "Show Bytecode",
         "category": "Varn",
         "icon": "$(file-binary)"
       },
       {
-        "command": "varn.showAst",
+        "command": "vn.showAst",
         "title": "Show AST",
         "category": "Varn",
         "icon": "$(symbol-structure)"
       },
       {
-        "command": "varn.showTokens",
+        "command": "vn.showTokens",
         "title": "Show Tokens",
         "category": "Varn"
       },
       {
-        "command": "varn.benchFile",
+        "command": "vn.benchFile",
         "title": "Benchmark File",
         "category": "Varn",
         "icon": "$(dashboard)"
       },
       {
-        "command": "varn.runRepl",
+        "command": "vn.runRepl",
         "title": "Start Interactive REPL",
         "category": "Varn",
         "icon": "$(terminal)"
       },
       {
-        "command": "varn.pkgInstall",
+        "command": "vn.pkgInstall",
         "title": "Pkg: Install Dependencies",
         "category": "Varn",
         "icon": "$(cloud-download)"
       },
       {
-        "command": "varn.pkgUpdate",
+        "command": "vn.pkgUpdate",
         "title": "Pkg: Update Dependencies",
         "category": "Varn",
         "icon": "$(refresh)"
       },
       {
-        "command": "varn.pkgAdd",
+        "command": "vn.pkgAdd",
         "title": "Pkg: Add Dependency",
         "category": "Varn",
         "icon": "$(add)"
       },
       {
-        "command": "varn.pkgRemove",
+        "command": "vn.pkgRemove",
         "title": "Pkg: Remove Dependency",
         "category": "Varn",
         "icon": "$(trash)"
       },
       {
-        "command": "varn.cacheClean",
+        "command": "vn.cacheClean",
         "title": "Clean Cache",
         "category": "Varn",
         "icon": "$(clear-all)"
       },
       {
-        "command": "varn.initProject",
+        "command": "vn.initProject",
         "title": "Init Project",
         "category": "Varn",
         "icon": "$(new-folder)"
       },
       {
-        "command": "varn.doctor",
+        "command": "vn.doctor",
         "title": "Doctor (Check Setup)",
         "category": "Varn",
         "icon": "$(pulse)"
       },
       {
-        "command": "varn.installRuntime",
+        "command": "vn.installRuntime",
         "title": "Install Runtime",
         "category": "Varn",
         "icon": "$(cloud-download)"
       },
       {
-        "command": "varn.runWithPhases",
+        "command": "vn.runWithPhases",
         "title": "Run with Debug Phases...",
         "category": "Varn",
         "icon": "$(debug-console)"
       },
       {
-        "command": "varn.toggleBuildMode",
+        "command": "vn.toggleBuildMode",
         "title": "Toggle Build Mode (Debug/Release)",
         "category": "Varn"
       },
       {
-        "command": "varn.reloadExtension",
+        "command": "vn.reloadExtension",
         "title": "Reload Extension",
         "category": "Varn",
         "icon": "$(refresh)"
       },
       {
-        "command": "varn.showActionsHub",
+        "command": "vn.showActionsHub",
         "title": "Show Actions Hub",
         "category": "Varn",
         "icon": "$(symbol-menu)"
       },
       {
-        "command": "varn.selectEditorRange",
+        "command": "vn.selectEditorRange",
         "title": "Select Editor Range"
       },
       {
-        "command": "varn.openBytecodeViewer",
+        "command": "vn.openBytecodeViewer",
         "title": "Open Bytecode Viewer (Side-by-Side)",
         "category": "Varn",
         "icon": "$(file-binary)"
       },
       {
-        "command": "varn.openSSAViewer",
+        "command": "vn.openSSAViewer",
         "title": "Open SSA Viewer (Side-by-Side)",
         "category": "Varn",
         "icon": "$(symbol-structure)"
       },
       {
-        "command": "varn.openVisualInspector",
+        "command": "vn.openVisualInspector",
         "title": "Open Graphical CFG & Debug Inspector",
         "category": "Varn",
         "icon": "$(graph)"
       },
       {
-        "command": "varn.diffBytecode",
+        "command": "vn.diffBytecode",
         "title": "Diff Source vs Bytecode",
         "category": "Varn",
         "icon": "$(diff)"
       },
       {
-        "command": "varn.openStdModule",
+        "command": "vn.openStdModule",
         "title": "Open Stdlib Module (readonly)",
         "category": "Varn",
         "icon": "$(library)"
       },
       {
-        "command": "varn.runMain",
+        "command": "vn.runMain",
         "title": "Run Main Function",
         "category": "Varn",
         "icon": "$(play)"
       },
       {
-        "command": "varn.runTest",
+        "command": "vn.runTest",
         "title": "Run Test",
         "category": "Varn",
         "icon": "$(beaker)"
       },
       {
-        "command": "varn.runBenchmark",
+        "command": "vn.runBenchmark",
         "title": "Run Benchmark",
         "category": "Varn",
         "icon": "$(dashboard)"
@@ -419,8 +418,8 @@
     ],
     "problemMatchers": [
       {
-        "name": "varn",
-        "owner": "varn",
+        "name": "vn",
+        "owner": "vn",
         "fileLocation": [
           "relative",
           "${workspaceFolder}"
@@ -437,201 +436,201 @@
     ],
     "taskDefinitions": [
       {
-        "type": "varn",
+        "type": "vn",
         "required": [
           "task"
         ],
         "properties": {
           "task": {
             "type": "string",
-            "description": "The Varn task to execute (build, check, test)"
+            "description": "The vn task to execute (build, check, test)"
           }
         }
       }
     ],
     "keybindings": [
       {
-        "command": "varn.runFile",
+        "command": "vn.runFile",
         "key": "ctrl+f5",
-        "when": "resourceLangId == varn && !inDebugMode"
+        "when": "resourceLangId == vn && !inDebugMode"
       },
       {
         "command": "workbench.action.debug.start",
         "key": "f5",
-        "when": "resourceLangId == varn && !inDebugMode && !debuggersAvailable"
+        "when": "resourceLangId == vn && !inDebugMode && !debuggersAvailable"
       }
     ],
     "menus": {
       "editor/title/run": [
         {
-          "command": "varn.runFile",
-          "when": "resourceLangId == varn",
+          "command": "vn.runFile",
+          "when": "resourceLangId == vn",
           "group": "navigation@1"
         },
         {
-          "command": "varn.runFileInTerminal",
-          "when": "resourceLangId == varn",
+          "command": "vn.runFileInTerminal",
+          "when": "resourceLangId == vn",
           "group": "navigation@2"
         },
         {
-          "command": "varn.checkFile",
-          "when": "resourceLangId == varn",
+          "command": "vn.checkFile",
+          "when": "resourceLangId == vn",
           "group": "navigation@3"
         },
         {
-          "command": "varn.buildFile",
-          "when": "resourceLangId == varn",
+          "command": "vn.buildFile",
+          "when": "resourceLangId == vn",
           "group": "navigation@4"
         },
         {
-          "command": "varn.runWithPhases",
-          "when": "resourceLangId == varn",
+          "command": "vn.runWithPhases",
+          "when": "resourceLangId == vn",
           "group": "navigation@5"
         }
       ],
       "editor/context": [
         {
-          "command": "varn.runFile",
-          "when": "resourceLangId == varn",
-          "group": "Varn@1"
+          "command": "vn.runFile",
+          "when": "resourceLangId == vn",
+          "group": "vn@1"
         },
         {
-          "command": "varn.runFileInTerminal",
-          "when": "resourceLangId == varn",
-          "group": "Varn@2"
+          "command": "vn.runFileInTerminal",
+          "when": "resourceLangId == vn",
+          "group": "vn@2"
         },
         {
-          "command": "varn.checkFile",
-          "when": "resourceLangId == varn",
-          "group": "Varn@3"
+          "command": "vn.checkFile",
+          "when": "resourceLangId == vn",
+          "group": "vn@3"
         },
         {
-          "command": "varn.buildFile",
-          "when": "resourceLangId == varn",
-          "group": "Varn@4"
+          "command": "vn.buildFile",
+          "when": "resourceLangId == vn",
+          "group": "vn@4"
         },
         {
-          "command": "varn.showBytecode",
-          "when": "resourceLangId == varn",
-          "group": "Varn@5"
+          "command": "vn.showBytecode",
+          "when": "resourceLangId == vn",
+          "group": "vn@5"
         },
         {
-          "command": "varn.showAst",
-          "when": "resourceLangId == varn",
-          "group": "Varn@6"
+          "command": "vn.showAst",
+          "when": "resourceLangId == vn",
+          "group": "vn@6"
         },
         {
-          "command": "varn.doctor",
-          "when": "resourceLangId == varn",
-          "group": "Varn@7"
+          "command": "vn.doctor",
+          "when": "resourceLangId == vn",
+          "group": "vn@7"
         },
         {
-          "command": "varn.openVisualInspector",
-          "when": "resourceLangId == varn",
-          "group": "Varn@8"
+          "command": "vn.openVisualInspector",
+          "when": "resourceLangId == vn",
+          "group": "vn@8"
         }
       ],
       "editor/title": [
         {
-          "command": "varn.openVisualInspector",
-          "when": "resourceLangId == varn",
+          "command": "vn.openVisualInspector",
+          "when": "resourceLangId == vn",
           "group": "navigation@10"
         }
       ],
       "explorer/context": [
         {
-          "command": "varn.runFile",
+          "command": "vn.runFile",
           "when": "resourceExtname == .vn",
-          "group": "Varn@1"
+          "group": "vn@1"
         },
         {
-          "command": "varn.runFileInTerminal",
+          "command": "vn.runFileInTerminal",
           "when": "resourceExtname == .vn",
-          "group": "Varn@2"
+          "group": "vn@2"
         },
         {
-          "command": "varn.checkFile",
+          "command": "vn.checkFile",
           "when": "resourceExtname == .vn",
-          "group": "Varn@3"
+          "group": "vn@3"
         },
         {
-          "command": "varn.buildFile",
+          "command": "vn.buildFile",
           "when": "resourceExtname == .vn",
-          "group": "Varn@4"
+          "group": "vn@4"
         },
         {
-          "command": "varn.benchFile",
+          "command": "vn.benchFile",
           "when": "resourceExtname == .vn",
-          "group": "Varn@5"
+          "group": "vn@5"
         }
       ],
       "commandPalette": [
         {
-          "command": "varn.selectEditorRange",
+          "command": "vn.selectEditorRange",
           "when": "false"
         },
         {
-          "command": "varn.runFile",
-          "when": "editorLangId == varn"
+          "command": "vn.runFile",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.runFileInTerminal",
-          "when": "editorLangId == varn"
+          "command": "vn.runFileInTerminal",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.checkFile",
-          "when": "editorLangId == varn"
+          "command": "vn.checkFile",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.buildFile",
-          "when": "editorLangId == varn"
+          "command": "vn.buildFile",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.showBytecode",
-          "when": "editorLangId == varn"
+          "command": "vn.showBytecode",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.showAst",
-          "when": "editorLangId == varn"
+          "command": "vn.showAst",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.showTokens",
-          "when": "editorLangId == varn"
+          "command": "vn.showTokens",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.benchFile",
-          "when": "editorLangId == varn"
+          "command": "vn.benchFile",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.runWithPhases",
-          "when": "editorLangId == varn"
+          "command": "vn.runWithPhases",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.openBytecodeViewer",
-          "when": "editorLangId == varn"
+          "command": "vn.openBytecodeViewer",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.openSSAViewer",
-          "when": "editorLangId == varn"
+          "command": "vn.openSSAViewer",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.openVisualInspector",
-          "when": "editorLangId == varn"
+          "command": "vn.openVisualInspector",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.diffBytecode",
-          "when": "editorLangId == varn"
+          "command": "vn.diffBytecode",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.runTest",
-          "when": "editorLangId == varn"
+          "command": "vn.runTest",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.runBenchmark",
-          "when": "editorLangId == varn"
+          "command": "vn.runBenchmark",
+          "when": "editorLangId == vn"
         },
         {
-          "command": "varn.runMain",
+          "command": "vn.runMain",
           "when": "false"
         }
       ]
@@ -639,23 +638,23 @@
     "configuration": {
       "title": "Varn",
       "properties": {
-        "Varn.cli.path": {
+        "vn.cli.path": {
           "type": "string",
           "default": "",
-          "description": "Absolute path to the Varn binary. Leave empty to auto-detect from varn_HOME/bin, workspace target/{release,debug}, or PATH.",
+          "description": "Absolute path to the `vn` binary. Leave empty to auto-detect from VARN_HOME/bin, workspace target/{release,debug}, or PATH.",
           "scope": "machine-overridable"
         },
-        "Varn.inlayHints.enabled": {
+        "vn.inlayHints.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Enable inlay hints for types and parameter names."
         },
-        "Varn.run.verbose": {
+        "vn.run.verbose": {
           "type": "boolean",
           "default": false,
-          "description": "Pass --verbose to Varn when running files."
+          "description": "Pass --verbose to `vn` when running files."
         },
-        "Varn.run.debugPhases": {
+        "vn.run.debugPhases": {
           "type": "array",
           "items": {
             "type": "string",
@@ -678,24 +677,24 @@
           "default": [],
           "description": "Default debug phases to enable when running files."
         },
-        "Varn.codeLens.enabled": {
+        "vn.codeLens.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Show Varn CodeLens actions (Run, Bench, Disasm, AST) at the top of .Varn files."
+          "description": "Show Varn CodeLens actions (Run, Bench, Disasm, AST) at the top of .vn files."
         },
-        "Varn.hotReload.watchBinary": {
+        "vn.hotReload.watchBinary": {
           "type": "boolean",
           "default": true,
           "description": "Automatically restart the Language Server when the resolved `vn` binary is rebuilt."
         },
-        "Varn.buildMode": {
+        "vn.buildMode": {
           "type": "string",
           "enum": [
             "debug",
             "release"
           ],
           "default": "release",
-          "description": "Preferred build mode for Varn binaries when auto-detecting from the workspace target directory."
+          "description": "Preferred build mode for `vn` binaries when auto-detecting from the workspace target directory."
         }
       }
     }

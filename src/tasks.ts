@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { resolveCliPath } from "./binary.js";
 
 interface VarnTaskDefinition extends vscode.TaskDefinition {
-    type: "varn";
+    type: "vn";
     task: "build" | "check" | "test";
 }
 
@@ -27,14 +27,14 @@ export class VarnTaskProvider implements vscode.TaskProvider {
             name: string,
             group: vscode.TaskGroup,
         ): vscode.Task => {
-            const definition: VarnTaskDefinition = { type: "varn", task };
+            const definition: VarnTaskDefinition = { type: "vn", task };
             const built = new vscode.Task(
                 definition,
                 rootFolder,
                 name,
                 "Varn",
                 new vscode.ProcessExecution(cliPath, [task]),
-                "$varn",
+                "$vn",
             );
             built.group = group;
             return built;
@@ -49,5 +49,5 @@ export class VarnTaskProvider implements vscode.TaskProvider {
 }
 
 export function registerTaskProvider(context: vscode.ExtensionContext): vscode.Disposable {
-    return vscode.tasks.registerTaskProvider("varn", new VarnTaskProvider(context));
+    return vscode.tasks.registerTaskProvider("vn", new VarnTaskProvider(context));
 }

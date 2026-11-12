@@ -71,7 +71,7 @@ class AstNodeItem extends vscode.TreeItem {
         if (line !== undefined) {
             this.command = {
                 title: "Select Editor Range",
-                command: "varn.selectEditorRange",
+                command: "vn.selectEditorRange",
                 arguments: [line],
             };
         }
@@ -94,7 +94,7 @@ async function getAstFromLsp(uri: string): Promise<AstNodeItem[] | null> {
 
     try {
         const res: unknown = await client.sendRequest("workspace/executeCommand", {
-            command: "varn.syntaxTree",
+            command: "vn.syntaxTree",
             arguments: [uri],
         });
         if (!Array.isArray(res)) return null;
@@ -178,7 +178,7 @@ function parseAstCli(stdout: string): AstNodeItem[] {
     return rootNodes;
 }
 
-const AST_VIEW_ID = "varn-ast";
+const AST_VIEW_ID = "vn-ast";
 
 export class VarnAstProvider implements vscode.TreeDataProvider<AstNodeItem> {
     private readonly changed = new vscode.EventEmitter<void>();

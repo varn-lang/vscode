@@ -21,19 +21,19 @@ export function createClient(
         args,
         transport: TransportKind.stdio,
     };
-    const varnCfg = vscode.workspace.getConfiguration("Varn");
+    const varnCfg = vscode.workspace.getConfiguration("vn");
     const clientOptions: LanguageClientOptions = {
         documentSelector: [
-            { scheme: "file", language: "varn" },
-            { scheme: "untitled", language: "varn" },
+            { scheme: "file", language: "vn" },
+            { scheme: "untitled", language: "vn" },
         ],
         synchronize: {
             fileEvents: vscode.workspace.createFileSystemWatcher("**/*.vn"),
-            configurationSection: "Varn",
+            configurationSection: "vn",
         },
         outputChannel,
         initializationOptions: {
-            Varn: {
+            vn: {
                 inlayHints: { enabled: varnCfg.get("inlayHints.enabled", true) },
                 codeLens: { enabled: varnCfg.get("codeLens.enabled", true) },
             },
@@ -44,7 +44,7 @@ export function createClient(
         },
     };
 
-    client = new LanguageClient("Varn", "Varn Language Server", serverOptions, clientOptions);
+    client = new LanguageClient("vn", "Varn Language Server", serverOptions, clientOptions);
     registerCommandsIndividually(client);
     return client;
 }
