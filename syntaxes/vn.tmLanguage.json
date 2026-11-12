@@ -63,7 +63,7 @@
 		"___________________IMPORTS___________________": { "comment": "section marker" },
 
 		"import-declaration": {
-			"begin": "(?<![._$[:alnum:]])(import)(?![_$[:alnum:]])",
+			"begin": "(?<![._$[:alnum:]])(import)(?![_$[:alnum:]]|\\s*[.(])",
 			"beginCaptures": {
 				"1": { "name": "keyword.control.import.vn" }
 			},
@@ -509,8 +509,20 @@
 		},
 
 		"variable-language": {
-			"name": "variable.language.vn",
-			"match": "(?<![._$[:alnum:]])(this|super)(?![_$[:alnum:]])"
+			"patterns": [
+				{
+					"match": "(?<![._$[:alnum:]])(import)\\s*(\\.)\\s*(meta)(?![_$[:alnum:]])",
+					"captures": {
+						"1": { "name": "keyword.control.import.vn" },
+						"2": { "name": "punctuation.accessor.vn" },
+						"3": { "name": "variable.language.meta.vn" }
+					}
+				},
+				{
+					"name": "variable.language.vn",
+					"match": "(?<![._$[:alnum:]])(this|super)(?![_$[:alnum:]])"
+				}
+			]
 		},
 
 		"constant": {
