@@ -1,0 +1,431 @@
+1: const a = 1 + 2 * 3 - 4 / 5 % 6 ** 2;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "a" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    "+" keyword.operator.arithmetic.vn
+    "2" constant.numeric.decimal.vn
+    "*" keyword.operator.arithmetic.vn
+    "3" constant.numeric.decimal.vn
+    "-" keyword.operator.arithmetic.vn
+    "4" constant.numeric.decimal.vn
+    "/" keyword.operator.arithmetic.vn
+    "5" constant.numeric.decimal.vn
+    "%" keyword.operator.arithmetic.vn
+    "6" constant.numeric.decimal.vn
+    "**" keyword.operator.arithmetic.vn
+    "2" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+2: const b = a << 2 >> 1 >>> 1 & 3 | 4 ^ 5;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "b" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "a " entity.name.function.call.vn
+    "<<" keyword.operator.bitwise.vn
+    "2" constant.numeric.decimal.vn
+    ">>" keyword.operator.bitwise.vn
+    "1" constant.numeric.decimal.vn
+    ">>>" keyword.operator.bitwise.vn
+    "1" constant.numeric.decimal.vn
+    "&" keyword.operator.bitwise.vn
+    "3" constant.numeric.decimal.vn
+    "|" keyword.operator.bitwise.vn
+    "4" constant.numeric.decimal.vn
+    "^" keyword.operator.bitwise.vn
+    "5" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+3: const c = !true && false || null ?? 1;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "c" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "!" keyword.operator.logical.vn
+    "true" constant.language.vn
+    "&&" keyword.operator.logical.vn
+    "false" constant.language.vn
+    "||" keyword.operator.logical.vn
+    "null" constant.language.vn
+    "??" keyword.operator.ternary.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+4: const d = a == b && a != c || a <= b && a >= c;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "d" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "a" variable.other.readwrite.vn
+    "==" keyword.operator.comparison.vn
+    "b" variable.other.readwrite.vn
+    "&&" keyword.operator.logical.vn
+    "a" variable.other.readwrite.vn
+    "!=" keyword.operator.comparison.vn
+    "c" variable.other.readwrite.vn
+    "||" keyword.operator.logical.vn
+    "a " entity.name.function.call.vn
+    "<=" keyword.operator.comparison.vn
+    "b" variable.other.readwrite.vn
+    "&&" keyword.operator.logical.vn
+    "a" variable.other.readwrite.vn
+    ">=" keyword.operator.comparison.vn
+    "c" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+5: let e = 0;
+    "let" meta.var.expr.mut.vn storage.type.vn
+    "e" meta.var.expr.mut.vn variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+6: e += 1; e -= 1; e *= 2; e /= 2; e %= 3; e **= 2;
+    "e" variable.other.readwrite.vn
+    "+=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "-=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "*=" keyword.operator.assignment.vn
+    "2" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "/=" keyword.operator.assignment.vn
+    "2" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "%=" keyword.operator.assignment.vn
+    "3" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "**=" keyword.operator.assignment.vn
+    "2" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+7: e <<= 1; e >>= 1; e >>>= 1; e &= 1; e |= 1; e ^= 1;
+    "e " entity.name.function.call.vn
+    "<<=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    ">>=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    ">>>=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "&=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "|=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "^=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+8: e &&= 1; e ||= 1; e ??= 1;
+    "e" variable.other.readwrite.vn
+    "&&=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "||=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "e" variable.other.readwrite.vn
+    "??=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+9: const f = d ? a : b;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "f" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "d" variable.other.readwrite.vn
+    "?" keyword.operator.ternary.vn
+    "a" variable.other.readwrite.vn
+    ":" punctuation.separator.colon.vn
+    "b" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+10: const g = obj?.value?.[0]?.(1);
+    "const" meta.var.expr.const.vn storage.type.vn
+    "g" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "obj" variable.other.readwrite.vn
+    "?." keyword.operator.ternary.vn
+    "value" variable.other.property.vn
+    "?." keyword.operator.ternary.vn
+    "[" punctuation.section.brackets.vn
+    "0" constant.numeric.decimal.vn
+    "]" punctuation.section.brackets.vn
+    "?." keyword.operator.ternary.vn
+    "(" punctuation.section.parens.vn
+    "1" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+11: const h = [1, 2, ...rest];
+    "const" meta.var.expr.const.vn storage.type.vn
+    "h" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "[" punctuation.section.brackets.vn
+    "1" constant.numeric.decimal.vn
+    "," punctuation.separator.comma.vn
+    "2" constant.numeric.decimal.vn
+    "," punctuation.separator.comma.vn
+    "..." keyword.operator.range.vn
+    "rest" variable.other.property.vn
+    "]" punctuation.section.brackets.vn
+    ";" punctuation.terminator.statement.vn
+12: const i = { a, b: 2, ...other, [key]: 3, method() { return 1; } };
+    "const" meta.var.expr.const.vn storage.type.vn
+    "i" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "{" punctuation.section.braces.vn
+    "a" variable.other.readwrite.vn
+    "," punctuation.separator.comma.vn
+    "b" variable.other.property.vn
+    ":" punctuation.separator.colon.vn
+    "2" constant.numeric.decimal.vn
+    "," punctuation.separator.comma.vn
+    "..." keyword.operator.range.vn
+    "other" variable.other.property.vn
+    "," punctuation.separator.comma.vn
+    "[" punctuation.section.brackets.vn
+    "key" variable.other.readwrite.vn
+    "]" punctuation.section.brackets.vn
+    ":" punctuation.separator.colon.vn
+    "3" constant.numeric.decimal.vn
+    "," punctuation.separator.comma.vn
+    "method" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+    "return" keyword.control.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "}" punctuation.section.braces.vn
+    "}" punctuation.section.braces.vn
+    ";" punctuation.terminator.statement.vn
+13: const j = (x: int, y = 2): int => x + y;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "j" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "(" punctuation.section.parens.vn
+    "x" variable.other.property.vn
+    ":" punctuation.separator.colon.vn
+    "int" support.type.primitive.vn entity.name.type.primitive.vn
+    "," punctuation.separator.comma.vn
+    "y" variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "2" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    ":" punctuation.separator.colon.vn
+    "int" support.type.primitive.vn entity.name.type.primitive.vn
+    "=>" keyword.operator.arrow.vn
+    "x" variable.other.readwrite.vn
+    "+" keyword.operator.arithmetic.vn
+    "y" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+14: const k = items |> filter(x => x > 0) |> map(x => x * 2);
+    "const" meta.var.expr.const.vn storage.type.vn
+    "k" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "items" variable.other.readwrite.vn
+    "|>" keyword.operator.arrow.vn
+    "filter" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "x" variable.other.readwrite.vn
+    "=>" keyword.operator.arrow.vn
+    "x" variable.other.readwrite.vn
+    ">" keyword.operator.bitwise.vn
+    "0" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    "|>" keyword.operator.arrow.vn
+    "map" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "x" variable.other.readwrite.vn
+    "=>" keyword.operator.arrow.vn
+    "x" variable.other.readwrite.vn
+    "*" keyword.operator.arithmetic.vn
+    "2" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+15: const l = 0..10;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "l" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    ".." keyword.operator.range.vn
+    "10" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+16: const m = 0..=10;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "m" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    "..=" keyword.operator.range.vn
+    "10" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+17: const n = new Map<str, int>();
+    "const" meta.var.expr.const.vn storage.type.vn
+    "n" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "new" keyword.operator.new.vn
+    "Map" entity.name.type.vn
+    "<" punctuation.definition.typeparameters.begin.vn
+    "str" support.type.primitive.vn entity.name.type.primitive.vn
+    "," punctuation.type.vn
+    "int" support.type.primitive.vn entity.name.type.primitive.vn
+    ">" punctuation.definition.typeparameters.end.vn
+    "(" punctuation.section.parens.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+18: const o = value as int;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "o" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "value" variable.other.readwrite.vn
+    "as" keyword.control.cast.vn
+    "int" entity.name.type.vn
+    ";" punctuation.terminator.statement.vn
+19: const p = value::type;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "p" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "value" variable.other.property.vn
+    "::" punctuation.accessor.namespace.vn
+    "type" variable.other.property.vn
+    ";" punctuation.terminator.statement.vn
+20: const q = value is Circle;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "q" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "value" variable.other.readwrite.vn
+    "is" keyword.operator.expression.vn
+    "Circle" entity.name.type.vn
+    ";" punctuation.terminator.statement.vn
+21: const s = ++e + e++ - --e - e--;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "s" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "++" keyword.operator.arithmetic.vn
+    "e" variable.other.readwrite.vn
+    "+" keyword.operator.arithmetic.vn
+    "e" variable.other.readwrite.vn
+    "++" keyword.operator.arithmetic.vn
+    "-" keyword.operator.arithmetic.vn
+    "--" keyword.operator.arithmetic.vn
+    "e" variable.other.readwrite.vn
+    "-" keyword.operator.arithmetic.vn
+    "e" variable.other.readwrite.vn
+    "--" keyword.operator.arithmetic.vn
+    ";" punctuation.terminator.statement.vn
+22: const t = `a ${b} c ${`nested ${d}`} e`;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "t" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "`" string.template.vn
+    "a " string.template.vn
+    "${" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.begin.vn
+    "b" string.template.vn meta.template.expression.vn variable.other.readwrite.vn
+    "}" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.end.vn
+    " c " string.template.vn
+    "${" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.begin.vn
+    "`" string.template.vn meta.template.expression.vn string.template.vn
+    "nested " string.template.vn meta.template.expression.vn string.template.vn
+    "${" string.template.vn meta.template.expression.vn string.template.vn meta.template.expression.vn punctuation.definition.template-expression.begin.vn
+    "d" string.template.vn meta.template.expression.vn string.template.vn meta.template.expression.vn variable.other.readwrite.vn
+    "}" string.template.vn meta.template.expression.vn string.template.vn meta.template.expression.vn punctuation.definition.template-expression.end.vn
+    "`" string.template.vn meta.template.expression.vn string.template.vn
+    "}" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.end.vn
+    " e" string.template.vn
+    "`" string.template.vn
+    ";" punctuation.terminator.statement.vn
+23: const u = tag`x ${1} y`;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "u" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "tag" variable.other.readwrite.vn
+    "`" string.template.vn
+    "x " string.template.vn
+    "${" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.begin.vn
+    "1" string.template.vn meta.template.expression.vn constant.numeric.decimal.vn
+    "}" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.end.vn
+    " y" string.template.vn
+    "`" string.template.vn
+    ";" punctuation.terminator.statement.vn
+24: const v = 0xFF + 0b1010 + 0o17 + 1_000 + 1.5e3 + 10n + 2.5d;
+    "const" meta.var.expr.const.vn storage.type.vn
+    "v" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "0xFF" constant.numeric.hex.vn
+    "+" keyword.operator.arithmetic.vn
+    "0b1010" constant.numeric.binary.vn
+    "+" keyword.operator.arithmetic.vn
+    "0o17" constant.numeric.octal.vn
+    "+" keyword.operator.arithmetic.vn
+    "1_000" constant.numeric.decimal.vn
+    "+" keyword.operator.arithmetic.vn
+    "1.5e3" constant.numeric.decimal.vn
+    "+" keyword.operator.arithmetic.vn
+    "10n" constant.numeric.decimal.vn
+    "+" keyword.operator.arithmetic.vn
+    "2.5d" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+25: const w = "it's" + 'say "hi"' + "tab\there \u{1F600} \x41";
+    "const" meta.var.expr.const.vn storage.type.vn
+    "w" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "\"" string.quoted.double.vn
+    "it's" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    "+" keyword.operator.arithmetic.vn
+    "'" string.quoted.single.vn
+    "say \"hi\"" string.quoted.single.vn
+    "'" string.quoted.single.vn
+    "+" keyword.operator.arithmetic.vn
+    "\"" string.quoted.double.vn
+    "tab" string.quoted.double.vn
+    "\\t" string.quoted.double.vn constant.character.escape.vn
+    "here " string.quoted.double.vn
+    "\\u{1F600}" string.quoted.double.vn constant.character.escape.vn
+    "\\x41" string.quoted.double.vn constant.character.escape.vn
+    "\"" string.quoted.double.vn
+    ";" punctuation.terminator.statement.vn
+26: const x = """raw "text" here""";
+    "const" meta.var.expr.const.vn storage.type.vn
+    "x" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "\"\"\"" string.quoted.triple.vn punctuation.definition.string.begin.vn
+    "raw \"text\" here" string.quoted.triple.vn
+    "\"\"\"" string.quoted.triple.vn punctuation.definition.string.end.vn
+    ";" punctuation.terminator.statement.vn
+27: const y = /ab+c/i.test("abbc");
+    "const" meta.var.expr.const.vn storage.type.vn
+    "y" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "/" punctuation.definition.string.begin.vn
+    "ab+c" string.regexp.vn
+    "/" punctuation.definition.string.end.vn
+    "i" keyword.other.regexp-flag.vn
+    "." punctuation.accessor.vn
+    "test" entity.name.function.member.vn
+    "(" punctuation.section.parens.vn
+    "\"" string.quoted.double.vn
+    "abbc" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+28: const z = a /* inline */ + b; // trailing
+    "const" meta.var.expr.const.vn storage.type.vn
+    "z" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "a" variable.other.readwrite.vn
+    "/*" comment.block.vn
+    " inline " comment.block.vn
+    "*/" comment.block.vn
+    "+" keyword.operator.arithmetic.vn
+    "b" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+    "//" comment.line.double-slash.vn
+    " trailing" comment.line.double-slash.vn
+29: 

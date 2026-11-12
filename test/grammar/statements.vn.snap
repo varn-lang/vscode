@@ -1,0 +1,370 @@
+1: function classify(n: int): str {
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "classify" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "n" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "str" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" punctuation.section.braces.vn
+2:     if (n < 0) {
+    "if" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "n " entity.name.function.call.vn
+    "<" keyword.operator.bitwise.vn
+    "0" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+3:         return "negative";
+    "return" keyword.control.vn
+    "\"" string.quoted.double.vn
+    "negative" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ";" punctuation.terminator.statement.vn
+4:     } else if (n == 0) {
+    "}" punctuation.section.braces.vn
+    "else" keyword.control.vn
+    "if" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "n" variable.other.readwrite.vn
+    "==" keyword.operator.comparison.vn
+    "0" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+5:         return "zero";
+    "return" keyword.control.vn
+    "\"" string.quoted.double.vn
+    "zero" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ";" punctuation.terminator.statement.vn
+6:     }
+    "}" punctuation.section.braces.vn
+7:     return "many";
+    "return" keyword.control.vn
+    "\"" string.quoted.double.vn
+    "many" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ";" punctuation.terminator.statement.vn
+8: }
+    "}" punctuation.section.braces.vn
+9: 
+10: function loops(items: int[]): int {
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "loops" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "items" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "[" meta.function.declaration.vn punctuation.definition.type.brackets.begin.vn
+    "]" meta.function.declaration.vn punctuation.definition.type.brackets.end.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" punctuation.section.braces.vn
+11:     let total = 0;
+    "let" meta.var.expr.mut.vn storage.type.vn
+    "total" meta.var.expr.mut.vn variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+12:     outer: for (let i = 0; i < 10; i++) {
+    "outer" variable.other.property.vn
+    ":" punctuation.separator.colon.vn
+    "for" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "let" meta.var.expr.mut.vn storage.type.vn
+    "i" meta.var.expr.mut.vn variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "i " entity.name.function.call.vn
+    "<" keyword.operator.bitwise.vn
+    "10" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "i" variable.other.readwrite.vn
+    "++" keyword.operator.arithmetic.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+13:         for (const item of items) {
+    "for" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "const" meta.var.expr.const.vn storage.type.vn
+    "item" meta.var.expr.const.vn variable.other.constant.vn
+    "of" keyword.operator.expression.vn
+    "items" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+14:             if (item > i) continue outer;
+    "if" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "item" variable.other.readwrite.vn
+    ">" keyword.operator.bitwise.vn
+    "i" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    "continue" keyword.control.vn
+    "outer" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+15:             total += item;
+    "total" variable.other.readwrite.vn
+    "+=" keyword.operator.assignment.vn
+    "item" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+16:         }
+    "}" punctuation.section.braces.vn
+17:     }
+    "}" punctuation.section.braces.vn
+18:     while (total > 100) total -= 1;
+    "while" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "total" variable.other.readwrite.vn
+    ">" keyword.operator.bitwise.vn
+    "100" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    "total" variable.other.readwrite.vn
+    "-=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+19:     do {
+    "do" keyword.control.vn
+    "{" punctuation.section.braces.vn
+20:         total++;
+    "total" variable.other.readwrite.vn
+    "++" keyword.operator.arithmetic.vn
+    ";" punctuation.terminator.statement.vn
+21:     } while (total < 5);
+    "}" punctuation.section.braces.vn
+    "while" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "total " entity.name.function.call.vn
+    "<" keyword.operator.bitwise.vn
+    "5" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+22:     return total;
+    "return" keyword.control.vn
+    "total" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+23: }
+    "}" punctuation.section.braces.vn
+24: 
+25: function guarded(): int {
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "guarded" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" punctuation.section.braces.vn
+26:     try {
+    "try" keyword.control.vn
+    "{" punctuation.section.braces.vn
+27:         throw new Error("boom");
+    "throw" keyword.control.vn
+    "new" keyword.operator.new.vn
+    "Error" entity.name.type.vn
+    "(" punctuation.section.parens.vn
+    "\"" string.quoted.double.vn
+    "boom" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+28:     } catch (error) {
+    "}" punctuation.section.braces.vn
+    "catch" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "error" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+29:         return 1;
+    "return" keyword.control.vn
+    "1" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+30:     } finally {
+    "}" punctuation.section.braces.vn
+    "finally" keyword.control.vn
+    "{" punctuation.section.braces.vn
+31:         print("done");
+    "print" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "\"" string.quoted.double.vn
+    "done" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+32:     }
+    "}" punctuation.section.braces.vn
+33: }
+    "}" punctuation.section.braces.vn
+34: 
+35: function pick(value: int | str | null): str {
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "pick" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "value" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "|" meta.function.declaration.vn keyword.operator.type.union.vn
+    "str" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "|" meta.function.declaration.vn keyword.operator.type.union.vn
+    "null" meta.function.declaration.vn constant.language.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "str" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" punctuation.section.braces.vn
+36:     return match (value) {
+    "return" keyword.control.vn
+    "match" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "value" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+37:         0 => "zero",
+    "0" constant.numeric.decimal.vn
+    "=>" keyword.operator.arrow.vn
+    "\"" string.quoted.double.vn
+    "zero" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    "," punctuation.separator.comma.vn
+38:         n if n is int => `int ${n}`,
+    "n" variable.other.readwrite.vn
+    "if" keyword.control.vn
+    "n" variable.other.readwrite.vn
+    "is" keyword.operator.expression.vn
+    "int" support.type.primitive.vn entity.name.type.primitive.vn
+    "=>" keyword.operator.arrow.vn
+    "`" string.template.vn
+    "int " string.template.vn
+    "${" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.begin.vn
+    "n" string.template.vn meta.template.expression.vn variable.other.readwrite.vn
+    "}" string.template.vn meta.template.expression.vn punctuation.definition.template-expression.end.vn
+    "`" string.template.vn
+    "," punctuation.separator.comma.vn
+39:         null => "nothing",
+    "null" constant.language.vn
+    "=>" keyword.operator.arrow.vn
+    "\"" string.quoted.double.vn
+    "nothing" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    "," punctuation.separator.comma.vn
+40:         _ => "other",
+    "_" constant.language.wildcard.vn
+    "=>" keyword.operator.arrow.vn
+    "\"" string.quoted.double.vn
+    "other" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    "," punctuation.separator.comma.vn
+41:     };
+    "}" punctuation.section.braces.vn
+    ";" punctuation.terminator.statement.vn
+42: }
+    "}" punctuation.section.braces.vn
+43: 
+44: async function fetchAll(urls: str[]): Promise<int> {
+    "async" meta.function.declaration.vn storage.modifier.async.vn
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "fetchAll" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "urls" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "str" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "[" meta.function.declaration.vn punctuation.definition.type.brackets.begin.vn
+    "]" meta.function.declaration.vn punctuation.definition.type.brackets.end.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "Promise" meta.function.declaration.vn entity.name.type.vn
+    "<" meta.function.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ">" meta.function.declaration.vn punctuation.definition.typeparameters.end.vn
+    "{" punctuation.section.braces.vn
+45:     let count = 0;
+    "let" meta.var.expr.mut.vn storage.type.vn
+    "count" meta.var.expr.mut.vn variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+46:     for await (const url of urls) {
+    "for" keyword.control.vn
+    "await" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "const" meta.var.expr.const.vn storage.type.vn
+    "url" meta.var.expr.const.vn variable.other.constant.vn
+    "of" keyword.operator.expression.vn
+    "urls" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+47:         const body = await fetch(url);
+    "const" meta.var.expr.const.vn storage.type.vn
+    "body" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "await" keyword.control.vn
+    "fetch" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "url" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+48:         count += body.length;
+    "count" variable.other.readwrite.vn
+    "+=" keyword.operator.assignment.vn
+    "body" variable.other.readwrite.vn
+    "." punctuation.accessor.vn
+    "length" variable.other.property.vn
+    ";" punctuation.terminator.statement.vn
+49:     }
+    "}" punctuation.section.braces.vn
+50:     return count;
+    "return" keyword.control.vn
+    "count" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+51: }
+    "}" punctuation.section.braces.vn
+52: 
+53: function* counter(limit: int): Generator<int> {
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "*" meta.function.declaration.vn keyword.generator.asterisk.vn
+    "counter" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "limit" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "Generator" meta.function.declaration.vn support.class.builtin.vn entity.name.type.class.vn
+    "<" meta.function.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ">" meta.function.declaration.vn punctuation.definition.typeparameters.end.vn
+    "{" punctuation.section.braces.vn
+54:     for (let i = 0; i < limit; i++) yield i;
+    "for" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "let" meta.var.expr.mut.vn storage.type.vn
+    "i" meta.var.expr.mut.vn variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "0" constant.numeric.decimal.vn
+    ";" punctuation.terminator.statement.vn
+    "i " entity.name.function.call.vn
+    "<" keyword.operator.bitwise.vn
+    "limit" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+    "i" variable.other.readwrite.vn
+    "++" keyword.operator.arithmetic.vn
+    ")" punctuation.section.parens.vn
+    "yield" keyword.control.vn
+    "i" variable.other.readwrite.vn
+    ";" punctuation.terminator.statement.vn
+55: }
+    "}" punctuation.section.braces.vn
+56: 
+57: using resource = open("data.txt");
+    "using" meta.var.expr.mut.vn storage.type.vn
+    "resource" meta.var.expr.mut.vn variable.other.readwrite.vn
+    "=" keyword.operator.assignment.vn
+    "open" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "\"" string.quoted.double.vn
+    "data.txt" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ")" punctuation.section.parens.vn
+    ";" punctuation.terminator.statement.vn
+58: 

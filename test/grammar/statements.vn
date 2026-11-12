@@ -1,0 +1,57 @@
+function classify(n: int): str {
+    if (n < 0) {
+        return "negative";
+    } else if (n == 0) {
+        return "zero";
+    }
+    return "many";
+}
+
+function loops(items: int[]): int {
+    let total = 0;
+    outer: for (let i = 0; i < 10; i++) {
+        for (const item of items) {
+            if (item > i) continue outer;
+            total += item;
+        }
+    }
+    while (total > 100) total -= 1;
+    do {
+        total++;
+    } while (total < 5);
+    return total;
+}
+
+function guarded(): int {
+    try {
+        throw new Error("boom");
+    } catch (error) {
+        return 1;
+    } finally {
+        print("done");
+    }
+}
+
+function pick(value: int | str | null): str {
+    return match (value) {
+        0 => "zero",
+        n if n is int => `int ${n}`,
+        null => "nothing",
+        _ => "other",
+    };
+}
+
+async function fetchAll(urls: str[]): Promise<int> {
+    let count = 0;
+    for await (const url of urls) {
+        const body = await fetch(url);
+        count += body.length;
+    }
+    return count;
+}
+
+function* counter(limit: int): Generator<int> {
+    for (let i = 0; i < limit; i++) yield i;
+}
+
+using resource = open("data.txt");
