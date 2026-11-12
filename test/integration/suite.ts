@@ -287,6 +287,19 @@ test("semantic tokens classify declarations and references", async () => {
     assert.ok(tokenAt(tokens, 29, "limit").modifiers.includes("readonly"), "a const is read-only");
     assert.equal(tokenAt(tokens, 30, "unit").type, "function");
     assert.equal(tokenAt(tokens, 31, "Green").type, "enumMember");
+    assert.equal(tokenAt(tokens, 33, "true").type, "keyword");
+});
+
+test("semantic tokens carry declaration, static and readonly modifiers", async () => {
+    await activate();
+    const tokens = await semanticTokensOf("semantic.vn");
+    assert.ok(tokenAt(tokens, 9, "Circle").modifiers.includes("declaration"), "a class name is a declaration");
+    assert.ok(tokenAt(tokens, 25, "first").modifiers.includes("declaration"), "a function name is a declaration");
+    assert.ok(tokenAt(tokens, 20, "unit").modifiers.includes("static"), "a static method declaration is static");
+    assert.ok(tokenAt(tokens, 30, "unit").modifiers.includes("static"), "a static method call is static");
+    assert.ok(!tokenAt(tokens, 16, "area").modifiers.includes("static"), "an instance method is not static");
+    assert.ok(tokenAt(tokens, 29, "limit").modifiers.includes("declaration"), "a const name is a declaration");
+    assert.ok(!tokenAt(tokens, 32, "print").modifiers.includes("declaration"), "a call is not a declaration");
 });
 
 export async function run(): Promise<void> {

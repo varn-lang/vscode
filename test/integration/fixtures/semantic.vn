@@ -31,3 +31,4 @@ const limit = 10;
 const circle = Circle.unit();
 const shade = Color.Green;
 print(first([limit]), circle.area(), shade);
+const ready = true;
