@@ -11,10 +11,11 @@
   },
   "scripts": {
     "bundle": "node scripts/bundle.mjs",
-    "build": "pnpm run typecheck && pnpm run bundle && vsce package --no-dependencies --allow-missing-repository",
+    "build": "pnpm run typecheck && pnpm run check:manifest && pnpm run bundle && vsce package --no-dependencies --allow-missing-repository",
     "grammar:scan": "node scripts/scan-grammar.cjs",
     "smoke": "node scripts/smoke-load.cjs",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p .",
+    "check:manifest": "node scripts/check-manifest.cjs"
   },
   "icon": "icon.png",
   "engines": {
