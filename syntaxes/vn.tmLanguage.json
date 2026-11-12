@@ -505,6 +505,17 @@
 			"patterns": [ { "include": "#expression" } ]
 		},
 
+		"regex": {
+			"comment": "Regex literal. The lexer allows it unless the previous token is an identifier, literal, `)`, `]`, `}`, `++` or `--`; `/=` is never a regex.",
+			"match": "(?<=^|[=(,:\\[&|?{;]|=>|\\breturn|\\btypeof|\\bcase)\\s*(/)(?![/*=])((?:\\\\.|\\[(?:\\\\.|[^\\]\\\\])*\\]|[^/\\\\\\[\\n])+)(/)([a-z]*)",
+			"captures": {
+				"1": { "name": "punctuation.definition.string.begin.vn" },
+				"2": { "name": "string.regexp.vn" },
+				"3": { "name": "punctuation.definition.string.end.vn" },
+				"4": { "name": "keyword.other.regexp-flag.vn" }
+			}
+		},
+
 		"number": {
 			"comment": "Suffixes: `n` = bigint, `d` = decimal. `_` digit separators allowed.",
 			"patterns": [
@@ -551,6 +562,7 @@
 				{ "include": "#variable-language" },
 				{ "include": "#match-wildcard" },
 				{ "include": "#constant" },
+				{ "include": "#regex" },
 				{ "include": "#string" },
 				{ "include": "#number" },
 				{ "include": "#object-key" },
