@@ -217,6 +217,78 @@ test("a vn debug session starts and stops", async () => {
     await vscode.debug.stopDebugging(session);
 });
 
+interface DecodedToken {
+    line: number;
+    text: string;
+    type: string;
+    modifiers: string[];
+}
+
+async function semanticTokensOf(name: string): Promise<DecodedToken[]> {
+    const uri = workspaceFile(name);
+    const document = await vscode.workspace.openTextDocument(uri);
+    await vscode.window.showTextDocument(document);
+    const legend = await until("the semantic token legend", async () =>
+        vscode.commands.executeCommand<vscode.SemanticTokensLegend>("vscode.provideDocumentSemanticTokensLegend", uri),
+    );
+    const tokens = await until("semantic tokens from the language server", async () => {
+        const result = await vscode.commands.executeCommand<vscode.SemanticTokens>("vscode.provideDocumentSemanticTokens", uri);
+        return result && result.data.length > 0 ? result : undefined;
+    });
+    const decoded: DecodedToken[] = [];
+    let line = 0;
+    let start = 0;
+    for (let i = 0; i < tokens.data.length; i += 5) {
+        line += tokens.data[i];
+        start = tokens.data[i] === 0 ? start + tokens.data[i + 1] : tokens.data[i + 1];
+        const length = tokens.data[i + 2];
+        const modifierBits = tokens.data[i + 4];
+        decoded.push({
+            line,
+            text: document.lineAt(line).text.substring(start, start + length),
+            type: legend.tokenTypes[tokens.data[i + 3]],
+            modifiers: legend.tokenModifiers.filter((_, bit) => (modifierBits & (1 << bit)) !== 0),
+        });
+    }
+    return decoded;
+}
+
+function tokenAt(tokens: DecodedToken[], line: number, text: string): DecodedToken {
+    const found = tokens.find((token) => token.line === line && token.text === text);
+    assert.ok(found, `no semantic token "${text}" on line ${line + 1}; got ${tokens.filter((t) => t.line === line).map((t) => `${t.text}:${t.type}`).join(" ")}`);
+    return found;
+}
+
+test("the semantic token legend only uses types and modifiers the manifest maps to scopes", async () => {
+    const extension = await activate();
+    await semanticTokensOf("semantic.vn");
+    const uri = workspaceFile("semantic.vn");
+    const legend = await vscode.commands.executeCommand<vscode.SemanticTokensLegend>("vscode.provideDocumentSemanticTokensLegend", uri);
+    const scopes = Object.keys(extension.packageJSON.contributes.semanticTokenScopes[0].scopes);
+    const standard = new Set(["declaration", "definition", "readonly", "static", "deprecated", "abstract", "async", "modification", "documentation", "defaultLibrary"]);
+    const unmapped = legend.tokenTypes.filter((type) => !scopes.includes(type));
+    assert.deepEqual(unmapped, [], `token types without a TextMate scope fallback: ${unmapped.join(", ")}`);
+    const unknown = legend.tokenModifiers.filter((modifier) => !standard.has(modifier));
+    assert.deepEqual(unknown, [], `modifiers outside the standard set: ${unknown.join(", ")}`);
+});
+
+test("semantic tokens classify declarations and references", async () => {
+    await activate();
+    const tokens = await semanticTokensOf("semantic.vn");
+    assert.equal(tokenAt(tokens, 0, "Shape").type, "interface");
+    assert.equal(tokenAt(tokens, 4, "Color").type, "type");
+    assert.equal(tokenAt(tokens, 9, "Circle").type, "class");
+    assert.equal(tokenAt(tokens, 9, "class").type, "keyword");
+    assert.equal(tokenAt(tokens, 12, "radius").type, "parameter");
+    assert.equal(tokenAt(tokens, 25, "first").type, "function");
+    assert.equal(tokenAt(tokens, 25, "T").type, "typeParameter");
+    assert.equal(tokenAt(tokens, 25, "items").type, "parameter");
+    assert.equal(tokenAt(tokens, 29, "limit").type, "variable");
+    assert.ok(tokenAt(tokens, 29, "limit").modifiers.includes("readonly"), "a const is read-only");
+    assert.equal(tokenAt(tokens, 30, "unit").type, "function");
+    assert.equal(tokenAt(tokens, 31, "Green").type, "enumMember");
+});
+
 export async function run(): Promise<void> {
     let failed = 0;
     for (const { name, run: body } of cases) {

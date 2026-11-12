@@ -133,6 +133,31 @@
           ],
           "typeParameter": [
             "entity.name.type.parameter.vn"
+          ],
+          "keyword": [
+            "keyword.control.vn",
+            "keyword.other.vn"
+          ],
+          "number": [
+            "constant.numeric.vn",
+            "constant.language.vn"
+          ],
+          "string": [
+            "string.quoted.vn"
+          ],
+          "variable.readonly": [
+            "variable.other.constant.vn"
+          ],
+          "property.readonly": [
+            "variable.other.constant.property.vn"
+          ],
+          "function.static": [
+            "entity.name.function.static.vn",
+            "entity.name.function.vn"
+          ],
+          "property.static": [
+            "variable.other.property.static.vn",
+            "variable.other.property.vn"
           ]
         }
       }

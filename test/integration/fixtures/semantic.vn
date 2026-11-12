@@ -1,0 +1,33 @@
+interface Shape {
+    area(): int;
+}
+
+enum Color {
+    Red,
+    Green,
+}
+
+class Circle implements Shape {
+    radius: int;
+
+    constructor(radius: int) {
+        this.radius = radius;
+    }
+
+    area(): int {
+        return this.radius * this.radius;
+    }
+
+    static unit(): Circle {
+        return new Circle(1);
+    }
+}
+
+function first<T>(items: T[]): T {
+    return items[0];
+}
+
+const limit = 10;
+const circle = Circle.unit();
+const shade = Color.Green;
+print(first([limit]), circle.area(), shade);
