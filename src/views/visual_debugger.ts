@@ -1,20 +1,25 @@
 import * as vscode from "vscode";
 import { getClient } from "../client.js";
 
-class VarnVisualInspectorPanel {
-    static currentPanel = undefined;
-    static viewType = "varnVisualInspector";
+type InspectorMessage = { command: "goToLine"; line?: number } | { command: "refresh" };
 
-    static createOrShow(extensionUri, documentUri) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.ViewColumn.Beside
-            : vscode.ViewColumn.One;
+export class VarnVisualInspectorPanel {
+    static currentPanel: VarnVisualInspectorPanel | undefined;
+    static readonly viewType = "varnVisualInspector";
 
-        if (VarnVisualInspectorPanel.currentPanel) {
-            VarnVisualInspectorPanel.currentPanel._panel.reveal(column);
+    private documentUri: vscode.Uri | undefined;
+    private readonly disposables: vscode.Disposable[] = [];
+    private refreshTimer: ReturnType<typeof setTimeout> | undefined;
+
+    static createOrShow(extensionUri: vscode.Uri, documentUri?: vscode.Uri): void {
+        const column = vscode.window.activeTextEditor ? vscode.ViewColumn.Beside : vscode.ViewColumn.One;
+
+        const current = VarnVisualInspectorPanel.currentPanel;
+        if (current) {
+            current.panel.reveal(column);
             if (documentUri) {
-                VarnVisualInspectorPanel.currentPanel._documentUri = documentUri;
-                VarnVisualInspectorPanel.currentPanel.scheduleRefresh();
+                current.documentUri = documentUri;
+                current.scheduleRefresh();
             }
             return;
         }
@@ -23,115 +28,106 @@ class VarnVisualInspectorPanel {
             VarnVisualInspectorPanel.viewType,
             "Varn Visual CFG & Debug Inspector",
             column,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: false,
-                localResourceRoots: [extensionUri]
-            }
+            { enableScripts: true, retainContextWhenHidden: false, localResourceRoots: [extensionUri] },
         );
 
         VarnVisualInspectorPanel.currentPanel = new VarnVisualInspectorPanel(panel, extensionUri, documentUri);
     }
 
-    constructor(panel, extensionUri, documentUri) {
-        this._panel = panel;
-        this._extensionUri = extensionUri;
-        this._documentUri = documentUri || vscode.window.activeTextEditor?.document.uri;
-        this._disposables = [];
-        this._refreshTimer = null;
+    constructor(
+        private readonly panel: vscode.WebviewPanel,
+        private readonly extensionUri: vscode.Uri,
+        documentUri?: vscode.Uri,
+    ) {
+        this.documentUri = documentUri ?? vscode.window.activeTextEditor?.document.uri;
 
-        this._update();
+        this.update();
 
-        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+        this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
-        this._panel.webview.onDidReceiveMessage(
-            async (message) => {
+        this.panel.webview.onDidReceiveMessage(
+            async (message: InspectorMessage) => {
                 switch (message.command) {
                     case "goToLine":
-                        if (message.line && this._documentUri) {
-                            try {
-                                const doc = await vscode.workspace.openTextDocument(this._documentUri);
-                                const editor = await vscode.window.showTextDocument(doc, {
-                                    viewColumn: vscode.ViewColumn.One,
-                                    preserveFocus: true
-                                });
-                                const line = Math.max(0, message.line - 1);
-                                const pos = new vscode.Position(line, 0);
-                                editor.selection = new vscode.Selection(pos, pos);
-                                editor.revealRange(
-                                    new vscode.Range(pos, pos),
-                                    vscode.TextEditorRevealType.InCenter
-                                );
-                            } catch (e) {
-                                console.error("Failed to jump to line:", e);
-                            }
-                        }
+                        if (message.line && this.documentUri) await this.revealLine(this.documentUri, message.line);
                         return;
                     case "refresh":
-                        this.refresh();
+                        void this.refresh();
                         return;
                 }
             },
             null,
-            this._disposables
+            this.disposables,
         );
 
-        vscode.workspace.onDidSaveTextDocument((doc) => {
-            if (this._documentUri && doc.uri.toString() === this._documentUri.toString()) {
-                this.scheduleRefresh();
-            }
-        }, null, this._disposables);
+        vscode.workspace.onDidSaveTextDocument(
+            (doc) => {
+                if (this.documentUri && doc.uri.toString() === this.documentUri.toString()) this.scheduleRefresh();
+            },
+            null,
+            this.disposables,
+        );
 
-        vscode.workspace.onDidChangeTextDocument((e) => {
-            if (this._documentUri && e.document.uri.toString() === this._documentUri.toString()) {
-                this.scheduleRefresh();
-            }
-        }, null, this._disposables);
+        vscode.workspace.onDidChangeTextDocument(
+            (event) => {
+                if (this.documentUri && event.document.uri.toString() === this.documentUri.toString()) {
+                    this.scheduleRefresh();
+                }
+            },
+            null,
+            this.disposables,
+        );
     }
 
-    scheduleRefresh() {
-        if (this._refreshTimer) clearTimeout(this._refreshTimer);
-        this._refreshTimer = setTimeout(() => this.refresh(), 500);
+    private async revealLine(uri: vscode.Uri, oneBasedLine: number): Promise<void> {
+        try {
+            const doc = await vscode.workspace.openTextDocument(uri);
+            const editor = await vscode.window.showTextDocument(doc, {
+                viewColumn: vscode.ViewColumn.One,
+                preserveFocus: true,
+            });
+            const pos = new vscode.Position(Math.max(0, oneBasedLine - 1), 0);
+            editor.selection = new vscode.Selection(pos, pos);
+            editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+        } catch (err) {
+            console.error("Failed to jump to line:", err);
+        }
     }
 
-    async refresh() {
-        if (!this._panel || !this._documentUri) return;
+    scheduleRefresh(): void {
+        if (this.refreshTimer) clearTimeout(this.refreshTimer);
+        this.refreshTimer = setTimeout(() => void this.refresh(), 500);
+    }
+
+    async refresh(): Promise<void> {
+        if (!this.documentUri) return;
         const client = getClient();
         if (!client) return;
 
         try {
-            const data = await client.sendRequest("workspace/executeCommand", {
+            const data: unknown = await client.sendRequest("workspace/executeCommand", {
                 command: "varn.getCFG",
-                arguments: [this._documentUri.toString()]
+                arguments: [this.documentUri.toString()],
             });
-
-            if (data) {
-                this._panel.webview.postMessage({
-                    type: "updateData",
-                    data
-                });
-            }
+            if (data) void this.panel.webview.postMessage({ type: "updateData", data });
         } catch (err) {
             console.error("Error refreshing CFG data:", err);
         }
     }
 
-    async _update() {
-        this._panel.webview.html = this._getHtmlForWebview();
-        setTimeout(() => this.refresh(), 300);
+    private update(): void {
+        this.panel.webview.html = this.getHtmlForWebview();
+        setTimeout(() => void this.refresh(), 300);
     }
 
-    dispose() {
+    dispose(): void {
         VarnVisualInspectorPanel.currentPanel = undefined;
-        if (this._refreshTimer) clearTimeout(this._refreshTimer);
-        this._panel.dispose();
-        while (this._disposables.length) {
-            const x = this._disposables.pop();
-            if (x) x.dispose();
-        }
+        if (this.refreshTimer) clearTimeout(this.refreshTimer);
+        this.panel.dispose();
+        while (this.disposables.length) this.disposables.pop()?.dispose();
     }
 
-    _getHtmlForWebview() {
+    private getHtmlForWebview(): string {
         const nonce = String(Date.now().toString(36) + Math.random().toString(36).slice(2));
         return `<!DOCTYPE html>
 <html lang="en">
@@ -936,19 +932,18 @@ class VarnVisualInspectorPanel {
     }
 }
 
-function registerVisualInspectorSerializer(extensionUri) {
+export function registerVisualInspectorSerializer(extensionUri: vscode.Uri): vscode.Disposable {
     try {
         return vscode.window.registerWebviewPanelSerializer(VarnVisualInspectorPanel.viewType, {
-            async deserializeWebviewPanel(panel) {
-                VarnVisualInspectorPanel.currentPanel = new VarnVisualInspectorPanel(panel, extensionUri, vscode.window.activeTextEditor?.document.uri);
+            async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
+                VarnVisualInspectorPanel.currentPanel = new VarnVisualInspectorPanel(
+                    panel,
+                    extensionUri,
+                    vscode.window.activeTextEditor?.document.uri,
+                );
             },
         });
     } catch {
-        return { dispose() {} };
+        return new vscode.Disposable(() => {});
     }
 }
-
-export {
-    VarnVisualInspectorPanel,
-    registerVisualInspectorSerializer
-};
