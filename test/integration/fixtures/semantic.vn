@@ -43,3 +43,6 @@ extension Tools on str {
 }
 import { describe } from "std:test";
 describe("box", () => {});
+interface Opt { label?: str }
+const out = 1;
+print(out);

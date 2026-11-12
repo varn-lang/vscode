@@ -20,7 +20,8 @@
     "check:naming": "node scripts/check-naming.cjs",
     "test:integration": "pnpm run bundle && node scripts/run-integration.mjs",
     "grammar:snapshot": "node scripts/check-grammar-snapshots.cjs",
-    "grammar:lexer": "node scripts/check-grammar-lexer.cjs"
+    "grammar:lexer": "node scripts/check-grammar-lexer.cjs",
+    "semantic:coverage": "node scripts/check-semantic-coverage.cjs"
   },
   "icon": "icon.png",
   "engines": {

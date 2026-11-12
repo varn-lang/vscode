@@ -79,3 +79,17 @@ jobs:
         env:
           VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
         run: xvfb-run -a pnpm run test:integration
+
+      - name: Lexer and grammar agree on the whole language corpus
+        working-directory: varn-extension
+        env:
+          VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
+        run: pnpm run grammar:lexer ../varn-lang
+
+      - name: Semantic tokens cover the standard library and the language tests
+        working-directory: varn-extension
+        env:
+          VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
+        run: |
+          pnpm run semantic:coverage ../varn-lang/std -- --limit 120 --min 97
+          pnpm run semantic:coverage ../varn-lang/tests -- --limit 150 --min 99

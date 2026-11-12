@@ -292,6 +292,10 @@ test("semantic tokens classify declarations and references", async () => {
     assert.equal(tokenAt(tokens, 34, "/ab+c/i").type, "regexp");
     assert.equal(tokenAt(tokens, 35, "sealed").type, "decorator");
     assert.equal(tokenAt(tokens, 40, "Tools").type, "class");
+    assert.equal(tokenAt(tokens, 5, "Red").type, "enumMember");
+    assert.equal(tokenAt(tokens, 45, "label").type, "property");
+    assert.equal(tokenAt(tokens, 46, "out").type, "variable");
+    assert.equal(tokenAt(tokens, 47, "out").type, "variable");
 });
 
 test("semantic tokens carry declaration, static and readonly modifiers", async () => {
@@ -303,6 +307,7 @@ test("semantic tokens carry declaration, static and readonly modifiers", async (
     assert.ok(tokenAt(tokens, 30, "unit").modifiers.includes("static"), "a static method call is static");
     assert.ok(!tokenAt(tokens, 16, "area").modifiers.includes("static"), "an instance method is not static");
     assert.ok(tokenAt(tokens, 29, "limit").modifiers.includes("declaration"), "a const name is a declaration");
+    assert.ok(tokenAt(tokens, 5, "Red").modifiers.includes("declaration"), "an enum member is a declaration");
     assert.ok(!tokenAt(tokens, 32, "print").modifiers.includes("declaration"), "a call is not a declaration");
     assert.ok(tokenAt(tokens, 37, "size").modifiers.includes("readonly"), "a readonly field declaration is readonly");
     assert.ok(tokenAt(tokens, 38, "size").modifiers.includes("readonly"), "a reference to a readonly field is readonly");
