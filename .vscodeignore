@@ -12,3 +12,4 @@ test/**
 out/**
 .vscode-test/**
 pnpm-workspace.yaml
+.github/**
