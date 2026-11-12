@@ -13,7 +13,8 @@
     "bundle": "node scripts/bundle.mjs",
     "build": "pnpm run bundle && vsce package --no-dependencies --allow-missing-repository",
     "grammar:scan": "node scripts/scan-grammar.cjs",
-    "smoke": "node scripts/smoke-load.cjs"
+    "smoke": "node scripts/smoke-load.cjs",
+    "typecheck": "tsc -p ."
   },
   "icon": "icon.png",
   "engines": {
@@ -663,6 +664,7 @@
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.96.0",
     "esbuild": "^0.28.2",
+    "typescript": "^7.0.2",
     "vscode-oniguruma": "2.0.1",
     "vscode-textmate": "9.2.0"
   }
