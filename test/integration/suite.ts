@@ -298,6 +298,20 @@ test("semantic tokens classify declarations and references", async () => {
     assert.equal(tokenAt(tokens, 47, "out").type, "variable");
 });
 
+test("every parameter is a parameter, including callbacks, and the default theme underlines them", async () => {
+    const extension = await activate();
+    const tokens = await semanticTokensOf("semantic.vn");
+    const onLine = (text: string) => tokens.filter((token) => token.line === 48 && token.text === text);
+    for (const name of ["run", "v", "x"]) {
+        const found = onLine(name);
+        assert.ok(found.length > 0, `no semantic token for ${name}`);
+        assert.ok(found.every((token) => token.type === "parameter"), `${name} must always be a parameter, got ${found.map((t) => t.type).join(", ")}`);
+    }
+    assert.equal(onLine("run").length, 2, "the declaration and the call of a callback parameter");
+    const defaults = extension.packageJSON.contributes.configurationDefaults["[vn]"];
+    assert.equal(defaults["editor.semanticTokenColorCustomizations"].rules.parameter.underline, true);
+});
+
 test("semantic tokens carry declaration, static and readonly modifiers", async () => {
     await activate();
     const tokens = await semanticTokensOf("semantic.vn");

@@ -836,7 +836,19 @@
           }
         ]
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[vn]": {
+        "editor.semanticHighlighting.enabled": true,
+        "editor.semanticTokenColorCustomizations": {
+          "rules": {
+            "parameter": {
+              "underline": true
+            }
+          }
+        }
+      }
+    }
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

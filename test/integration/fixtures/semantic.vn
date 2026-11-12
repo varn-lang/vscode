@@ -46,3 +46,4 @@ describe("box", () => {});
 interface Opt { label?: str }
 const out = 1;
 print(out);
+function apply(run: (x: int) => int, v: int): int { return run(v); }
