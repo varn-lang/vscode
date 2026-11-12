@@ -21,6 +21,19 @@
   "engines": {
     "vscode": "^1.109.0"
   },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "In an untrusted workspace Varn does not run binaries found inside the workspace and ignores a workspace-level Varn.cli.path.",
+      "restrictedConfigurations": [
+        "Varn.cli.path"
+      ]
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "Varn runs the vn binary against files on disk, so virtual file systems are not supported."
+    }
+  },
   "categories": [
     "Programming Languages",
     "Debuggers",
@@ -628,7 +641,8 @@
         "Varn.cli.path": {
           "type": "string",
           "default": "",
-          "description": "Absolute path to the Varn binary. Leave empty to auto-detect from varn_HOME/bin, workspace target/{release,debug}, or PATH."
+          "description": "Absolute path to the Varn binary. Leave empty to auto-detect from varn_HOME/bin, workspace target/{release,debug}, or PATH.",
+          "scope": "machine-overridable"
         },
         "Varn.inlayHints.enabled": {
           "type": "boolean",
