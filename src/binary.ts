@@ -20,8 +20,10 @@ export function getBinaryCandidates(context: vscode.ExtensionContext, binName: s
     const homeBin = varnHomeBinPath(binName);
     if (homeBin) candidates.push(homeBin);
 
-    for (const folder of vscode.workspace.workspaceFolders ?? []) {
-        candidates.push(...targetCandidates(folder.uri.fsPath, binName, mode));
+    if (vscode.workspace.isTrusted) {
+        for (const folder of vscode.workspace.workspaceFolders ?? []) {
+            candidates.push(...targetCandidates(folder.uri.fsPath, binName, mode));
+        }
     }
 
     const siblingRoot = path.resolve(context.extensionPath, "..", "varn-lang");

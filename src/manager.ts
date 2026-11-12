@@ -65,6 +65,7 @@ export class ExtensionManager {
                 this.stopWatchers();
             },
         });
+        context.subscriptions.push(vscode.workspace.onDidGrantWorkspaceTrust(() => void this.restart()));
     }
 
     private pushDisposable(...disposables: vscode.Disposable[]): void {
