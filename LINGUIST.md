@@ -17,7 +17,7 @@ the points that decide acceptance.
       language in `lib/linguist/languages.yml`, or that heuristics can separate it.
 - [ ] **Grammar**: a TextMate grammar under an OSS license, added with
       `script/add-grammar`. Ours is `syntaxes/vn.tmLanguage.json`
-      (`scopeName: source.vn`, MIT, same repo license).
+      (`scopeName: source.vn`, Apache-2.0, same repo license).
 - [ ] **Samples**: real-world `.vn` files in `samples/Varn/`, from repositories
       with a license that allows it. Candidates: `varn-lang/varn` `examples/` and `std/`.
 - [ ] **languages.yml entry**: `type: programming`, `color`, `extensions: [.vn]`,

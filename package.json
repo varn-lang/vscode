@@ -4,10 +4,10 @@
   "description": "Syntax highlighting, diagnostics, hover, go-to-definition, completions, rename, run and debug for the Varn language.",
   "version": "0.3.1",
   "publisher": "Varn",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/varn-lang/varn"
+    "url": "https://github.com/varn-lang/vscode"
   },
   "scripts": {
     "bundle": "rollup -c",
