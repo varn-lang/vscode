@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { runInOutputChannel, resolveCliPath, formatTerminalCommand } from "./base.js";
-import { BINARY_NOT_FOUND } from "../binary.js";
+import { INSTALL_GUIDE, reportMissingBinary } from "../binary.js";
 
 function getWorkspaceDir(context: vscode.ExtensionContext): string {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? context.extensionPath;
@@ -10,7 +10,7 @@ function getWorkspaceDir(context: vscode.ExtensionContext): string {
 
 function requireCli(context: vscode.ExtensionContext): string | undefined {
     const cliPath = resolveCliPath(context);
-    if (!cliPath) void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
+    if (!cliPath) void reportMissingBinary();
     return cliPath;
 }
 
@@ -59,8 +59,6 @@ async function runInitProject(context: vscode.ExtensionContext): Promise<void> {
 
     runInOutputChannel(cliPath, args, getWorkspaceDir(context), "Init: New Project");
 }
-
-const INSTALL_GUIDE = "https://github.com/varn-lang/varn/blob/main/docs/INSTALL.md";
 
 /**
  * Run the installer script of a sibling varn-lang checkout. The script only

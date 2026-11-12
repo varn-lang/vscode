@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
-import { BINARY_NOT_FOUND, resolveCliPath } from "../binary.js";
+import { reportMissingBinary, resolveCliPath } from "../binary.js";
 import { stripAnsi } from "../utils.js";
 import { scanTests, type ScannedCase } from "./scan.js";
 
@@ -137,7 +137,7 @@ class VnTestController implements vscode.Disposable {
         const cliPath = resolveCliPath(this.context);
 
         if (!cliPath) {
-            void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
+            void reportMissingBinary();
             run.end();
             return;
         }

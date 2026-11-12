@@ -9,6 +9,16 @@ type BuildMode = "release" | "debug";
 export const BINARY_NOT_FOUND =
     "The `vn` binary was not found. Build it with `cargo build --release --bin vn` or set vn.cli.path.";
 
+export const INSTALL_GUIDE = "https://github.com/varn-lang/varn/blob/main/docs/INSTALL.md";
+
+export async function reportMissingBinary(): Promise<void> {
+    const guide = "Open Install Guide";
+    const setting = "Set vn.cli.path";
+    const choice = await vscode.window.showErrorMessage(BINARY_NOT_FOUND, guide, setting);
+    if (choice === guide) await vscode.env.openExternal(vscode.Uri.parse(INSTALL_GUIDE));
+    else if (choice === setting) await vscode.commands.executeCommand("workbench.action.openSettings", "vn.cli.path");
+}
+
 function targetCandidates(root: string, binName: string, mode: BuildMode): string[] {
     const preferred = path.join(root, "target", mode, binName);
     const fallback = path.join(root, "target", mode === "release" ? "debug" : "release", binName);

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "node:path";
 import { resolveTargetFile, runInOutputChannel, resolveCliPath, formatTerminalCommand } from "./base.js";
-import { BINARY_NOT_FOUND } from "../binary.js";
+import { reportMissingBinary } from "../binary.js";
 import { updateBuildModeStatusBar } from "../status.js";
 import { VnVisualInspectorPanel } from "../views/visual_debugger.js";
 
@@ -41,7 +41,7 @@ function prepare(context: vscode.ExtensionContext, target: TargetUri): Invocatio
 
     const cliPath = resolveCliPath(context);
     if (!cliPath) {
-        void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
+        void reportMissingBinary();
         return undefined;
     }
     return { file, cliPath, cwd: path.dirname(file), name: path.basename(file) };

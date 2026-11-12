@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { BINARY_NOT_FOUND, resolveCliPath, resolveServerPath } from "./binary.js";
+import { reportMissingBinary, resolveCliPath, resolveServerPath } from "./binary.js";
 
 export class VnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {
     constructor(private readonly context: vscode.ExtensionContext) {}
@@ -7,7 +7,7 @@ export class VnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFacto
     createDebugAdapterDescriptor(): vscode.DebugAdapterDescriptor | undefined {
         const cliPath = resolveCliPath(this.context);
         if (!cliPath) {
-            void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
+            void reportMissingBinary();
             return undefined;
         }
         return new vscode.DebugAdapterExecutable(resolveServerPath(cliPath), ["dap"]);
