@@ -9,6 +9,8 @@
 		{ "include": "#export-modifier" },
 		{ "include": "#decorator" },
 		{ "include": "#function-declaration" },
+		{ "include": "#namespace-declaration" },
+		{ "include": "#extension-declaration" },
 		{ "include": "#class-declaration" },
 		{ "include": "#type-alias" },
 		{ "include": "#destructuring-declaration" },
@@ -52,7 +54,7 @@
 
 		"hover-label": {
 			"comment": "Pseudo-labels emitted only in LSP hover signatures, e.g. (property), (method). Rendered muted like an annotation.",
-			"match": "(\\()(type parameter|enum member|property|method|param|this|getter|setter|constructor|destructor|namespace|interface|struct|class|enum|module|extension|var|let|const|prop)(\\))",
+			"match": "^\\s*(\\()(type parameter|enum member|property|method|param|this|getter|setter|constructor|destructor|namespace|interface|struct|class|enum|module|extension|var|let|const|prop)(\\))(?=\\s+[_$[:alpha:]])",
 			"captures": {
 				"1": { "name": "punctuation.definition.label.vn" },
 				"2": { "name": "comment.label.hover.vn" },
@@ -108,12 +110,14 @@
 				"3": { "name": "keyword.generator.asterisk.vn" },
 				"4": { "name": "entity.name.function.vn" }
 			},
-			"end": "(?=[{;])",
+			"end": "(?=[{;])|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
 				{ "include": "#parameter-list" },
-				{ "include": "#type-annotation" }
+				{ "include": "#type-annotation" },
+				{ "match": "=>", "name": "keyword.operator.type.arrow.vn" },
+				{ "include": "#type" }
 			]
 		},
 
@@ -121,13 +125,52 @@
 
 		"class-declaration": {
 			"name": "meta.class.declaration.vn",
-			"begin": "(?<![._$[:alnum:]])(?:(abstract|declare)\\s+)?(class|struct|interface|enum|namespace|module|extension)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*)",
+			"begin": "(?<![._$[:alnum:]])(?:(abstract|declare)\\s+)?(class|struct|interface|enum)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*)",
 			"beginCaptures": {
 				"1": { "name": "storage.modifier.vn" },
 				"2": { "name": "storage.type.vn" },
 				"3": { "name": "entity.name.type.vn" }
 			},
 			"end": "(?<=\\})|(?=[;])",
+			"patterns": [
+				{ "include": "#comment" },
+				{ "include": "#generic-parameters" },
+				{ "include": "#parameter-list" },
+				{ "include": "#heritage" },
+				{ "include": "#class-body" }
+			]
+		},
+
+		"namespace-declaration": {
+			"comment": "`namespace A.B { ... }` and `module m { ... }`: the body holds statements, not class members.",
+			"name": "meta.namespace.declaration.vn",
+			"begin": "(?<![._$[:alnum:]])(?:(declare)\\s+)?(namespace|module)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*(?:\\.[_$[:alpha:]][_$[:alnum:]]*)*)",
+			"beginCaptures": {
+				"1": { "name": "storage.modifier.vn" },
+				"2": { "name": "storage.type.vn" },
+				"3": { "name": "entity.name.namespace.vn" }
+			},
+			"end": "(?<=\\})|(?=;)",
+			"patterns": [
+				{ "include": "#comment" },
+				{
+					"begin": "\\{",
+					"beginCaptures": { "0": { "name": "punctuation.section.namespace-body.begin.vn" } },
+					"end": "\\}",
+					"endCaptures": { "0": { "name": "punctuation.section.namespace-body.end.vn" } },
+					"patterns": [ { "include": "#block-statements" } ]
+				}
+			]
+		},
+
+		"extension-declaration": {
+			"comment": "`extension<T> on Type { ... }`.",
+			"name": "meta.extension.declaration.vn",
+			"begin": "(?<![._$[:alnum:]])(extension)(?![_$[:alnum:]])(?=\\s*(?:<|on\\b))",
+			"beginCaptures": {
+				"1": { "name": "storage.type.vn" }
+			},
+			"end": "(?<=\\})|(?=;)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
@@ -162,12 +205,43 @@
 				{ "include": "#comment" },
 				{ "include": "#decorator" },
 				{ "include": "#storage-modifier" },
+				{ "include": "#field-initializer" },
 				{ "include": "#enum-member" },
+				{ "include": "#constructor-declaration" },
 				{ "include": "#method-declaration" },
 				{ "include": "#property-declaration" },
 				{ "include": "#type-annotation" },
 				{ "include": "#block" },
 				{ "include": "#expression" }
+			]
+		},
+
+		"field-initializer": {
+			"comment": "`name: Type = expression` inside a class body: the value is an expression, not a method.",
+			"begin": "=(?!>)",
+			"beginCaptures": { "0": { "name": "keyword.operator.assignment.vn" } },
+			"end": "(?=;)|(?=})|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"patterns": [
+				{ "include": "#nested-groups" },
+				{ "include": "#expression" }
+			]
+		},
+
+		"constructor-declaration": {
+			"name": "meta.method.declaration.vn",
+			"comment": "`constructor(...)` and `destructor()` are keywords, not method names.",
+			"begin": "(?<![._$[:alnum:]])(constructor|destructor)\\s*(?=[(<])",
+			"beginCaptures": {
+				"1": { "name": "storage.type.function.constructor.vn" }
+			},
+			"end": "(?=[{;,}])|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"patterns": [
+				{ "include": "#comment" },
+				{ "include": "#generic-parameters" },
+				{ "include": "#parameter-list" },
+				{ "include": "#type-annotation" },
+				{ "match": "=>", "name": "keyword.operator.type.arrow.vn" },
+				{ "include": "#type" }
 			]
 		},
 
@@ -179,12 +253,14 @@
 				"1": { "name": "keyword.generator.asterisk.vn" },
 				"2": { "name": "entity.name.function.vn" }
 			},
-			"end": "(?=[{;,}])",
+			"end": "(?=[{;,}])|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
 				{ "include": "#parameter-list" },
-				{ "include": "#type-annotation" }
+				{ "include": "#type-annotation" },
+				{ "match": "=>", "name": "keyword.operator.type.arrow.vn" },
+				{ "include": "#type" }
 			]
 		},
 
@@ -209,11 +285,17 @@
 				"1": { "name": "storage.type.vn" },
 				"2": { "name": "entity.name.type.vn" }
 			},
-			"end": "(?=;)|(?=\\})|(?=^\\s*(?:export|declare|type|interface|class|enum|function|async|const|let|var|import|namespace|module|abstract|extension)\\b)|(?=^\\s*@)",
+			"end": "(?=;)|(?=\\})|(?=^(?!\\s*[|&])\\s*\\S)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
-				{ "match": "=(?!>)", "name": "keyword.operator.assignment.vn" },
+				{
+					"comment": "The type itself. It ends at the end of the line once the type is complete; a following line that starts with | or & continues it.",
+					"begin": "=(?!>)",
+					"beginCaptures": { "0": { "name": "keyword.operator.assignment.vn" } },
+					"end": "(?=;)|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+					"patterns": [ { "include": "#type" } ]
+				},
 				{ "include": "#type" }
 			]
 		},
@@ -222,11 +304,11 @@
 
 		"destructuring-declaration": {
 			"name": "meta.binding.destructuring.vn",
-			"begin": "(?<![._$[:alnum:]])(const|let|var|using)(?![_$[:alnum:]])(?=\\s*[{\\[])",
+			"begin": "(?<![._$[:alnum:]])(const|let|var|using)(?![_$[:alnum:]])(?=\\s*[{\\[(])",
 			"beginCaptures": {
 				"1": { "name": "storage.type.vn" }
 			},
-			"end": "(?<=[}\\]])",
+			"end": "(?<=[}\\])])",
 			"patterns": [ { "include": "#binding-pattern" } ]
 		},
 		"binding-pattern": {
@@ -245,6 +327,14 @@
 					"begin": "\\[",
 					"beginCaptures": { "0": { "name": "punctuation.definition.binding.begin.vn" } },
 					"end": "\\]",
+					"endCaptures": { "0": { "name": "punctuation.definition.binding.end.vn" } },
+					"patterns": [ { "include": "#binding-contents" } ]
+				},
+				{
+					"name": "meta.binding.tuple.vn",
+					"begin": "\\(",
+					"beginCaptures": { "0": { "name": "punctuation.definition.binding.begin.vn" } },
+					"end": "\\)",
 					"endCaptures": { "0": { "name": "punctuation.definition.binding.end.vn" } },
 					"patterns": [ { "include": "#binding-contents" } ]
 				}
@@ -284,7 +374,7 @@
 					"end": "(?=[;=},)]|\\b(of|in)\\b)",
 					"patterns": [
 						{ "include": "#comment" },
-						{ "include": "#type-annotation" },
+						{ "include": "#variable-type-annotation" },
 						{
 							"match": "([_$[:alpha:]][_$[:alnum:]]*)",
 							"name": "variable.other.constant.vn"
@@ -300,7 +390,7 @@
 					"end": "(?=[;=},)]|\\b(of|in)\\b)",
 					"patterns": [
 						{ "include": "#comment" },
-						{ "include": "#type-annotation" },
+						{ "include": "#variable-type-annotation" },
 						{
 							"match": "([_$[:alpha:]][_$[:alnum:]]*)",
 							"name": "variable.other.readwrite.vn"
@@ -311,6 +401,52 @@
 		},
 
 		"___________________PARAMETERS & TYPE ANNOTATIONS___________________": { "comment": "section marker" },
+
+		"parameter-default": {
+			"comment": "The default value of a parameter is an expression, up to the comma or the closing parenthesis.",
+			"begin": "=(?!>)",
+			"beginCaptures": { "0": { "name": "keyword.operator.assignment.vn" } },
+			"end": "(?=[,)])",
+			"patterns": [
+				{ "include": "#nested-groups" },
+				{ "include": "#expression" }
+			]
+		},
+
+		"nested-groups": {
+			"comment": "Balanced (), [] and {} inside an expression, so a comma in them does not end the enclosing rule.",
+			"patterns": [
+				{
+					"begin": "\\(",
+					"beginCaptures": { "0": { "name": "punctuation.section.parens.vn" } },
+					"end": "\\)",
+					"endCaptures": { "0": { "name": "punctuation.section.parens.vn" } },
+					"patterns": [
+						{ "include": "#nested-groups" },
+						{ "include": "#expression" },
+						{ "match": ",", "name": "punctuation.separator.comma.vn" }
+					]
+				},
+				{
+					"begin": "\\[",
+					"beginCaptures": { "0": { "name": "punctuation.section.brackets.vn" } },
+					"end": "\\]",
+					"endCaptures": { "0": { "name": "punctuation.section.brackets.vn" } },
+					"patterns": [
+						{ "include": "#nested-groups" },
+						{ "include": "#expression" },
+						{ "match": ",", "name": "punctuation.separator.comma.vn" }
+					]
+				},
+				{
+					"begin": "\\{",
+					"beginCaptures": { "0": { "name": "punctuation.section.braces.vn" } },
+					"end": "\\}",
+					"endCaptures": { "0": { "name": "punctuation.section.braces.vn" } },
+					"patterns": [ { "include": "#block-statements" } ]
+				}
+			]
+		},
 
 		"parameter-list": {
 			"begin": "\\(",
@@ -337,6 +473,14 @@
 					"match": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(?=[,)=])",
 					"name": "variable.parameter.vn"
 				},
+				{ "include": "#parameter-default" },
+				{
+					"comment": "The arrow of a function type used as a parameter type: `cb: (x: T) => void`.",
+					"begin": "=>",
+					"beginCaptures": { "0": { "name": "keyword.operator.type.arrow.vn" } },
+					"end": "(?=[,)])",
+					"patterns": [ { "include": "#type" } ]
+				},
 				{ "include": "#type-annotation" },
 				{ "include": "#constant" },
 				{ "include": "#string" },
@@ -346,12 +490,20 @@
 			]
 		},
 
+		"variable-type-annotation": {
+			"comment": "The type of a const/let/var: unlike a return type, a { here starts an object type, not a body.",
+			"begin": "(:)",
+			"beginCaptures": { "1": { "name": "punctuation.separator.annotation.vn" } },
+			"end": "(?=[,)=;}]|=>)|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
+			"patterns": [ { "include": "#type" } ]
+		},
+
 		"type-annotation": {
 			"begin": "(:)",
 			"beginCaptures": {
 				"1": { "name": "punctuation.separator.annotation.vn" }
 			},
-			"end": "(?=[,)=;{}]|=>)",
+			"end": "(?=[,)=;{}]|=>)|(?<=[A-Za-z0-9_$\\]>)}\"'`])(?<!=>)(?=\\s*(?://.*)?$)",
 			"patterns": [ { "include": "#type" } ]
 		},
 
@@ -373,11 +525,14 @@
 				{ "include": "#type-parens" },
 				{ "include": "#generic-arguments" },
 				{ "match": ":", "name": "keyword.operator.ternary.vn" },
+				{ "match": "-(?=\\s*[0-9])", "name": "keyword.operator.arithmetic.vn" },
 				{ "match": "\\|", "name": "keyword.operator.type.union.vn" },
 				{ "match": "&", "name": "keyword.operator.type.intersection.vn" },
 				{ "match": "\\?", "name": "keyword.operator.type.optional.vn" },
 				{ "match": "\\[\\]", "name": "punctuation.definition.array.vn" },
 				{ "match": "=>", "name": "keyword.operator.type.arrow.vn" },
+				{ "include": "#constant" },
+				{ "include": "#variable-language" },
 				{ "match": "[_$[:alpha:]][_$[:alnum:]]*", "name": "entity.name.type.vn" },
 				{ "match": "[,.]", "name": "punctuation.type.vn" }
 			]
@@ -437,7 +592,7 @@
 		},
 
 		"generic-parameters": {
-			"comment": "Declaration-site type parameter list, e.g. `<T, U extends X>`.",
+			"comment": "Declaration-site type parameter list, e.g. `<T, U extends X = Y>`.",
 			"begin": "(?<=[_$[:alnum:]])(<)(?=[_$[:alpha:]\\s])",
 			"beginCaptures": {
 				"1": { "name": "punctuation.definition.typeparameters.begin.vn" }
@@ -447,6 +602,7 @@
 				"0": { "name": "punctuation.definition.typeparameters.end.vn" }
 			},
 			"patterns": [
+				{ "match": "=(?!>)", "name": "keyword.operator.assignment.vn" },
 				{ "include": "#type" },
 				{ "include": "#punctuation-comma" }
 			]
@@ -454,7 +610,7 @@
 
 		"generic-arguments": {
 			"comment": "Use-site type argument list, e.g. `Box<int>`, `identity<str>(...)`.",
-			"begin": "(?<=[_$[:alnum:]])(<)(?=[_$[:alpha:](\\[])",
+			"begin": "(?<=[_$[:alnum:]])(<)(?=[_$[:alpha:](\\[{])",
 			"beginCaptures": {
 				"1": { "name": "punctuation.definition.typeparameters.begin.vn" }
 			},
@@ -609,7 +765,10 @@
 		"block-statements": {
 			"patterns": [
 				{ "include": "#comment" },
+				{ "include": "#export-modifier" },
 				{ "include": "#function-declaration" },
+				{ "include": "#namespace-declaration" },
+				{ "include": "#extension-declaration" },
 				{ "include": "#class-declaration" },
 				{ "include": "#type-alias" },
 				{ "include": "#destructuring-declaration" },
@@ -623,6 +782,8 @@
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#decorator" },
+				{ "include": "#reflection-access" },
+				{ "include": "#anonymous-class" },
 				{ "include": "#cast-expression" },
 				{ "include": "#new-expression" },
 				{ "include": "#word-operator" },
@@ -648,13 +809,47 @@
 			]
 		},
 
+		"reflection-access": {
+			"comment": "`value::type`, `value::class`: the name after :: is a member, even when it is a keyword.",
+			"match": "(::)\\s*([_$[:alpha:]][_$[:alnum:]]*)",
+			"captures": {
+				"1": { "name": "punctuation.accessor.namespace.vn" },
+				"2": { "name": "variable.other.property.vn" }
+			}
+		},
+
+		"anonymous-class": {
+			"comment": "A class expression: `class { ... }`.",
+			"name": "meta.class.declaration.vn",
+			"begin": "(?<![._$[:alnum:]:])(class)(?=\\s*(?:\\{|extends\\b|implements\\b|<|\\())",
+			"beginCaptures": { "1": { "name": "storage.type.vn" } },
+			"end": "(?<=\\})",
+			"patterns": [
+				{ "include": "#comment" },
+				{ "include": "#generic-parameters" },
+				{ "include": "#parameter-list" },
+				{ "include": "#heritage" },
+				{ "include": "#class-body" }
+			]
+		},
+
 		"cast-expression": {
 			"comment": "`expr as Type` cast. The `as` used in imports is handled inside #import-declaration.",
-			"match": "(?<![._$[:alnum:]])(as)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*)",
-			"captures": {
-				"1": { "name": "keyword.control.cast.vn" },
-				"2": { "name": "entity.name.type.vn" }
-			}
+			"patterns": [
+				{
+					"match": "(?<![._$[:alnum:]])(as)(?![_$[:alnum:]])\\s+([_$[:alpha:]][_$[:alnum:]]*)",
+					"captures": {
+						"1": { "name": "keyword.control.cast.vn" },
+						"2": { "name": "entity.name.type.vn" }
+					}
+				},
+				{
+					"begin": "(?<![._$[:alnum:]])(as)(?![_$[:alnum:]])\\s*(?=\\{)",
+					"beginCaptures": { "1": { "name": "keyword.control.cast.vn" } },
+					"end": "(?<=\\})",
+					"patterns": [ { "include": "#type-object" } ]
+				}
+			]
 		},
 
 		"match-wildcard": {
