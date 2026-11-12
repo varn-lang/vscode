@@ -26,15 +26,21 @@ function member() {
     });
 }
 
+function stubClass() {
+    return new Proxy(class {}, {
+        get: (target, key) => (key in target || typeof key !== "string" ? target[key] : member()),
+    });
+}
+
 const stub = {};
 for (const name of names) {
-    stub[name] = /^[A-Z]/.test(name) ? class {} : member();
+    stub[name] = /^[A-Z]/.test(name) ? stubClass() : member();
 }
 
 const vscodeStub = new Proxy(stub, {
     get: (target, key) => {
         if (key in target || typeof key !== "string") return target[key];
-        return /^[A-Z]/.test(key) ? class {} : member();
+        return /^[A-Z]/.test(key) ? stubClass() : member();
     },
 });
 
