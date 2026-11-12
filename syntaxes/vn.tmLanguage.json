@@ -209,11 +209,11 @@
 				"1": { "name": "storage.type.vn" },
 				"2": { "name": "entity.name.type.vn" }
 			},
-			"end": "(?=[;])",
+			"end": "(?=;)|(?=\\})|(?=^\\s*(?:export|declare|type|interface|class|enum|function|async|const|let|var|import|namespace|module|abstract|extension)\\b)|(?=^\\s*@)",
 			"patterns": [
 				{ "include": "#comment" },
 				{ "include": "#generic-parameters" },
-				{ "match": "=", "name": "keyword.operator.assignment.vn" },
+				{ "match": "=(?!>)", "name": "keyword.operator.assignment.vn" },
 				{ "include": "#type" }
 			]
 		},
@@ -368,15 +368,72 @@
 				},
 				{ "include": "#string" },
 				{ "include": "#number" },
+				{ "include": "#type-object" },
+				{ "include": "#type-brackets" },
+				{ "include": "#type-parens" },
 				{ "include": "#generic-arguments" },
+				{ "match": ":", "name": "keyword.operator.ternary.vn" },
 				{ "match": "\\|", "name": "keyword.operator.type.union.vn" },
 				{ "match": "&", "name": "keyword.operator.type.intersection.vn" },
 				{ "match": "\\?", "name": "keyword.operator.type.optional.vn" },
 				{ "match": "\\[\\]", "name": "punctuation.definition.array.vn" },
 				{ "match": "=>", "name": "keyword.operator.type.arrow.vn" },
 				{ "match": "[_$[:alpha:]][_$[:alnum:]]*", "name": "entity.name.type.vn" },
-				{ "match": "[(),.]", "name": "punctuation.type.vn" }
+				{ "match": "[,.]", "name": "punctuation.type.vn" }
 			]
+		},
+
+		"type-object": {
+			"comment": "Object type literal and mapped type body: `{ a: int, b?: str }`, `{ [K in keyof T]: T[K] }`.",
+			"name": "meta.type.object.vn",
+			"begin": "\\{",
+			"beginCaptures": { "0": { "name": "punctuation.definition.type.object.begin.vn" } },
+			"end": "\\}",
+			"endCaptures": { "0": { "name": "punctuation.definition.type.object.end.vn" } },
+			"patterns": [
+				{ "include": "#comment" },
+				{ "include": "#type-member" },
+				{ "include": "#type" },
+				{ "match": "[;,]", "name": "punctuation.separator.type.vn" }
+			]
+		},
+
+		"type-brackets": {
+			"comment": "Tuple, indexed access, index signature and mapped-type key: `[int, str]`, `T[K]`, `[K in keyof T]`.",
+			"begin": "\\[",
+			"beginCaptures": { "0": { "name": "punctuation.definition.type.brackets.begin.vn" } },
+			"end": "\\]",
+			"endCaptures": { "0": { "name": "punctuation.definition.type.brackets.end.vn" } },
+			"patterns": [
+				{ "include": "#type-member" },
+				{ "include": "#type" }
+			]
+		},
+
+		"type-parens": {
+			"comment": "Parenthesized type and function type parameters: `(a: int, ...rest: str[]) => void`.",
+			"begin": "\\(",
+			"beginCaptures": { "0": { "name": "punctuation.definition.type.parens.begin.vn" } },
+			"end": "\\)",
+			"endCaptures": { "0": { "name": "punctuation.definition.type.parens.end.vn" } },
+			"patterns": [
+				{ "match": "\\.\\.\\.", "name": "keyword.operator.spread.vn" },
+				{ "include": "#type-member" },
+				{ "include": "#type" }
+			]
+		},
+
+		"type-member": {
+			"comment": "A named member or parameter inside a type: `name?: Type`, `readonly id: int`.",
+			"begin": "(?:(readonly)\\s+)?([_$[:alpha:]][_$[:alnum:]]*)(\\?)?\\s*(:)",
+			"beginCaptures": {
+				"1": { "name": "keyword.operator.type.vn" },
+				"2": { "name": "variable.other.property.vn" },
+				"3": { "name": "keyword.operator.type.optional.vn" },
+				"4": { "name": "punctuation.separator.annotation.vn" }
+			},
+			"end": "(?=[;,})\\]])",
+			"patterns": [ { "include": "#type" } ]
 		},
 
 		"generic-parameters": {
