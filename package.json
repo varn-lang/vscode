@@ -2,7 +2,7 @@
   "name": "varn-language",
   "displayName": "Varn Language Support",
   "description": "Syntax highlighting, diagnostics, hover, go-to-definition, completions, rename, run and debug for the Varn language.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publisher": "Varn",
   "license": "MIT",
   "repository": {
@@ -10,11 +10,12 @@
     "url": "https://github.com/varn-lang/varn"
   },
   "scripts": {
-    "build": "vsce package --allow-missing-repository"
+    "bundle": "rollup -c",
+    "build": "rollup -c && vsce package --no-dependencies --allow-missing-repository"
   },
   "icon": "icon.png",
   "engines": {
-    "vscode": "^1.82.0"
+    "vscode": "^1.96.0"
   },
   "categories": [
     "Programming Languages",
@@ -22,24 +23,42 @@
     "Themes"
   ],
   "activationEvents": [
+    "onLanguage:varn",
     "onCommand:Varn.restartServer",
     "onCommand:Varn.stopServer",
     "onCommand:Varn.showServerLog",
-    "onLanguage:varn",
     "onCommand:Varn.runFile",
     "onCommand:Varn.runFileInTerminal",
+    "onCommand:Varn.runMain",
+    "onCommand:Varn.runTest",
+    "onCommand:Varn.runBenchmark",
+    "onCommand:Varn.checkFile",
+    "onCommand:Varn.buildFile",
+    "onCommand:Varn.showBytecode",
     "onCommand:Varn.showAst",
     "onCommand:Varn.showTokens",
-    "onCommand:Varn.disasmFile",
     "onCommand:Varn.benchFile",
+    "onCommand:Varn.runRepl",
+    "onCommand:Varn.pkgInstall",
+    "onCommand:Varn.pkgUpdate",
+    "onCommand:Varn.pkgAdd",
+    "onCommand:Varn.pkgRemove",
+    "onCommand:Varn.cacheClean",
+    "onCommand:Varn.initProject",
     "onCommand:Varn.doctor",
     "onCommand:Varn.installRuntime",
     "onCommand:Varn.runWithPhases",
     "onCommand:Varn.toggleBuildMode",
     "onCommand:Varn.reloadExtension",
-    "onCommand:Varn.showActionsHub"
+    "onCommand:Varn.showActionsHub",
+    "onCommand:varn.openBytecodeViewer",
+    "onCommand:varn.openSSAViewer",
+    "onCommand:varn.diffBytecode",
+    "onCommand:varn.openStdModule",
+    "onCommand:varn.openVisualInspector"
   ],
-  "main": "./extension.js",
+  "main": "./dist/extension.cjs",
+  "type": "module",
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -94,16 +113,38 @@
       {
         "language": "varn",
         "scopes": {
-          "type": ["entity.name.type", "support.type.primitive.vn"],
-          "class": ["entity.name.type.class", "support.class.vn"],
-          "variable": ["variable.other.readwrite.vn"],
-          "parameter": ["variable.parameter.vn"],
-          "property": ["variable.other.property.vn"],
-          "function": ["entity.name.function.vn"],
-          "enumMember": ["variable.other.enummember.vn"],
-          "namespace": ["entity.name.namespace.vn"],
-          "interface": ["entity.name.type.interface.vn"],
-          "typeParameter": ["entity.name.type.parameter.vn"]
+          "type": [
+            "entity.name.type",
+            "support.type.primitive.vn"
+          ],
+          "class": [
+            "entity.name.type.class",
+            "support.class.vn"
+          ],
+          "variable": [
+            "variable.other.readwrite.vn"
+          ],
+          "parameter": [
+            "variable.parameter.vn"
+          ],
+          "property": [
+            "variable.other.property.vn"
+          ],
+          "function": [
+            "entity.name.function.vn"
+          ],
+          "enumMember": [
+            "variable.other.enummember.vn"
+          ],
+          "namespace": [
+            "entity.name.namespace.vn"
+          ],
+          "interface": [
+            "entity.name.type.interface.vn"
+          ],
+          "typeParameter": [
+            "entity.name.type.parameter.vn"
+          ]
         }
       }
     ],
@@ -114,15 +155,10 @@
         "path": "./icons/varn-icons.json"
       }
     ],
-    "breakpoints": [
-      {
-        "language": "varn"
-      }
-    ],
     "debuggers": [
       {
         "type": "Varn",
-        "label": "Varn",
+        "label": "Varn Debug",
         "languages": [
           "varn"
         ],
@@ -130,42 +166,32 @@
           {
             "type": "Varn",
             "request": "launch",
-            "name": "Run Varn File",
+            "name": "Debug Varn File",
             "program": "${file}",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "verbose": false,
-            "debugPhases": []
+            "stopOnEntry": false
           }
         ],
         "configurationSnippets": [
           {
-            "label": "Varn: Run file",
-            "description": "Run the current Varn file",
+            "label": "Varn: Debug file",
+            "description": "Debug the current Varn file with breakpoints and stepping",
             "body": {
               "type": "Varn",
               "request": "launch",
-              "name": "Run Varn File",
+              "name": "Debug Varn File",
               "program": "^\"\\${file}\"",
-              "args": [],
-              "cwd": "^\"\\${workspaceFolder}\"",
-              "verbose": false,
-              "debugPhases": []
+              "stopOnEntry": false
             }
           },
           {
-            "label": "Varn: Run with AST dump",
-            "description": "Run and print the AST",
+            "label": "Varn: Debug file (stop on entry)",
+            "description": "Debug the current Varn file, stopping on program entry",
             "body": {
               "type": "Varn",
               "request": "launch",
-              "name": "Varn ÔÇô AST dump",
+              "name": "Debug Varn File (entry)",
               "program": "^\"\\${file}\"",
-              "cwd": "^\"\\${workspaceFolder}\"",
-              "verbose": true,
-              "debugPhases": [
-                "ast"
-              ]
+              "stopOnEntry": true
             }
           }
         ],
@@ -177,58 +203,39 @@
             "properties": {
               "program": {
                 "type": "string",
-                "description": "Absolute path to the .Varn file to run.",
+                "description": "Absolute path to the .vn file to debug.",
                 "default": "${file}"
               },
-              "args": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Extra arguments passed after -- to the Varn program.",
-                "default": []
-              },
-              "cwd": {
-                "type": "string",
-                "description": "Working directory for the Varn process.",
-                "default": "${workspaceFolder}"
-              },
-              "verbose": {
+              "stopOnEntry": {
                 "type": "boolean",
-                "description": "Print stage-level progress messages (--verbose).",
+                "description": "Stop on program entry.",
                 "default": false
-              },
-              "noRun": {
-                "type": "boolean",
-                "description": "Compile but skip execution (--noRun).",
-                "default": false
-              },
-              "debugPhases": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "enum": [
-                    "tokens",
-                    "ast",
-                    "bytecode",
-                    "symbols",
-                    "binds",
-                    "modules",
-                    "types",
-                    "errors",
-                    "trace",
-                    "calls",
-                    "consts",
-                    "scope",
-                    "graph"
-                  ]
-                },
-                "description": "Debug phases to enable (--debug=phase1,phase2,...).",
-                "default": []
               }
             }
           }
         }
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "varn.bytecode",
+        "displayName": "Varn Bytecode",
+        "selector": [
+          {
+            "filenamePattern": "*.vn"
+          }
+        ],
+        "priority": "option"
+      },
+      {
+        "viewType": "varn.ssa",
+        "displayName": "Varn SSA",
+        "selector": [
+          {
+            "filenamePattern": "*.vn"
+          }
+        ],
+        "priority": "option"
       }
     ],
     "commands": [
@@ -394,6 +401,18 @@
         "icon": "$(graph)"
       },
       {
+        "command": "varn.diffBytecode",
+        "title": "Diff Source vs Bytecode",
+        "category": "Varn",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "varn.openStdModule",
+        "title": "Open Stdlib Module (readonly)",
+        "category": "Varn",
+        "icon": "$(library)"
+      },
+      {
         "command": "varn.runMain",
         "title": "Run Main Function",
         "category": "Varn",
@@ -416,7 +435,10 @@
       {
         "name": "varn",
         "owner": "varn",
-        "fileLocation": ["relative", "${workspaceFolder}"],
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
         "pattern": {
           "regexp": "^(.*?):(\\d+):(\\d+):\\s+(error|warning|info):\\s+(.*)$",
           "file": 1,
@@ -430,7 +452,9 @@
     "taskDefinitions": [
       {
         "type": "varn",
-        "required": ["task"],
+        "required": [
+          "task"
+        ],
         "properties": {
           "task": {
             "type": "string",
@@ -634,7 +658,10 @@
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^20.0.0",
-    "@types/vscode": "^1.82.0"
+    "@types/vscode": "^1.96.0",
+    "rollup": "^4.64.0"
   }
 }

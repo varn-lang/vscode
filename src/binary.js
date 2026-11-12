@@ -1,10 +1,9 @@
-"use strict";
-
-const vscode = require("vscode");
-const path = require("path");
-const fs = require("fs");
-const { BIN_EXT } = require("./constants");
-const { varnHomeBinPath, findOnPath } = require("./utils");
+import * as vscode from "vscode";
+import * as os from "node:os";
+import * as path from "node:path";
+import * as fs from "node:fs";
+import { BIN_EXT } from "./constants.js";
+import { varnHomeBinPath, findOnPath } from "./utils.js";
 
 /**
  * Generate a list of candidate paths for a binary.
@@ -12,9 +11,9 @@ const { varnHomeBinPath, findOnPath } = require("./utils");
  * @param {string} binName
  * @returns {string[]}
  */
-function getBinaryCandidates(context, binName) {
+export function getBinaryCandidates(context, binName) {
     const candidates = [];
-    const mode = vscode.workspace.getConfiguration("Varn").get("buildMode", "debug");
+    const mode = vscode.workspace.getConfiguration("Varn").get("buildMode", "release");
 
     // 1. VARN_HOME
     const homeBin = varnHomeBinPath(binName);
@@ -52,9 +51,12 @@ function getBinaryCandidates(context, binName) {
  * @param {vscode.ExtensionContext} context
  * @returns {string | undefined}
  */
-function resolveCliPath(context) {
+export function resolveCliPath(context) {
     const override = vscode.workspace.getConfiguration("Varn").get("cli.path");
-    if (override && fs.existsSync(override)) return override;
+    if (override) {
+        if (fs.existsSync(override)) return override;
+        vscode.window.showWarningMessage(`Varn.cli.path not found: ${override}. Falling back to auto-detect.`);
+    }
 
     const binName = `vn${BIN_EXT}`;
     const found = getBinaryCandidates(context, binName).find((p) => fs.existsSync(p));
@@ -63,16 +65,39 @@ function resolveCliPath(context) {
     return findOnPath(binName);
 }
 
-/**
- * The executable that runs the language server: `vn-shadow` when it sits next
- * to `vn`, so the server runs from a private copy and rebuilding `vn` never
- * hits a locked exe. Falls back to `vn` itself.
- * @param {string} cliPath
- * @returns {string}
- */
-function resolveServerPath(cliPath) {
-    const shadow = path.join(path.dirname(cliPath), `vn-shadow${BIN_EXT}`);
-    return fs.existsSync(shadow) ? shadow : cliPath;
+export function resolveServerPath(cliPath) {
+    try {
+        const tag = fs.statSync(cliPath).mtimeMs.toString(36).replace(".", "");
+        const dir = path.join(os.tmpdir(), "varn-dev-server");
+        const dest = path.join(dir, `vn-${tag}${BIN_EXT}`);
+        if (!fs.existsSync(dest)) {
+            fs.mkdirSync(dir, { recursive: true });
+            fs.copyFileSync(cliPath, dest);
+            pruneDevCopies(dir, dest);
+        }
+        return dest;
+    } catch {}
+    return cliPath;
+}
+
+function pruneDevCopies(dir, keep) {
+    let entries;
+    try {
+        entries = fs.readdirSync(dir);
+    } catch {
+        return;
+    }
+    const copies = entries
+        .filter((n) => n.startsWith("vn-") && n.endsWith(BIN_EXT))
+        .map((n) => path.join(dir, n))
+        .filter((p) => p !== keep)
+        .sort()
+        .reverse();
+    for (const extra of copies.slice(1)) {
+        try {
+            fs.unlinkSync(extra);
+        } catch {}
+    }
 }
 
 /**
@@ -83,10 +108,4 @@ function resolveServerPath(cliPath) {
  * binaries could disagree about which std is valid. One binary makes that
  * impossible.
  */
-const LSP_ARGS = ["lsp"];
-
-module.exports = {
-    resolveCliPath,
-    resolveServerPath,
-    LSP_ARGS,
-};
+export const LSP_ARGS = ["lsp"];

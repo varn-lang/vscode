@@ -1,8 +1,6 @@
-"use strict";
-
-const vscode = require("vscode");
-const path = require("path");
-const { runInOutputChannel, resolveCliPath } = require("./base");
+import * as vscode from "vscode";
+import path from "node:path";
+import { runInOutputChannel, resolveCliPath } from "./base.js";
 
 /**
  * Get workspace root directory path.
@@ -89,7 +87,7 @@ async function runPkgRemove(context) {
     runInOutputChannel(cliPath, ["pkg", "remove", alias], cwd, `Pkg: Remove ${alias}`);
 }
 
-module.exports = {
+export {
     runPkgInstall,
     runPkgUpdate,
     runPkgAdd,

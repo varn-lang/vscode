@@ -1,10 +1,8 @@
-"use strict";
-
-const vscode = require("vscode");
-const path = require("path");
-const { spawn } = require("child_process");
-const { resolveCliPath } = require("../binary");
-const { stripAnsi } = require("../utils");
+import * as vscode from "vscode";
+import path from "node:path";
+import { spawn } from "node:child_process";
+import { resolveCliPath } from "../binary.js";
+import { stripAnsi } from "../utils.js";
 
 class VarnTestController {
     /** @param {vscode.ExtensionContext} context */
@@ -28,13 +26,17 @@ class VarnTestController {
             "Run Tests",
             vscode.TestRunProfileKind.Run,
             (req, tok) => this.runHandler(req, tok, false),
+            true,
+            undefined,
             true
         );
 
         this.ctrl.createRunProfile(
-            "Benchmark",
+            "Benchmark File",
             vscode.TestRunProfileKind.Run,
             (req, tok) => this.runHandler(req, tok, true),
+            false,
+            undefined,
             false
         );
 
@@ -79,25 +81,34 @@ class VarnTestController {
 
             const currentChildIds = new Set();
             const lines = text.split(/\r?\n/);
+            let pendingTestDecorator = null;
 
             for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
                 const line = lines[lineIdx];
-                // Match function declarations: fn test_* or fn bench_* or test_*()
-                const match = line.match(/\bfn\s+(test_[a-zA-Z0-9_]+|bench_[a-zA-Z0-9_]+)/);
+                if (/^\s*@test\b/.test(line)) {
+                    pendingTestDecorator = lineIdx;
+                    continue;
+                }
+                const match = line.match(/\bfn\s+([a-zA-Z0-9_]+)/);
                 if (match) {
                     const fnName = match[1];
                     const col = line.indexOf(fnName);
-                    const isBench = fnName.startsWith("bench_");
+                    const isTest = pendingTestDecorator !== null || fnName.startsWith("test_");
+                    pendingTestDecorator = null;
+                    if (!isTest) continue;
                     const testId = `${fileId}::${fnName}`;
                     currentChildIds.add(testId);
 
                     let testItem = fileItem.children.get(testId);
                     if (!testItem) {
-                        const label = isBench ? `⏱ ${fnName}` : `▶ ${fnName}`;
-                        testItem = this.ctrl.createTestItem(testId, label, uri);
+                        testItem = this.ctrl.createTestItem(testId, `▶ ${fnName}`, uri);
                         fileItem.children.add(testItem);
                     }
                     testItem.range = new vscode.Range(lineIdx, col, lineIdx, col + fnName.length);
+                    continue;
+                }
+                if (line.trim() !== "" && !/^\s*@/.test(line)) {
+                    pendingTestDecorator = null;
                 }
             }
 
@@ -136,27 +147,30 @@ class VarnTestController {
             if (request.exclude?.includes(item)) continue;
 
             if (item.children.size > 0) {
-                item.children.forEach((child) => queue.push(child));
+                const fileUri = item.uri;
+                if (fileUri) {
+                    await this.runFile(item, fileUri, run, token, isBench);
+                }
                 continue;
             }
 
-            // Execute single test
-            run.started(item);
-            const start = Date.now();
+            await this.runFile(item, item.uri, run, token, isBench);
+        }
 
-            const uri = item.uri;
-            if (!uri) {
-                run.skipped(item);
-                continue;
-            }
+        run.end();
+    }
 
-            const fnName = item.id.split("::")[1] || "";
-            const filePath = uri.fsPath;
-            const subCmd = isBench ? "bench" : "test";
-            const args = [subCmd, filePath];
-            if (fnName) {
-                args.push("--filter", fnName);
-            }
+    async runFile(item, uri, run, token, isBench) {
+        if (!uri || token.isCancellationRequested) {
+            run.skipped(item);
+            return;
+        }
+        run.started(item);
+        const start = Date.now();
+        const cliPath = resolveCliPath(this.context);
+        const filePath = uri.fsPath;
+        const subCmd = isBench ? "bench" : "test";
+        const args = [subCmd, filePath];
 
             await new Promise((resolve) => {
                 const proc = spawn(cliPath, args, { cwd: path.dirname(filePath) });
@@ -197,9 +211,6 @@ class VarnTestController {
                     resolve();
                 });
             });
-        }
-
-        run.end();
     }
 
     dispose() {
@@ -214,6 +225,6 @@ function registerTestController(context) {
     return new VarnTestController(context);
 }
 
-module.exports = {
+export {
     registerTestController
 };

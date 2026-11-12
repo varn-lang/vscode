@@ -1,60 +1,64 @@
-"use strict";
+import * as vscode from "vscode";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { State } from "vscode-languageclient/node";
 
-const vscode = require("vscode");
-const fs = require("fs");
-const path = require("path");
-const { State } = require("vscode-languageclient/node");
-
-const { resolveCliPath, resolveServerPath, LSP_ARGS } = require("./binary");
-const {
+import { resolveCliPath, resolveServerPath, LSP_ARGS } from "./binary.js";
+import {
     initStatusBar,
     setLspStatus,
     setStatusProvider,
     disposeStatusBar,
-    showActionsHub
-} = require("./status");
-const { createClient, stopClient, getClient } = require("./client");
-const { VarnDebugAdapterFactory, VarnDebugConfigProvider } = require("./debug");
+} from "./status.js";
+import { showActionsHub } from "./commands/hub.js";
+import { createClient, stopClient, getClient } from "./client.js";
+import { initLanguageFeatures, setLanguageState, refreshLanguageStatus } from "./language.js";
+import { VarnDebugAdapterFactory, VarnDebugConfigProvider } from "./debug.js";
 
-const { VarnStatusProvider } = require("./views/status_view");
-const { VarnActionsProvider } = require("./views/actions_view");
-const { VarnAstProvider } = require("./views/ast_view");
+import { VarnStatusProvider } from "./views/status_view.js";
+import { VarnActionsProvider } from "./views/actions_view.js";
+import { VarnAstProvider } from "./views/ast_view.js";
 
-const {
+import {
     runVarnFile,
     runCheck,
     runBuild,
     runBytecode,
     runBench,
     runWithPhases,
+    runWithDebugPhase,
     toggleBuildMode,
     openBytecodeViewer,
     openSSAViewer,
+    diffBytecode,
     openVisualInspector,
     runTest,
     runBenchmark
-} = require("./commands/execution");
+} from "./commands/execution.js";
 
-const {
+import {
     runPkgInstall,
     runPkgUpdate,
     runPkgAdd,
     runPkgRemove
-} = require("./commands/packages");
+} from "./commands/packages.js";
 
-const {
+import {
     runRepl,
     runDoctor,
     runCacheClean,
     runInitProject,
     runInstaller
-} = require("./commands/utilities");
+} from "./commands/utilities.js";
 
-const { registerVirtualDocumentProviders } = require("./providers/virtual_documents");
-const { registerTaskProvider } = require("./tasks");
-const { registerTestController } = require("./testing/test_controller");
+import { registerVirtualDocumentProviders } from "./providers/virtual_documents.js";
+import { registerTaskProvider } from "./tasks.js";
+import { registerTestController } from "./testing/test_controller.js";
+import { registerVisualInspectorSerializer } from "./views/visual_debugger.js";
+import { registerInspectEditors } from "./editors/inspect.js";
+import { VarnStdFileSystemProvider, registerStdlibFeatures, openStdModule } from "./features/stdlibFs.js";
 
-class ExtensionManager {
+export class ExtensionManager {
     constructor(context) {
         this._context = context;
         this._disposables = [];
@@ -86,6 +90,7 @@ class ExtensionManager {
         this._startTreeViews();
         this._startCommands();
         this._startHotReload();
+        this._startLanguageFeatures();
 
         const client = getClient();
         if (client) {
@@ -99,7 +104,11 @@ class ExtensionManager {
     }
 
     async stop() {
-        this._reloadTimer = null;
+        if (this._reloadTimer) {
+            clearTimeout(this._reloadTimer);
+            this._reloadTimer = null;
+        }
+        this._stopWatchers();
         await stopClient();
         for (const d of this._disposables) {
             try { d.dispose(); } catch {}
@@ -117,6 +126,17 @@ class ExtensionManager {
 
     _startStatusBar() {
         initStatusBar(this._context);
+    }
+
+    _startLanguageFeatures() {
+        try {
+            initLanguageFeatures(this._context);
+            this._pushDisposable(
+                vscode.workspace.onDidChangeConfiguration((e) => {
+                    if (e.affectsConfiguration("Varn")) refreshLanguageStatus();
+                })
+            );
+        } catch {}
     }
 
     // ── Language Server ────────────────────────────────────────────────
@@ -138,9 +158,9 @@ class ExtensionManager {
 
         const client = createClient(resolveServerPath(lspPath), this._lspOutputChannel, LSP_ARGS);
         client.onDidChangeState(({ newState }) => {
-            if      (newState === State.Running)  setLspStatus("running");
-            else if (newState === State.Starting) setLspStatus("starting");
-            else                                  setLspStatus("stopped");
+            if      (newState === State.Running)  { setLspStatus("running"); setLanguageState("running"); }
+            else if (newState === State.Starting) { setLspStatus("starting"); setLanguageState("starting"); }
+            else                                  { setLspStatus("stopped"); setLanguageState("stopped"); }
         });
     }
 
@@ -190,6 +210,10 @@ class ExtensionManager {
         const virtualDocs = registerVirtualDocumentProviders();
         const taskProvider = registerTaskProvider(ctx);
         const testController = registerTestController(ctx);
+        const visualSerializer = registerVisualInspectorSerializer(ctx.extensionUri);
+        const inspectEditors = registerInspectEditors(ctx);
+        const stdFs = new VarnStdFileSystemProvider();
+        const stdlibFeatures = registerStdlibFeatures(ctx, stdFs);
 
         const registerCmd = (name, handler) => {
             const lowerName = name.startsWith("Varn.") ? `varn.${name.slice(5)}` : name;
@@ -204,6 +228,13 @@ class ExtensionManager {
             virtualDocs,
             taskProvider,
             testController,
+            visualSerializer,
+            inspectEditors,
+            stdlibFeatures,
+
+            ...registerCmd("varn.openStdModule", () => {
+                openStdModule();
+            }),
 
             ...registerCmd("varn.reloadExtension", async () => {
                 await this.restart();
@@ -217,17 +248,25 @@ class ExtensionManager {
             ...registerCmd("varn.restartServer", async () => {
                 await stopClient();
                 const lspPath = resolveCliPath(ctx);
-                if (!lspPath) return;
+                if (!lspPath) {
+                    vscode.window.showErrorMessage("vn binary not found. Set Varn.cli.path.");
+                    return;
+                }
                 setLspStatus("starting");
                 const ch = this._lspOutputChannel
                     || vscode.window.createOutputChannel("Varn Language Server");
                 const client = createClient(resolveServerPath(lspPath), ch, LSP_ARGS);
                 client.onDidChangeState(({ newState }) => {
-                    if      (newState === State.Running)  setLspStatus("running");
-                    else if (newState === State.Starting) setLspStatus("starting");
-                    else                                  setLspStatus("stopped");
+                    if      (newState === State.Running)  { setLspStatus("running"); setLanguageState("running"); }
+                    else if (newState === State.Starting) { setLspStatus("starting"); setLanguageState("starting"); }
+                    else                                  { setLspStatus("stopped"); setLanguageState("stopped"); }
                 });
-                await client.start();
+                try {
+                    await client.start();
+                } catch (err) {
+                    setLspStatus("stopped");
+                    vscode.window.showErrorMessage(`Varn Language Server failed to start: ${err?.message ?? err}`);
+                }
             }),
 
             ...registerCmd("varn.stopServer", async () => {
@@ -276,7 +315,6 @@ class ExtensionManager {
             }),
 
             ...registerCmd("varn.showSSA", (uri) => {
-                const { runWithDebugPhase } = require("./commands/execution");
                 runWithDebugPhase(ctx, uri, ["bytecode"], "SSA");
             }),
 
@@ -284,17 +322,19 @@ class ExtensionManager {
                 openSSAViewer(ctx, uri);
             }),
 
+            ...registerCmd("varn.diffBytecode", (uri) => {
+                diffBytecode(ctx, uri);
+            }),
+
             ...registerCmd("varn.openVisualInspector", (uri) => {
                 openVisualInspector(ctx, uri);
             }),
 
             ...registerCmd("varn.showAst", (uri) => {
-                const { runWithDebugPhase } = require("./commands/execution");
                 runWithDebugPhase(ctx, uri, ["ast"], "AST");
             }),
 
             ...registerCmd("varn.showTokens", (uri) => {
-                const { runWithDebugPhase } = require("./commands/execution");
                 runWithDebugPhase(ctx, uri, ["tokens"], "Tokens");
             }),
 
@@ -398,12 +438,6 @@ class ExtensionManager {
             } catch {}
         }
 
-        // Rebuilding `vn` replaces the exe the server runs from (or the one
-        // `vn-shadow` copies on the next start); nothing used to notice, so every rebuild
-        // needed a manual "Varn: Restart Language Server". Watching its
-        // directory and matching on the exact filename catches that the same
-        // way the .js watchers above catch a source edit — one mechanism,
-        // one debounce, reused rather than duplicated.
         if (config.get("hotReload.watchBinary", true) && this._lspPath) {
             const binDir = path.dirname(this._lspPath);
             const binName = path.basename(this._lspPath);
@@ -430,8 +464,6 @@ class ExtensionManager {
         this._reloadTimer = setTimeout(() => {
             this._reloadTimer = null;
             this.restart();
-        }, 300);
+        }, 800);
     }
 }
-
-module.exports = { ExtensionManager };

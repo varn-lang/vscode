@@ -1,9 +1,7 @@
-"use strict";
+import * as vscode from "vscode";
+import { resolveCliPath } from "./binary.js";
 
-const vscode = require("vscode");
-const { resolveCliPath } = require("./binary");
-
-class VarnTaskProvider {
+export class VarnTaskProvider {
     /** @param {vscode.ExtensionContext} context */
     constructor(context) {
         this.context = context;
@@ -47,7 +45,7 @@ class VarnTaskProvider {
             new vscode.ProcessExecution(cliPath, ["check"]),
             "$varn"
         );
-        checkTask.group = vscode.TaskGroup.Clean;
+        checkTask.group = vscode.TaskGroup.Build;
         tasks.push(checkTask);
 
         // 3. Test Task
@@ -66,11 +64,7 @@ class VarnTaskProvider {
     }
 }
 
-function registerTaskProvider(context) {
+export function registerTaskProvider(context) {
     const provider = new VarnTaskProvider(context);
     return vscode.tasks.registerTaskProvider("varn", provider);
 }
-
-module.exports = {
-    registerTaskProvider
-};

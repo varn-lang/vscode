@@ -1,9 +1,8 @@
-"use strict";
-
-const vscode = require("vscode");
-const path = require("path");
-const { resolveTargetFile, runInOutputChannel, resolveCliPath, formatTerminalCommand } = require("./base");
-const { updateBuildModeStatusBar } = require("../status");
+import * as vscode from "vscode";
+import path from "node:path";
+import { resolveTargetFile, runInOutputChannel, resolveCliPath, formatTerminalCommand } from "./base.js";
+import { updateBuildModeStatusBar } from "../status.js";
+import { VarnVisualInspectorPanel } from "../views/visual_debugger.js";
 
 /**
  * Run a Varn file (via vn run).
@@ -160,15 +159,8 @@ async function runWithPhases(context, uri) {
 async function openBytecodeViewer(_context, uri) {
     const file = resolveTargetFile(uri);
     if (!file) return;
-
-    const fileUri = typeof uri === "string" ? uri : (uri ? uri.toString() : vscode.Uri.file(file).toString());
-    const virtualUri = vscode.Uri.parse(`varn-bytecode:${path.basename(file)}.varn-bc?${encodeURIComponent(fileUri)}`);
-    const doc = await vscode.workspace.openTextDocument(virtualUri);
-    await vscode.window.showTextDocument(doc, {
-        viewColumn: vscode.ViewColumn.Beside,
-        preview: true,
-        preserveFocus: true
-    });
+    const fileUri = typeof uri === "string" ? vscode.Uri.parse(uri) : (uri instanceof vscode.Uri ? uri : vscode.Uri.file(file));
+    await vscode.commands.executeCommand("vscode.openWith", fileUri, "varn.bytecode", { viewColumn: vscode.ViewColumn.Beside, preview: true });
 }
 
 /**
@@ -179,15 +171,16 @@ async function openBytecodeViewer(_context, uri) {
 async function openSSAViewer(_context, uri) {
     const file = resolveTargetFile(uri);
     if (!file) return;
+    const fileUri = typeof uri === "string" ? vscode.Uri.parse(uri) : (uri instanceof vscode.Uri ? uri : vscode.Uri.file(file));
+    await vscode.commands.executeCommand("vscode.openWith", fileUri, "varn.ssa", { viewColumn: vscode.ViewColumn.Beside, preview: true });
+}
 
-    const fileUri = typeof uri === "string" ? uri : (uri ? uri.toString() : vscode.Uri.file(file).toString());
-    const virtualUri = vscode.Uri.parse(`varn-ssa:${path.basename(file)}.varn-ssa?${encodeURIComponent(fileUri)}`);
-    const doc = await vscode.workspace.openTextDocument(virtualUri);
-    await vscode.window.showTextDocument(doc, {
-        viewColumn: vscode.ViewColumn.Beside,
-        preview: true,
-        preserveFocus: true
-    });
+async function diffBytecode(_context, uri) {
+    const file = resolveTargetFile(uri);
+    if (!file) return;
+    const fileUri = typeof uri === "string" ? vscode.Uri.parse(uri) : (uri instanceof vscode.Uri ? uri : vscode.Uri.file(file));
+    const virtualUri = vscode.Uri.parse(`varn-bytecode:${path.basename(file)}.varn-bc?${encodeURIComponent(fileUri.toString())}`);
+    await vscode.commands.executeCommand("vscode.diff", fileUri, virtualUri, `Diff ${path.basename(file)} ↔ Bytecode`);
 }
 
 /**
@@ -256,13 +249,12 @@ async function toggleBuildMode() {
  * @param {vscode.Uri | string | undefined} uri
  */
 function openVisualInspector(context, uri) {
-    const { VarnVisualInspectorPanel } = require("../views/visual_debugger");
     const file = resolveTargetFile(uri);
     const fileUri = file ? vscode.Uri.file(file) : vscode.window.activeTextEditor?.document.uri;
     VarnVisualInspectorPanel.createOrShow(context.extensionUri, fileUri);
 }
 
-module.exports = {
+export {
     runVarnFile,
     runCheck,
     runBuild,
@@ -273,6 +265,7 @@ module.exports = {
     toggleBuildMode,
     openBytecodeViewer,
     openSSAViewer,
+    diffBytecode,
     openVisualInspector,
     runTest,
     runBenchmark

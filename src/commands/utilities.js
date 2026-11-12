@@ -1,9 +1,7 @@
-"use strict";
-
-const vscode = require("vscode");
-const path = require("path");
-const fs = require("fs");
-const { runInOutputChannel, resolveCliPath, formatTerminalCommand } = require("./base");
+import * as vscode from "vscode";
+import path from "node:path";
+import fs from "node:fs";
+import { runInOutputChannel, resolveCliPath, formatTerminalCommand } from "./base.js";
 
 /**
  * Get workspace root directory path.
@@ -122,7 +120,7 @@ function runInstaller(context) {
     }
 }
 
-module.exports = {
+export {
     runRepl,
     runDoctor,
     runCacheClean,

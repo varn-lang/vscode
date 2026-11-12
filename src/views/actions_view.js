@@ -1,6 +1,4 @@
-"use strict";
-
-const vscode = require("vscode");
+import * as vscode from "vscode";
 
 class ActionCategoryItem extends vscode.TreeItem {
     constructor(label, collapsibleState) {
@@ -74,6 +72,6 @@ class VarnActionsProvider {
     }
 }
 
-module.exports = {
+export {
     VarnActionsProvider
 };

@@ -1,7 +1,5 @@
-"use strict";
-
-const vscode = require("vscode");
-const { getClient } = require("../client");
+import * as vscode from "vscode";
+import { getClient } from "../client.js";
 
 class VarnVisualInspectorPanel {
     static currentPanel = undefined;
@@ -16,7 +14,7 @@ class VarnVisualInspectorPanel {
             VarnVisualInspectorPanel.currentPanel._panel.reveal(column);
             if (documentUri) {
                 VarnVisualInspectorPanel.currentPanel._documentUri = documentUri;
-                VarnVisualInspectorPanel.currentPanel.refresh();
+                VarnVisualInspectorPanel.currentPanel.scheduleRefresh();
             }
             return;
         }
@@ -27,7 +25,7 @@ class VarnVisualInspectorPanel {
             column,
             {
                 enableScripts: true,
-                retainContextWhenHidden: true,
+                retainContextWhenHidden: false,
                 localResourceRoots: [extensionUri]
             }
         );
@@ -40,6 +38,7 @@ class VarnVisualInspectorPanel {
         this._extensionUri = extensionUri;
         this._documentUri = documentUri || vscode.window.activeTextEditor?.document.uri;
         this._disposables = [];
+        this._refreshTimer = null;
 
         this._update();
 
@@ -79,15 +78,20 @@ class VarnVisualInspectorPanel {
 
         vscode.workspace.onDidSaveTextDocument((doc) => {
             if (this._documentUri && doc.uri.toString() === this._documentUri.toString()) {
-                this.refresh();
+                this.scheduleRefresh();
             }
         }, null, this._disposables);
 
         vscode.workspace.onDidChangeTextDocument((e) => {
             if (this._documentUri && e.document.uri.toString() === this._documentUri.toString()) {
-                this.refresh();
+                this.scheduleRefresh();
             }
         }, null, this._disposables);
+    }
+
+    scheduleRefresh() {
+        if (this._refreshTimer) clearTimeout(this._refreshTimer);
+        this._refreshTimer = setTimeout(() => this.refresh(), 500);
     }
 
     async refresh() {
@@ -119,6 +123,7 @@ class VarnVisualInspectorPanel {
 
     dispose() {
         VarnVisualInspectorPanel.currentPanel = undefined;
+        if (this._refreshTimer) clearTimeout(this._refreshTimer);
         this._panel.dispose();
         while (this._disposables.length) {
             const x = this._disposables.pop();
@@ -127,10 +132,12 @@ class VarnVisualInspectorPanel {
     }
 
     _getHtmlForWebview() {
+        const nonce = String(Date.now().toString(36) + Math.random().toString(36).slice(2));
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Varn Visual CFG & Debug Inspector</title>
     <style>
@@ -582,7 +589,7 @@ class VarnVisualInspectorPanel {
         </div>
     </div>
 
-    <script>
+    <script nonce="${nonce}>
         const vscode = acquireVsCodeApi();
         let globalData = null;
         let activeFuncIndex = 0;
@@ -929,6 +936,19 @@ class VarnVisualInspectorPanel {
     }
 }
 
-module.exports = {
-    VarnVisualInspectorPanel
+function registerVisualInspectorSerializer(extensionUri) {
+    try {
+        return vscode.window.registerWebviewPanelSerializer(VarnVisualInspectorPanel.viewType, {
+            async deserializeWebviewPanel(panel) {
+                VarnVisualInspectorPanel.currentPanel = new VarnVisualInspectorPanel(panel, extensionUri, vscode.window.activeTextEditor?.document.uri);
+            },
+        });
+    } catch {
+        return { dispose() {} };
+    }
+}
+
+export {
+    VarnVisualInspectorPanel,
+    registerVisualInspectorSerializer
 };

@@ -1,7 +1,5 @@
-"use strict";
-
-const path = require("path");
-const fs = require("fs");
+import * as path from "node:path";
+import * as fs from "node:fs";
 
 const ANSI_PATTERN = /\u001b\[[0-9;]*[A-Za-z]/g;
 
@@ -9,7 +7,7 @@ const ANSI_PATTERN = /\u001b\[[0-9;]*[A-Za-z]/g;
  * @param {string} binFile
  * @returns {string | undefined}
  */
-function varnHomeBinPath(binFile) {
+export function varnHomeBinPath(binFile) {
     const home = process.env.VARN_HOME;
     if (!home) return undefined;
     return path.join(home, "bin", binFile);
@@ -19,7 +17,7 @@ function varnHomeBinPath(binFile) {
  * @param {string} executable
  * @returns {string | undefined}
  */
-function findOnPath(executable) {
+export function findOnPath(executable) {
     const pathValue = process.env.PATH;
     if (!pathValue) return undefined;
     const dirs = pathValue.split(path.delimiter);
@@ -36,12 +34,6 @@ function findOnPath(executable) {
  * @param {string} text
  * @returns {string}
  */
-function stripAnsi(text) {
+export function stripAnsi(text) {
     return text.replace(ANSI_PATTERN, "");
 }
-
-module.exports = {
-    varnHomeBinPath,
-    findOnPath,
-    stripAnsi
-};

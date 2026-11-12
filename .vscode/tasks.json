@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "extension: bundle",
+      "type": "shell",
+      "command": "pnpm bundle",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "presentation": { "reveal": "silent", "panel": "dedicated" },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "vn: check lsp",
+      "type": "shell",
+      "command": "cargo check -p varn-lsp -p varn-dap",
+      "options": { "cwd": "${workspaceFolder}/../varn-lang" },
+      "group": "build",
+      "presentation": { "reveal": "silent", "panel": "dedicated" },
+      "problemMatcher": "$rustc"
+    },
+    {
+      "label": "vn: build dev-it",
+      "type": "shell",
+      "command": "cargo build --profile dev-it --bin vn",
+      "options": { "cwd": "${workspaceFolder}/../varn-lang" },
+      "group": "build",
+      "presentation": { "reveal": "silent", "panel": "dedicated" },
+      "problemMatcher": "$rustc"
+    },
+    {
+      "label": "vn: watch check",
+      "type": "shell",
+      "command": "cargo watch -x \"check -p varn-lsp -p varn-dap\"",
+      "options": { "cwd": "${workspaceFolder}/../varn-lang" },
+      "group": "none",
+      "presentation": { "reveal": "never", "panel": "dedicated" },
+      "isBackground": true,
+      "problemMatcher": "$rustc"
+    }
+  ]
+}

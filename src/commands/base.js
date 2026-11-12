@@ -1,10 +1,8 @@
-"use strict";
-
-const vscode = require("vscode");
-const path = require("path");
-const { spawn } = require("child_process");
-const { resolveCliPath } = require("../binary");
-const { stripAnsi } = require("../utils");
+import * as vscode from "vscode";
+import path from "node:path";
+import { spawn } from "node:child_process";
+import { resolveCliPath } from "../binary.js";
+import { stripAnsi } from "../utils.js";
 
 /** @type {vscode.OutputChannel | undefined} */
 let runChannel;
@@ -86,7 +84,7 @@ function formatTerminalCommand(cliPath, args) {
     }
 }
 
-module.exports = {
+export {
     resolveTargetFile,
     runInOutputChannel,
     resolveCliPath,

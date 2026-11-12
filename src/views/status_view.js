@@ -1,8 +1,6 @@
-"use strict";
-
-const vscode = require("vscode");
-const { getLspStatus } = require("../status");
-const { resolveCliPath } = require("../binary");
+import * as vscode from "vscode";
+import { getLspStatus } from "../status.js";
+import { resolveCliPath } from "../binary.js";
 
 class StatusTreeItem extends vscode.TreeItem {
     constructor(label, description, iconName, command) {
@@ -87,6 +85,6 @@ class VarnStatusProvider {
     }
 }
 
-module.exports = {
+export {
     VarnStatusProvider
 };

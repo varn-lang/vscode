@@ -1,12 +1,11 @@
-"use strict";
-
-const vscode = require("vscode");
-const { getClient } = require("../client");
+import * as vscode from "vscode";
+import { getClient } from "../client.js";
 
 class VarnVirtualDocumentProvider {
     constructor() {
         this._onDidChange = new vscode.EventEmitter();
         this.onDidChange = this._onDidChange.event;
+        this._pending = new Map();
     }
 
     refresh(uri) {
@@ -18,7 +17,13 @@ class VarnVirtualDocumentProvider {
     refreshAll() {
         for (const doc of vscode.workspace.textDocuments) {
             if (doc.uri.scheme === "varn-bytecode" || doc.uri.scheme === "varn-ssa") {
-                this._onDidChange.fire(doc.uri);
+                const key = doc.uri.toString();
+                if (this._pending.has(key)) continue;
+                const timer = setTimeout(() => {
+                    this._pending.delete(key);
+                    this._onDidChange.fire(doc.uri);
+                }, 300);
+                this._pending.set(key, timer);
             }
         }
     }
@@ -51,6 +56,7 @@ class VarnVirtualDocumentProvider {
 
 function registerVirtualDocumentProviders() {
     const provider = new VarnVirtualDocumentProvider();
+    let saveTimer = null;
 
     return vscode.Disposable.from(
         vscode.workspace.registerTextDocumentContentProvider("varn-bytecode", provider),
@@ -62,13 +68,14 @@ function registerVirtualDocumentProviders() {
         }),
         vscode.workspace.onDidChangeTextDocument((e) => {
             if (e.document.fileName.endsWith(".vn")) {
-                provider.refreshAll();
+                if (saveTimer) clearTimeout(saveTimer);
+                saveTimer = setTimeout(() => provider.refreshAll(), 500);
             }
         })
     );
 }
 
-module.exports = {
+export {
     VarnVirtualDocumentProvider,
     registerVirtualDocumentProviders
 };

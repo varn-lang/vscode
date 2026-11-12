@@ -1,24 +1,16 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Run Extension",
-            "type": "extensionHost",
-            "request": "launch",
-            "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}",
-                "${workspaceFolder}/../varn-lang/tests"
-            ],
-            "outFiles": [
-                "${workspaceFolder}/extension.js",
-                "${workspaceFolder}/src/**/*.js"
-            ],
-            "env": {
-                "PATH": "${workspaceFolder}\\..\\varn-lang\\target\\debug;${workspaceFolder}\\..\\varn-lang\\target\\release;${env:PATH}"
-            },
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Extension Host (varn-extension)",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "extension: bundle"
+    }
+  ]
 }

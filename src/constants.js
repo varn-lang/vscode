@@ -1,9 +1,3 @@
-"use strict";
+import * as path from "node:path";
 
-const path = require("path");
-
-const BIN_EXT = process.platform === "win32" ? ".exe" : "";
-
-module.exports = {
-    BIN_EXT
-};
+export const BIN_EXT = process.platform === "win32" ? ".exe" : "";

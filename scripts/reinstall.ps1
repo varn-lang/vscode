@@ -5,12 +5,11 @@
 .DESCRIPTION
     Dos problemas de entorno que este script evita:
 
-    1. `vsce` instalado globalmente vía pnpm en esta máquina tiene una
-       instalación incompleta (le faltan los paquetes de `@secretlint/*` que
-       su escaneo de secretos requiere, y falla con "Failed to load rule
-       module"). En vez de depender de esa instalación, este script siempre
-       empaqueta con `npx @vscode/vsce` — una instalación aislada y completa,
-       descargada bajo demanda.
+    1. El bundle se compila con rollup (`pnpm build`: rollup + `vsce
+       package --no-dependencies`). El entry `dist/extension.js` ya lleva
+       empaquetado `vscode-languageclient`, así el .vsix no necesita
+       `node_modules` y se evita el `npm list` de vsce, que truena con
+       el layout de pnpm.
 
     2. VS Code bloquea el folder de una extensión ACTIVA: `code
        --install-extension` truena con EPERM tras ~1000 reintentos si la
@@ -39,10 +38,10 @@ if ($openCode) {
     exit 1
 }
 
-Write-Host "Empaquetando (npx @vscode/vsce)..." -ForegroundColor Cyan
-& npx --yes @vscode/vsce package --allow-missing-repository
+Write-Host "Empaquetando (pnpm build: rollup + vsce)..." -ForegroundColor Cyan
+& pnpm build
 if ($LASTEXITCODE -ne 0) {
-    throw "vsce package falló (exit $LASTEXITCODE)"
+    throw "pnpm build falló (exit $LASTEXITCODE)"
 }
 
 $vsixName = (Get-Content package.json | ConvertFrom-Json).name

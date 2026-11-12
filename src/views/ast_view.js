@@ -1,12 +1,10 @@
-"use strict";
+import * as vscode from "vscode";
+import { spawn } from "node:child_process";
+import { resolveCliPath } from "../binary.js";
+import { stripAnsi } from "../utils.js";
+import path from "node:path";
 
-const vscode = require("vscode");
-const { spawn } = require("child_process");
-const { resolveCliPath } = require("../binary");
-const { stripAnsi } = require("../utils");
-const path = require("path");
-
-const { getClient } = require("../client");
+import { getClient } from "../client.js";
 
 class AstNodeItem extends vscode.TreeItem {
     constructor(label, line, children, kind) {
@@ -267,7 +265,7 @@ class VarnAstProvider {
     }
 }
 
-module.exports = {
+export {
     VarnAstProvider
 };
 
