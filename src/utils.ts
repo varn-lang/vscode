@@ -24,3 +24,7 @@ export function findOnPath(executable: string): string | undefined {
 export function stripAnsi(text: string): string {
     return text.replace(ANSI_PATTERN, "");
 }
+
+export function errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+}
