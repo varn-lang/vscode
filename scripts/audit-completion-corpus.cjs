@@ -1,6 +1,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const { Rpc } = require("./lib/lsp-client.cjs");
+const { identifierReferences } = require("./lib/identifier-references.cjs");
 
 const args = process.argv.slice(2);
 const flag = (name, fallback) => (args.includes(name) ? Number(args[args.indexOf(name) + 1]) : fallback);
@@ -9,6 +10,8 @@ const perFile = flag("--per-file", 6);
 const maxFiles = flag("--limit", 40);
 const examples = flag("--examples", 25);
 const minimum = flag("--min", 0);
+const identifiers = args.includes("--identifiers");
+const prefixLength = flag("--prefix", 2);
 const vn = process.env.VN_CLI_PATH;
 if (!vn || !fs.existsSync(vn)) {
     console.error("Set VN_CLI_PATH to a vn binary.");
@@ -65,24 +68,26 @@ function memberAccesses(text) {
     let checked = 0;
     for (const file of files) {
         const text = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
-        const picks = memberAccesses(text);
+        const picks = identifiers ? identifierReferences(text) : memberAccesses(text);
         const step = Math.max(1, Math.floor(picks.length / perFile));
         const sample = picks.filter((_, i) => i % step === 0).slice(0, perFile);
         for (const access of sample) {
             const lines = text.split("\n");
             const original = lines[access.line];
-            const head = original.slice(0, access.dotColumn + 1);
+            const keep = identifiers ? access.name.slice(0, prefixLength) : "";
+            const head = original.slice(0, access.dotColumn + 1) + keep;
             const tail = original.slice(access.dotColumn + 1 + access.name.length);
             lines[access.line] = head + tail;
             const uri = "file:///" + file.split(path.sep).join("/") + `#${checked}`;
             rpc.notify("textDocument/didOpen", { textDocument: { uri, languageId: "vn", version: 1, text: lines.join("\n") } });
             const character = Buffer.from(head, "utf8").length === head.length ? head.length : [...head].reduce((n, ch) => n + ch.length, 0);
             let labels = [];
+            rpc.logs.length = 0;
             for (let attempt = 0; attempt < 10; attempt++) {
                 const response = await rpc.request("textDocument/completion", {
                     textDocument: { uri },
                     position: { line: access.line, character },
-                    context: { triggerKind: 2, triggerCharacter: "." },
+                    context: identifiers ? { triggerKind: 1 } : { triggerKind: 2, triggerCharacter: "." },
                 });
                 const result = response.result;
                 labels = (Array.isArray(result) ? result : (result?.items ?? [])).map((item) => item.label);
@@ -93,14 +98,14 @@ function memberAccesses(text) {
             const present = labels.some((label) => label === access.name || label === `${access.name}:`);
             if (!present) {
                 const log = rpc.logs.filter((l) => l.includes("cmp ")).pop() ?? "";
-                failures.push({ where: `${path.relative(corpus, file)}:${access.line + 1}`, name: access.name, receiver: access.receiver, got: labels.length, log: log.slice(0, 160) });
+                failures.push({ line: lines[access.line].trim().slice(0, 90), where: `${path.relative(corpus, file)}:${access.line + 1}`, name: access.name, receiver: access.receiver, got: labels.length, log: log.slice(0, 160) });
             }
             rpc.notify("textDocument/didClose", { textDocument: { uri } });
         }
     }
     rpc.proc.kill();
     const percent = ((checked - failures.length) / Math.max(checked, 1)) * 100;
-    console.log(`checked ${checked} member accesses in ${files.length} files: ${checked - failures.length} found (${percent.toFixed(1)}%)`);
+    console.log(`checked ${checked} ${identifiers ? "identifier references" : "member accesses"} in ${files.length} files: ${checked - failures.length} found (${percent.toFixed(1)}%)`);
     const byStage = new Map();
     for (const failure of failures) {
         const stage = /dotmiss=([a-z-]+)|via=([a-z-]+)|(postfix-only|general|callargs|pattern|object-keys)/.exec(failure.log);
@@ -109,7 +114,7 @@ function memberAccesses(text) {
     }
     console.log(`failures by stage: ${[...byStage].map(([k, v]) => `${k}=${v}`).join(" ")}`);
     for (const failure of failures.slice(0, examples)) {
-        console.log(`  ${failure.where}  .${failure.name}  after "${failure.receiver}"  [${failure.got} items]  ${failure.log}`);
+        console.log(`  ${failure.where}  ${identifiers ? "" : "."}${failure.name}  | ${failure.line}  [${failure.got}] ${failure.log.slice(0, 110)}`);
     }
     if (percent < minimum) {
         console.error(`coverage ${percent.toFixed(1)}% is below the required ${minimum}%`);

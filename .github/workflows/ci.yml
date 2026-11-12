@@ -107,3 +107,5 @@ jobs:
         run: |
           pnpm run audit:completion:corpus ../varn-lang/std -- --limit 200 --per-file 6 --min 99
           pnpm run audit:completion:corpus ../varn-lang/tests -- --limit 150 --per-file 6 --min 99
+          pnpm run audit:completion:corpus ../varn-lang/tests -- --identifiers --limit 100 --per-file 8 --min 97
+          pnpm run audit:completion:corpus ../varn-lang/std -- --identifiers --limit 100 --per-file 8 --min 97

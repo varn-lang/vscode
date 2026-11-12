@@ -37,4 +37,12 @@ module.exports = [
     { name: "decimal literal is not postfix", code: "const f = 1.‸", excludes: ["let", "const", "if"] },
     { name: "inherited from a core class", code: "class V extends Error { constructor(m: str) { super(m); this.‸ } }", includes: ["message", "name"] },
     { name: "inherited from a core class on an instance", code: "class V2 extends Error {}\nconst v = new V2(\"x\"); v.‸", includes: ["message", "name"] },
+    { name: "locals inside a method", code: "class K { m(alpha: int): int { const beta = 1; return ‸ } }", includes: ["alpha", "beta"] },
+    { name: "locals inside an async method", code: "class K2 { async m(alpha: int): Promise<int> { const beta = 1; return ‸ } }", includes: ["alpha", "beta"] },
+    { name: "locals inside a constructor", code: "class K3 { x: int; constructor(alpha: int) { const beta = 1; this.x = ‸ } }", includes: ["alpha", "beta"] },
+    { name: "locals inside a lambda", code: "const f = (alpha: int): int => { const beta = 1; return ‸ }", includes: ["alpha", "beta"] },
+    { name: "locals in a for header", code: "function g(): void { for (let index = 0; ‸ < 3; index = index + 1) {} }", includes: ["index"] },
+    { name: "locals inside a block", code: "function h(): void { if (true) { const inner = 1; ‸ } }", includes: ["inner"] },
+    { name: "locals after a use as cast", code: "function k(chunk: Person | null): void { const bytes = chunk as Person; ‸ }", includes: ["chunk", "bytes"] },
+    { name: "keyword-looking prefix of a local", code: "function g2(): void { for (let index = 0; in‸ < 3; index = index + 1) {} }", includes: ["index"] },
 ];
