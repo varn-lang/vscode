@@ -8,3 +8,7 @@ tsconfig.json
 pnpm-lock.yaml
 LINGUIST.md
 dist/*.map
+test/**
+out/**
+.vscode-test/**
+pnpm-workspace.yaml
