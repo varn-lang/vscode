@@ -6,6 +6,47 @@ const SCHEME = "vn-std";
 const KINDS = ["std", "core", "runtime"];
 const ZERO_STAT = { ctime: 0, mtime: 0, size: 0 };
 
+const READ_ONLY = "The Varn standard library is read-only.";
+
+interface StdLocation {
+    kind: string;
+    path: string;
+    file: boolean;
+}
+
+function locate(uri: vscode.Uri): StdLocation | null {
+    const [kind, ...rest] = uri.path.split("/").filter(Boolean);
+    if (!kind || !KINDS.includes(kind)) return null;
+    const joined = rest.join("/");
+    const file = joined.endsWith(".vn");
+    return { kind, path: file ? joined.slice(0, -".vn".length) : joined, file };
+}
+
+/** Entries of a directory of the standard library, derived from the flat module list. */
+export function childrenOf(specs: readonly string[], kind: string, directory: string): [string, vscode.FileType][] {
+    const prefix = `${kind}:${directory ? `${directory}/` : ""}`;
+    const entries = new Map<string, vscode.FileType>();
+    for (const spec of specs) {
+        if (!spec.startsWith(prefix)) continue;
+        const rest = spec.slice(prefix.length);
+        if (!rest) continue;
+        const slash = rest.indexOf("/");
+        if (slash >= 0) entries.set(rest.slice(0, slash), vscode.FileType.Directory);
+        else entries.set(`${rest}.vn`, vscode.FileType.File);
+    }
+    return [...entries];
+}
+
+export function typeOf(
+    specs: readonly string[],
+    kind: string,
+    relative: string,
+    file: boolean,
+): vscode.FileType | undefined {
+    if (file) return specs.includes(`${kind}:${relative}`) ? vscode.FileType.File : undefined;
+    return specs.some((spec) => spec.startsWith(`${kind}:${relative}/`)) ? vscode.FileType.Directory : undefined;
+}
+
 export class VnStdFileSystemProvider implements vscode.FileSystemProvider {
     #specs: string[] | null = null;
     #contents = new Map<string, Uint8Array>();
@@ -19,79 +60,85 @@ export class VnStdFileSystemProvider implements vscode.FileSystemProvider {
     async #specifiers(): Promise<string[]> {
         if (this.#specs) return this.#specs;
         const client = getClient();
-        if (!client) return [];
+        if (!client) throw vscode.FileSystemError.Unavailable("Varn Language Server not running");
+        let res: unknown;
         try {
-            const res: unknown = await client.sendRequest("workspace/executeCommand", {
-                command: "vn.stdList",
-                arguments: [],
-            });
-            this.#specs = Array.isArray(res) ? ([...res] as string[]).sort() : [];
-        } catch {
-            this.#specs = [];
+            res = await client.sendRequest("workspace/executeCommand", { command: "vn.stdList", arguments: [] });
+        } catch (err) {
+            throw vscode.FileSystemError.Unavailable(`Stdlib unavailable: ${errorMessage(err)}`);
         }
+        if (!Array.isArray(res) || res.length === 0) {
+            throw vscode.FileSystemError.Unavailable(
+                "The server found no standard library: check that vn can locate its std directory.",
+            );
+        }
+        this.#specs = [...(res as string[])].sort();
         return this.#specs;
     }
 
-    #specifierOf(uri: vscode.Uri): string | null {
-        const parts = uri.path.split("/").filter(Boolean);
-        if (parts.length <= 1) return null;
-        const [kind, file] = parts;
-        if (!KINDS.includes(kind)) return null;
-        return `${kind}:${file.replace(/\.vn$/, "")}`;
-    }
-
     async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
-        const parts = uri.path.split("/").filter(Boolean);
-        if (parts.length <= 1) return { type: vscode.FileType.Directory, ...ZERO_STAT };
+        const location = locate(uri);
+        if (!location) {
+            if (uri.path.split("/").filter(Boolean).length === 0) return { type: vscode.FileType.Directory, ...ZERO_STAT };
+            throw vscode.FileSystemError.FileNotFound(uri);
+        }
+        if (location.path === "") return { type: vscode.FileType.Directory, ...ZERO_STAT };
+        const type = typeOf(await this.#specifiers(), location.kind, location.path, location.file);
+        if (type === undefined) throw vscode.FileSystemError.FileNotFound(uri);
+        if (type === vscode.FileType.Directory) return { type, ...ZERO_STAT };
         const text = await this.readFile(uri);
-        return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: text.length };
+        return { type, ctime: 0, mtime: 0, size: text.length };
     }
 
     async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
-        const parts = uri.path.split("/").filter(Boolean);
+        const location = locate(uri);
+        if (!location) {
+            if (uri.path.split("/").filter(Boolean).length === 0) {
+                return KINDS.map((kind) => [kind, vscode.FileType.Directory]);
+            }
+            throw vscode.FileSystemError.FileNotFound(uri);
+        }
         const specs = await this.#specifiers();
-        if (parts.length === 0) return KINDS.map((kind) => [kind, vscode.FileType.Directory]);
-        const [kind] = parts;
-        return specs
-            .filter((spec) => spec.startsWith(`${kind}:`))
-            .map((spec): [string, vscode.FileType] => [`${spec.slice(kind.length + 1)}.vn`, vscode.FileType.File]);
+        if (location.path !== "" && typeOf(specs, location.kind, location.path, location.file) !== vscode.FileType.Directory) {
+            throw vscode.FileSystemError.FileNotFound(uri);
+        }
+        return childrenOf(specs, location.kind, location.path);
     }
 
     async readFile(uri: vscode.Uri): Promise<Uint8Array> {
-        const spec = this.#specifierOf(uri);
-        if (!spec) throw vscode.FileSystemError.FileNotFound(uri);
+        const location = locate(uri);
+        if (!location || !location.file) throw vscode.FileSystemError.FileNotFound(uri);
+        const spec = `${location.kind}:${location.path}`;
         const cached = this.#contents.get(spec);
         if (cached !== undefined) return cached;
         const client = getClient();
         if (!client) throw vscode.FileSystemError.Unavailable("Varn Language Server not running");
         let res: unknown;
         try {
-            res = await client.sendRequest("workspace/executeCommand", {
-                command: "vn.stdRead",
-                arguments: [spec],
-            });
+            res = await client.sendRequest("workspace/executeCommand", { command: "vn.stdRead", arguments: [spec] });
         } catch {
             throw vscode.FileSystemError.Unavailable(`std module unavailable: ${spec}`);
         }
-        const data = Buffer.from(String(res ?? ""), "utf8");
+        if (typeof res !== "string") throw vscode.FileSystemError.FileNotFound(uri);
+        const data = Buffer.from(res, "utf8");
         this.#contents.set(spec, data);
         return data;
     }
 
     writeFile(): never {
-        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions(READ_ONLY);
     }
 
     createDirectory(): never {
-        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions(READ_ONLY);
     }
 
     delete(): never {
-        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions(READ_ONLY);
     }
 
     rename(): never {
-        throw vscode.FileSystemError.NoPermissions("vn-std is readonly");
+        throw vscode.FileSystemError.NoPermissions(READ_ONLY);
     }
 
     refresh(): void {
