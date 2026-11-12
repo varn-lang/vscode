@@ -1,5 +1,5 @@
 {
-  "name": "varn-language",
+  "name": "vn-language",
   "displayName": "Varn Language Support",
   "description": "Syntax highlighting, diagnostics, hover, go-to-definition, completions, rename, run and debug for the Varn language.",
   "version": "0.3.1",
