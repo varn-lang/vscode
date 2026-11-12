@@ -656,29 +656,6 @@
           "default": false,
           "description": "Pass --verbose to `vn` when running files."
         },
-        "vn.run.debugPhases": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": [
-              "tokens",
-              "ast",
-              "bytecode",
-              "symbols",
-              "binds",
-              "modules",
-              "types",
-              "errors",
-              "trace",
-              "calls",
-              "consts",
-              "scope",
-              "graph"
-            ]
-          },
-          "default": [],
-          "description": "Default debug phases to enable when running files."
-        },
         "vn.codeLens.enabled": {
           "type": "boolean",
           "default": true,
