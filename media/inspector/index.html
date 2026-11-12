@@ -9,22 +9,22 @@
 </head>
 <body>
     <div class="toolbar">
-        <h3>⚡ Varn CFG & Debug</h3>
+        <h3>Varn CFG & Debug</h3>
         
         <select id="func-selector" class="function-select" onchange="onSelectFunction()">
             <option value="">(Loading functions...)</option>
         </select>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('graph')">📊 CFG Graph</button>
-            <button class="tab-btn" onclick="switchTab('bytecode')">📦 Bytecode</button>
+            <button class="tab-btn active" onclick="switchTab('graph')">CFG Graph</button>
+            <button class="tab-btn" onclick="switchTab('bytecode')">Bytecode</button>
         </div>
 
         <div class="stepper-controls">
             <button class="btn-ctrl" onclick="stepReset()" title="Reset Simulation">⏮</button>
             <button class="btn-ctrl" onclick="stepPrev()" title="Step Previous">◀</button>
             <span class="step-label" id="step-counter">0 / 0</span>
-            <button class="btn-ctrl" onclick="stepNext()" title="Step Next">▶</button>
+            <button class="btn-ctrl" onclick="stepNext()" title="Step Next">Step</button>
             <button class="btn-ctrl" onclick="stepRun()" title="Run Animation">⏭</button>
         </div>
     </div>
@@ -37,9 +37,9 @@
             </div>
 
             <div class="floating-controls">
-                <button class="floating-btn" onclick="zoomIn()" title="Zoom In">➕</button>
-                <button class="floating-btn" onclick="zoomOut()" title="Zoom Out">➖</button>
-                <button class="floating-btn" onclick="resetView()" title="Center & Reset View">🎯 Center</button>
+                <button class="floating-btn" onclick="zoomIn()" title="Zoom In">+</button>
+                <button class="floating-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+                <button class="floating-btn" onclick="resetView()" title="Center & Reset View">Center</button>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
 
         <div class="side-inspector">
             <div class="side-header">
-                <span>🔍 Live SSA Virtual Registers</span>
+                <span>Live SSA Virtual Registers</span>
                 <span id="reg-count" style="font-size:10px;color:#888;">0 active</span>
             </div>
             <div id="register-list" class="register-list">

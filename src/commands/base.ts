@@ -26,7 +26,7 @@ function runInOutputChannel(bin: string, args: string[], cwd: string, label: str
     const channel = runChannel;
     channel.clear();
     channel.show(true);
-    channel.appendLine(`▶  ${label}`);
+    channel.appendLine(`> ${label}`);
     channel.appendLine(`  command: ${path.basename(bin)} ${args.join(" ")}`);
     channel.appendLine("─".repeat(64));
 
