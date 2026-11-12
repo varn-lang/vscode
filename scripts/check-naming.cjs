@@ -16,13 +16,15 @@ const sources = [];
 })(path.join(root, "src"));
 sources.push(path.join(root, "extension.ts"), path.join(root, "package.json"));
 
-const allowed = [/varn-lang\/varn\b/g, /varn-lang/g, /varn-language/g, /varn-extension/g, /VARN_[A-Z_]+/g];
+const allowed = [/varn-lang\/varn\b/g, /varn-lang/g, /varn-extension/g];
 
 const rules = [
     [/["'`]varn["'`]/, 'bare "varn": use "vn" for an id or "Varn" for text'],
     [/["'`]varn[.:/-]/, 'lowercase "varn" prefix on an id: use "vn"'],
     [/\bVarn\.[a-z]/, 'dotted id in brand case ("Varn.x"): use "vn.x"'],
     [/\bVn\b/, '"Vn" is neither the brand nor the logic name'],
+    [/\bVARN_/, "environment variables are VN_*"],
+    [/(?<![A-Za-z0-9])[Vv]arn[A-Z]/, "identifiers are Vn* and vn*, not Varn* and varn*"],
     [/\bvarn\b(?=[^-])/, 'lowercase "varn" in text: use "Varn" for the brand or "vn" for the program'],
 ];
 
