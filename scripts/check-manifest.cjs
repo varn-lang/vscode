@@ -43,6 +43,24 @@ for (const walkthrough of contributes.walkthroughs ?? []) {
     }
 }
 
+const languageConfiguration = JSON.parse(fs.readFileSync(path.join(root, "language-configuration.json"), "utf8"));
+const patternKeys = new Set(["increaseIndentPattern", "decreaseIndentPattern", "wordPattern", "beforeText", "afterText", "previousLineText", "start", "end"]);
+(function checkPatterns(value, where) {
+    if (Array.isArray(value)) return value.forEach((item, index) => checkPatterns(item, `${where}[${index}]`));
+    if (!value || typeof value !== "object") return;
+    for (const [key, child] of Object.entries(value)) {
+        if (typeof child === "string" && patternKeys.has(key)) {
+            try {
+                new RegExp(child);
+            } catch (error) {
+                problems.push(`language-configuration ${where}.${key}: ${error.message}`);
+            }
+        } else {
+            checkPatterns(child, `${where}.${key}`);
+        }
+    }
+})(languageConfiguration, "");
+
 for (const welcome of contributes.viewsWelcome ?? []) {
     for (const match of welcome.contents.matchAll(/command:([A-Za-z0-9.]+)/g)) {
         if (match[1].startsWith("vn.") && !declared.includes(match[1])) {
