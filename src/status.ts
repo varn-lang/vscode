@@ -6,9 +6,6 @@ interface Refreshable {
 }
 
 let lspStatusBar: vscode.StatusBarItem | undefined;
-let runStatusBar: vscode.StatusBarItem | undefined;
-let buildModeStatusBar: vscode.StatusBarItem | undefined;
-let actionsHubBar: vscode.StatusBarItem | undefined;
 
 let currentLspState: LspState = "starting";
 let statusProvider: Refreshable | null = null;
@@ -62,15 +59,6 @@ export function updateBuildModeStatusBar(): void {
     } catch {
         // the language status item is created after the status bar
     }
-    if (!buildModeStatusBar) return;
-    const mode = vscode.workspace.getConfiguration("Varn").get<string>("buildMode", "release");
-    if (mode === "release") {
-        buildModeStatusBar.text = "$(zap) Release";
-        buildModeStatusBar.tooltip = "Build Mode: Release (click to toggle to Debug)";
-    } else {
-        buildModeStatusBar.text = "$(beaker) Debug";
-        buildModeStatusBar.tooltip = "Build Mode: Debug (click to toggle to Release)";
-    }
 }
 
 export function getLspStatus(): LspState {
@@ -84,8 +72,5 @@ export function setStatusProvider(provider: Refreshable): void {
 export function disposeStatusBar(): void {
     lspStatusBar?.dispose();
     lspStatusBar = undefined;
-    runStatusBar = undefined;
-    buildModeStatusBar = undefined;
-    actionsHubBar = undefined;
     statusProvider = null;
 }
