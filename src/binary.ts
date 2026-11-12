@@ -21,9 +21,8 @@ export async function reportMissingBinary(): Promise<void> {
 }
 
 function targetCandidates(root: string, binName: string, mode: BuildMode): string[] {
-    const preferred = path.join(root, "target", mode, binName);
-    const fallback = path.join(root, "target", mode === "release" ? "debug" : "release", binName);
-    return [preferred, fallback];
+    const other = mode === "release" ? "debug" : "release";
+    return [mode, other, "quick"].map((profile) => path.join(root, "target", profile, binName));
 }
 
 export function getBinaryCandidates(context: vscode.ExtensionContext, binName: string): string[] {
@@ -39,8 +38,13 @@ export function getBinaryCandidates(context: vscode.ExtensionContext, binName: s
         }
     }
 
-    const siblingRoot = path.resolve(context.extensionPath, "..", "varn-lang");
-    candidates.push(...targetCandidates(siblingRoot, binName, mode));
+    const siblingRoots = new Set<string>([path.resolve(context.extensionPath, "..", "varn-lang")]);
+    if (vscode.workspace.isTrusted) {
+        for (const folder of vscode.workspace.workspaceFolders ?? []) {
+            siblingRoots.add(path.resolve(folder.uri.fsPath, "..", "varn-lang"));
+        }
+    }
+    for (const root of siblingRoots) candidates.push(...targetCandidates(root, binName, mode));
 
     return candidates;
 }
@@ -54,6 +58,9 @@ export function resolveCliPath(context: vscode.ExtensionContext): string | undef
             `vn.cli.path not found: ${override}. Falling back to auto-detect.`,
         );
     }
+
+    const fromEnvironment = process.env.VN_CLI_PATH;
+    if (fromEnvironment && fs.existsSync(fromEnvironment)) return fromEnvironment;
 
     const binName = `vn${BIN_EXT}`;
     const found = getBinaryCandidates(context, binName).find((candidate) => fs.existsSync(candidate));
