@@ -38,7 +38,7 @@ function findVn() {
 const has = (scopes, pattern) => scopes.some((scope) => pattern.test(scope));
 const KEYWORDISH = /^(keyword\.|storage\.|support\.type|constant\.language|variable\.language|entity\.name\.type\.primitive)/;
 const keywordish = (scopes) => has(scopes, KEYWORDISH);
-const codeLike = (scopes) => !has(scopes, /^(comment|string)\b/);
+const codeLike = (scopes) => !has(scopes, /^(comment|string|punctuation\.definition\.string)/);
 
 const RESERVED = new Set(
     "Let Const Var Function Class Struct Interface Type Enum Namespace Module Extension If Else Switch Case Default While For Do Break Continue Return Throw Try Catch Finally Using With Import Export Async Await Yield New Delete Typeof Instanceof In Void Public Private Protected Static Abstract Override Readonly Declare Extends Implements Constructor Destructor Match".split(" "),
@@ -73,7 +73,9 @@ function expectation(kind) {
     if (kind === "Identifier") {
         return ["not a keyword, literal, string or comment", (s) => !has(s, /^(keyword\.control|storage|constant\.numeric|constant\.language|string|comment)/)];
     }
-    if (OPERATORS.has(kind)) return ["an operator", (s) => has(s, /^(keyword\.operator|keyword\.generator|punctuation)/)];
+    if (OPERATORS.has(kind)) {
+        return ["an operator", (s) => has(s, /^(keyword\.operator|keyword\.generator|punctuation|variable\.language\.wildcard)/)];
+    }
     if (PUNCTUATION.has(kind)) return ["punctuation", (s) => has(s, /^(punctuation|keyword\.operator|meta\.brace)/)];
     return null;
 }
