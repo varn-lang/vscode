@@ -174,11 +174,16 @@ export class ExtensionManager {
         setStatusProvider(statusProvider);
         const actionsProvider = new VarnActionsProvider(this.context);
         const astProvider = new VarnAstProvider(this.context);
+        const astView = vscode.window.createTreeView("varn-ast", {
+            treeDataProvider: astProvider,
+            showCollapseAll: true,
+        });
+        astProvider.attach(astView);
 
         this.pushDisposable(
             vscode.window.registerTreeDataProvider("varn-status", statusProvider),
             vscode.window.registerTreeDataProvider("varn-actions", actionsProvider),
-            vscode.window.registerTreeDataProvider("varn-ast", astProvider),
+            astView,
         );
 
         this.pushDisposable(

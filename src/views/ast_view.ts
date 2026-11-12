@@ -178,73 +178,60 @@ function parseAstCli(stdout: string): AstNodeItem[] {
     return rootNodes;
 }
 
-type AstTreeNode = AstNodeItem | vscode.TreeItem;
+const AST_VIEW_ID = "varn-ast";
 
-export class VarnAstProvider implements vscode.TreeDataProvider<AstTreeNode> {
+export class VarnAstProvider implements vscode.TreeDataProvider<AstNodeItem> {
     private readonly changed = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData = this.changed.event;
     private rootNodes: AstNodeItem[] = [];
-    private errorItem: vscode.TreeItem | null = null;
-    private loading = false;
+    private view: vscode.TreeView<AstNodeItem> | undefined;
+    private generation = 0;
 
     constructor(private readonly context: vscode.ExtensionContext) {}
 
+    attach(view: vscode.TreeView<AstNodeItem>): void {
+        this.view = view;
+    }
+
     async refresh(): Promise<void> {
+        const ticket = ++this.generation;
         const editor = vscode.window.activeTextEditor;
         if (!editor?.document.fileName.endsWith(".vn")) {
-            this.rootNodes = [];
-            this.errorItem = null;
-            this.loading = false;
-            this.changed.fire();
+            this.show([], "Open a Varn file to see its syntax tree.");
             return;
         }
 
-        this.loading = true;
-        this.errorItem = null;
-        this.changed.fire();
+        const { document } = editor;
+        await vscode.window.withProgress({ location: { viewId: AST_VIEW_ID } }, async () => {
+            const lspNodes = await getAstFromLsp(document.uri.toString());
+            if (ticket !== this.generation) return;
+            if (lspNodes && lspNodes.length > 0) {
+                this.show(lspNodes);
+                return;
+            }
 
-        const lspNodes = await getAstFromLsp(editor.document.uri.toString());
-        if (lspNodes && lspNodes.length > 0) {
-            this.rootNodes = lspNodes;
-            this.loading = false;
-            this.changed.fire();
-            return;
-        }
+            try {
+                const nodes = parseAstCli(await getAstForFileCli(this.context, document.fileName));
+                if (ticket === this.generation) {
+                    this.show(nodes, nodes.length === 0 ? "No AST nodes found." : undefined);
+                }
+            } catch (err) {
+                if (ticket === this.generation) this.show([], `Error parsing AST: ${errorMessage(err)}`);
+            }
+        });
+    }
 
-        try {
-            const stdout = await getAstForFileCli(this.context, editor.document.fileName);
-            this.rootNodes = parseAstCli(stdout);
-        } catch (err) {
-            this.rootNodes = [];
-            this.errorItem = new vscode.TreeItem(
-                `Error parsing AST: ${errorMessage(err)}`,
-                vscode.TreeItemCollapsibleState.None,
-            );
-            this.errorItem.iconPath = new vscode.ThemeIcon("error");
-        }
-        this.loading = false;
+    private show(nodes: AstNodeItem[], message?: string): void {
+        this.rootNodes = nodes;
+        if (this.view) this.view.message = message;
         this.changed.fire();
     }
 
-    getTreeItem(element: AstTreeNode): vscode.TreeItem {
+    getTreeItem(element: AstNodeItem): vscode.TreeItem {
         return element;
     }
 
-    getChildren(element?: AstTreeNode): AstTreeNode[] {
-        if (element) return element instanceof AstNodeItem ? element.children : [];
-        if (this.errorItem) return [this.errorItem];
-        if (this.loading) {
-            const item = new vscode.TreeItem("Loading AST...", vscode.TreeItemCollapsibleState.None);
-            item.iconPath = new vscode.ThemeIcon("sync~spin");
-            return [item];
-        }
-        if (this.rootNodes.length === 0) {
-            const editor = vscode.window.activeTextEditor;
-            const message = editor?.document.fileName.endsWith(".vn")
-                ? "No AST nodes found"
-                : "No active Varn file open";
-            return [new vscode.TreeItem(message, vscode.TreeItemCollapsibleState.None)];
-        }
-        return this.rootNodes;
+    getChildren(element?: AstNodeItem): AstNodeItem[] {
+        return element ? element.children : this.rootNodes;
     }
 }
