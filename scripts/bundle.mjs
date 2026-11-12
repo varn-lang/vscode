@@ -1,0 +1,13 @@
+import { build } from "esbuild";
+
+await build({
+    entryPoints: ["extension.js"],
+    outfile: "dist/extension.cjs",
+    bundle: true,
+    platform: "node",
+    format: "cjs",
+    target: "node20",
+    external: ["vscode"],
+    sourcemap: true,
+    logLevel: "info",
+});
