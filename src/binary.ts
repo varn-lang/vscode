@@ -3,7 +3,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { BIN_EXT } from "./constants.js";
-import { varnHomeBinPath, findOnPath } from "./utils.js";
+import { vnHomeBinPath, findOnPath } from "./utils.js";
 
 type BuildMode = "release" | "debug";
 
@@ -20,7 +20,7 @@ export function getBinaryCandidates(context: vscode.ExtensionContext, binName: s
     const mode = vscode.workspace.getConfiguration("vn").get<BuildMode>("buildMode", "release");
     const candidates: string[] = [];
 
-    const homeBin = varnHomeBinPath(binName);
+    const homeBin = vnHomeBinPath(binName);
     if (homeBin) candidates.push(homeBin);
 
     if (vscode.workspace.isTrusted) {

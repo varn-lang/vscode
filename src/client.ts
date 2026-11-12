@@ -21,7 +21,7 @@ export function createClient(
         args,
         transport: TransportKind.stdio,
     };
-    const varnCfg = vscode.workspace.getConfiguration("vn");
+    const vnCfg = vscode.workspace.getConfiguration("vn");
     const clientOptions: LanguageClientOptions = {
         documentSelector: [
             { scheme: "file", language: "vn" },
@@ -34,8 +34,8 @@ export function createClient(
         outputChannel,
         initializationOptions: {
             vn: {
-                inlayHints: { enabled: varnCfg.get("inlayHints.enabled", true) },
-                codeLens: { enabled: varnCfg.get("codeLens.enabled", true) },
+                inlayHints: { enabled: vnCfg.get("inlayHints.enabled", true) },
+                codeLens: { enabled: vnCfg.get("codeLens.enabled", true) },
             },
         },
         errorHandler: {

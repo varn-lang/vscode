@@ -3,7 +3,7 @@ import * as path from "node:path";
 import { resolveTargetFile, runInOutputChannel, resolveCliPath, formatTerminalCommand } from "./base.js";
 import { BINARY_NOT_FOUND } from "../binary.js";
 import { updateBuildModeStatusBar } from "../status.js";
-import { VarnVisualInspectorPanel } from "../views/visual_debugger.js";
+import { VnVisualInspectorPanel } from "../views/visual_debugger.js";
 
 type TargetUri = vscode.Uri | string | undefined;
 
@@ -48,7 +48,7 @@ function prepare(context: vscode.ExtensionContext, target: TargetUri): Invocatio
 }
 
 /** Run a Varn file (vn run). */
-function runVarnFile(
+function runVnFile(
     context: vscode.ExtensionContext,
     uri: TargetUri,
     opts: { terminal: boolean; verbose?: boolean },
@@ -174,11 +174,11 @@ async function toggleBuildMode(): Promise<void> {
 function openVisualInspector(context: vscode.ExtensionContext, uri: TargetUri): void {
     const file = resolveTargetFile(toUri(uri));
     const fileUri = file ? vscode.Uri.file(file) : vscode.window.activeTextEditor?.document.uri;
-    VarnVisualInspectorPanel.createOrShow(context.extensionUri, fileUri);
+    VnVisualInspectorPanel.createOrShow(context.extensionUri, fileUri);
 }
 
 export {
-    runVarnFile,
+    runVnFile,
     runCheck,
     runBuild,
     runWithDebugPhase,

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import {
-    runVarnFile,
+    runVnFile,
     runCheck,
     runBuild,
     runBytecode,
@@ -65,9 +65,9 @@ type HubPick = vscode.QuickPickItem & { action?: HubAction };
 function execHubAction(action: HubAction, ctx: vscode.ExtensionContext): unknown {
     switch (action) {
         case "runFile":
-            return runVarnFile(ctx, undefined, { terminal: false });
+            return runVnFile(ctx, undefined, { terminal: false });
         case "runInTerminal":
-            return runVarnFile(ctx, undefined, { terminal: true });
+            return runVnFile(ctx, undefined, { terminal: true });
         case "checkFile":
             return runCheck(ctx, undefined);
         case "buildFile":

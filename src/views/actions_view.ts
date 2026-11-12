@@ -53,7 +53,7 @@ const UTILITIES: ActionDefinition[] = [
 
 type ActionNode = ActionCategoryItem | ActionTreeItem;
 
-export class VarnActionsProvider implements vscode.TreeDataProvider<ActionNode> {
+export class VnActionsProvider implements vscode.TreeDataProvider<ActionNode> {
     constructor(private readonly context: vscode.ExtensionContext) {}
 
     getTreeItem(element: ActionNode): vscode.TreeItem {

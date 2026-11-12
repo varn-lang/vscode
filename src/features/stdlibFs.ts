@@ -6,7 +6,7 @@ const SCHEME = "vn-std";
 const KINDS = ["std", "core", "runtime"];
 const ZERO_STAT = { ctime: 0, mtime: 0, size: 0 };
 
-export class VarnStdFileSystemProvider implements vscode.FileSystemProvider {
+export class VnStdFileSystemProvider implements vscode.FileSystemProvider {
     #specs: string[] | null = null;
     #contents = new Map<string, Uint8Array>();
     #emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
@@ -103,7 +103,7 @@ export class VarnStdFileSystemProvider implements vscode.FileSystemProvider {
 
 const IMPORT_RE = /(?:import|export)[^"']*from\s*["']((?:std|core|runtime):[^"']+)["']/g;
 
-export class VarnStdLinkProvider implements vscode.DocumentLinkProvider {
+export class VnStdLinkProvider implements vscode.DocumentLinkProvider {
     provideDocumentLinks(document: vscode.TextDocument): vscode.DocumentLink[] {
         const links: vscode.DocumentLink[] = [];
         for (const match of document.getText().matchAll(IMPORT_RE)) {
@@ -155,9 +155,9 @@ export async function openStdModule(): Promise<void> {
     if (uri) await vscode.window.showTextDocument(uri, { preview: true });
 }
 
-export function registerStdlibFeatures(_context: vscode.ExtensionContext, fsProvider: VarnStdFileSystemProvider): vscode.Disposable {
+export function registerStdlibFeatures(_context: vscode.ExtensionContext, fsProvider: VnStdFileSystemProvider): vscode.Disposable {
     return vscode.Disposable.from(
         vscode.workspace.registerFileSystemProvider(SCHEME, fsProvider, { isCaseSensitive: true, isReadonly: true }),
-        vscode.languages.registerDocumentLinkProvider({ language: "vn" }, new VarnStdLinkProvider()),
+        vscode.languages.registerDocumentLinkProvider({ language: "vn" }, new VnStdLinkProvider()),
     );
 }

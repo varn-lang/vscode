@@ -9,14 +9,14 @@ import { showActionsHub } from "./commands/hub.js";
 import { createClient, stopClient, getClient } from "./client.js";
 import { initLanguageFeatures, setLanguageState, refreshLanguageStatus } from "./language.js";
 import { errorMessage } from "./utils.js";
-import { VarnDebugAdapterFactory, VarnDebugConfigProvider } from "./debug.js";
+import { VnDebugAdapterFactory, VnDebugConfigProvider } from "./debug.js";
 
-import { VarnStatusProvider } from "./views/status_view.js";
-import { VarnActionsProvider } from "./views/actions_view.js";
-import { VarnAstProvider } from "./views/ast_view.js";
+import { VnStatusProvider } from "./views/status_view.js";
+import { VnActionsProvider } from "./views/actions_view.js";
+import { VnAstProvider } from "./views/ast_view.js";
 
 import {
-    runVarnFile,
+    runVnFile,
     runCheck,
     runBuild,
     runBytecode,
@@ -40,7 +40,7 @@ import { registerTaskProvider } from "./tasks.js";
 import { registerTestController } from "./testing/test_controller.js";
 import { registerVisualInspectorSerializer } from "./views/visual_debugger.js";
 import { registerInspectEditors } from "./editors/inspect.js";
-import { VarnStdFileSystemProvider, registerStdlibFeatures, openStdModule } from "./features/stdlibFs.js";
+import { VnStdFileSystemProvider, registerStdlibFeatures, openStdModule } from "./features/stdlibFs.js";
 
 type CommandTarget = vscode.Uri | string | undefined;
 
@@ -162,16 +162,16 @@ export class ExtensionManager {
 
     private startDebugAdapter(): void {
         this.pushDisposable(
-            vscode.debug.registerDebugAdapterDescriptorFactory("vn", new VarnDebugAdapterFactory(this.context)),
-            vscode.debug.registerDebugConfigurationProvider("vn", new VarnDebugConfigProvider()),
+            vscode.debug.registerDebugAdapterDescriptorFactory("vn", new VnDebugAdapterFactory(this.context)),
+            vscode.debug.registerDebugConfigurationProvider("vn", new VnDebugConfigProvider()),
         );
     }
 
     private startTreeViews(): void {
-        const statusProvider = new VarnStatusProvider(this.context);
+        const statusProvider = new VnStatusProvider(this.context);
         setStatusProvider(statusProvider);
-        const actionsProvider = new VarnActionsProvider(this.context);
-        const astProvider = new VarnAstProvider(this.context);
+        const actionsProvider = new VnActionsProvider(this.context);
+        const astProvider = new VnAstProvider(this.context);
         const astView = vscode.window.createTreeView("vn-ast", {
             treeDataProvider: astProvider,
             showCollapseAll: true,
@@ -206,7 +206,7 @@ export class ExtensionManager {
         const testController = registerTestController(ctx);
         const visualSerializer = registerVisualInspectorSerializer(ctx.extensionUri);
         const inspectEditors = registerInspectEditors(ctx);
-        const stdFs = new VarnStdFileSystemProvider();
+        const stdFs = new VnStdFileSystemProvider();
         const stdlibFeatures = registerStdlibFeatures(ctx, stdFs);
 
         const registerCmd = <Args extends unknown[]>(
@@ -259,9 +259,9 @@ export class ExtensionManager {
                 getClient()?.outputChannel.show();
             }),
 
-            registerCmd("vn.runFile", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: false })),
-            registerCmd("vn.runFileInTerminal", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: true })),
-            registerCmd("vn.runMain", (uri?: CommandTarget) => runVarnFile(ctx, uri, { terminal: false })),
+            registerCmd("vn.runFile", (uri?: CommandTarget) => runVnFile(ctx, uri, { terminal: false })),
+            registerCmd("vn.runFileInTerminal", (uri?: CommandTarget) => runVnFile(ctx, uri, { terminal: true })),
+            registerCmd("vn.runMain", (uri?: CommandTarget) => runVnFile(ctx, uri, { terminal: false })),
             registerCmd("vn.runTest", (uri?: CommandTarget, testName?: string) => runTest(ctx, uri, testName)),
             registerCmd("vn.runBenchmark", (uri?: CommandTarget, benchName?: string) =>
                 runBenchmark(ctx, uri, benchName),

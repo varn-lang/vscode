@@ -19,7 +19,7 @@ const LSP_PRESENTATION: Record<LspState, { description: string; icon: string }> 
     stopped: { description: "Stopped", icon: "circle-slash" },
 };
 
-export class VarnStatusProvider implements vscode.TreeDataProvider<StatusTreeItem> {
+export class VnStatusProvider implements vscode.TreeDataProvider<StatusTreeItem> {
     private readonly changed = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData = this.changed.event;
 

@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 import { resolveCliPath } from "./binary.js";
 
-interface VarnTaskDefinition extends vscode.TaskDefinition {
+interface VnTaskDefinition extends vscode.TaskDefinition {
     type: "vn";
     task: "build" | "check" | "test";
 }
 
-export class VarnTaskProvider implements vscode.TaskProvider {
+export class VnTaskProvider implements vscode.TaskProvider {
     constructor(private readonly context: vscode.ExtensionContext) {}
 
     provideTasks(): vscode.Task[] {
@@ -23,11 +23,11 @@ export class VarnTaskProvider implements vscode.TaskProvider {
         if (!cliPath || !rootFolder) return [];
 
         const make = (
-            task: VarnTaskDefinition["task"],
+            task: VnTaskDefinition["task"],
             name: string,
             group: vscode.TaskGroup,
         ): vscode.Task => {
-            const definition: VarnTaskDefinition = { type: "vn", task };
+            const definition: VnTaskDefinition = { type: "vn", task };
             const built = new vscode.Task(
                 definition,
                 rootFolder,
@@ -49,5 +49,5 @@ export class VarnTaskProvider implements vscode.TaskProvider {
 }
 
 export function registerTaskProvider(context: vscode.ExtensionContext): vscode.Disposable {
-    return vscode.tasks.registerTaskProvider("vn", new VarnTaskProvider(context));
+    return vscode.tasks.registerTaskProvider("vn", new VnTaskProvider(context));
 }

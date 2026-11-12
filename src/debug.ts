@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { BINARY_NOT_FOUND, resolveCliPath, resolveServerPath } from "./binary.js";
 
-export class VarnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {
+export class VnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {
     constructor(private readonly context: vscode.ExtensionContext) {}
 
     createDebugAdapterDescriptor(): vscode.DebugAdapterDescriptor | undefined {
@@ -18,7 +18,7 @@ function launchConfiguration(program: string, name: string, stopOnEntry: boolean
     return { type: "vn", request: "launch", name, program, stopOnEntry };
 }
 
-export class VarnDebugConfigProvider implements vscode.DebugConfigurationProvider {
+export class VnDebugConfigProvider implements vscode.DebugConfigurationProvider {
     provideDebugConfigurations(): vscode.DebugConfiguration[] {
         return [launchConfiguration("${file}", "Debug Varn File", false)];
     }

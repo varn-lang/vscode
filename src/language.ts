@@ -7,7 +7,7 @@ interface DiagnosticCounts {
     warnings: number;
 }
 
-interface VarnTerminalLink extends vscode.TerminalLink {
+interface VnTerminalLink extends vscode.TerminalLink {
     file: string;
     line: number;
     col: number;
@@ -23,7 +23,7 @@ export function initLanguageFeatures(context: vscode.ExtensionContext): void {
     refreshLanguageStatus();
     context.subscriptions.push(langStatus);
 
-    const deco = new VarnFileDecorationProvider();
+    const deco = new VnFileDecorationProvider();
     context.subscriptions.push(vscode.window.registerFileDecorationProvider(deco));
     context.subscriptions.push(
         vscode.languages.onDidChangeDiagnostics(() => {
@@ -33,20 +33,20 @@ export function initLanguageFeatures(context: vscode.ExtensionContext): void {
         }),
     );
 
-    context.subscriptions.push(vscode.window.registerTerminalLinkProvider(new VarnTerminalLinkProvider()));
+    context.subscriptions.push(vscode.window.registerTerminalLinkProvider(new VnTerminalLinkProvider()));
 
     context.subscriptions.push(
-        vscode.languages.registerDocumentDropEditProvider({ language: "vn" }, new VarnDropProvider()),
+        vscode.languages.registerDocumentDropEditProvider({ language: "vn" }, new VnDropProvider()),
     );
     context.subscriptions.push(
-        vscode.languages.registerDocumentPasteEditProvider({ language: "vn" }, new VarnPasteProvider(), {
+        vscode.languages.registerDocumentPasteEditProvider({ language: "vn" }, new VnPasteProvider(), {
             pasteMimeTypes: ["text/plain"],
-            providedPasteEditKinds: [VarnPasteProvider.kind],
+            providedPasteEditKinds: [VnPasteProvider.kind],
         }),
     );
 
     context.subscriptions.push(
-        vscode.languages.registerInlineCompletionItemProvider({ language: "vn" }, new VarnInlineProvider()),
+        vscode.languages.registerInlineCompletionItemProvider({ language: "vn" }, new VnInlineProvider()),
     );
 
     updateDiagCounts();
@@ -90,7 +90,7 @@ function updateDiagCounts(): void {
     diagCounts = { errors, warnings };
 }
 
-class VarnFileDecorationProvider implements vscode.FileDecorationProvider {
+class VnFileDecorationProvider implements vscode.FileDecorationProvider {
     private readonly emitter = new vscode.EventEmitter<undefined>();
     readonly onDidChangeFileDecorations = this.emitter.event;
 
@@ -121,10 +121,10 @@ class VarnFileDecorationProvider implements vscode.FileDecorationProvider {
     }
 }
 
-class VarnTerminalLinkProvider implements vscode.TerminalLinkProvider<VarnTerminalLink> {
-    provideTerminalLinks(context: vscode.TerminalLinkContext): VarnTerminalLink[] {
+class VnTerminalLinkProvider implements vscode.TerminalLinkProvider<VnTerminalLink> {
+    provideTerminalLinks(context: vscode.TerminalLinkContext): VnTerminalLink[] {
         const pattern = /([A-Za-z0-9_\/\\.\-]+\.vn):(\d+):(\d+)/g;
-        const links: VarnTerminalLink[] = [];
+        const links: VnTerminalLink[] = [];
         for (const match of context.line.matchAll(pattern)) {
             links.push({
                 startIndex: match.index,
@@ -138,7 +138,7 @@ class VarnTerminalLinkProvider implements vscode.TerminalLinkProvider<VarnTermin
         return links;
     }
 
-    async handleTerminalLink(link: VarnTerminalLink): Promise<void> {
+    async handleTerminalLink(link: VnTerminalLink): Promise<void> {
         try {
             const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(link.file));
             const editor = await vscode.window.showTextDocument(doc);
@@ -151,7 +151,7 @@ class VarnTerminalLinkProvider implements vscode.TerminalLinkProvider<VarnTermin
     }
 }
 
-class VarnDropProvider implements vscode.DocumentDropEditProvider {
+class VnDropProvider implements vscode.DocumentDropEditProvider {
     async provideDocumentDropEdits(
         document: vscode.TextDocument,
         _position: vscode.Position,
@@ -179,7 +179,7 @@ class VarnDropProvider implements vscode.DocumentDropEditProvider {
     }
 }
 
-class VarnPasteProvider implements vscode.DocumentPasteEditProvider {
+class VnPasteProvider implements vscode.DocumentPasteEditProvider {
     static readonly kind = vscode.DocumentDropOrPasteEditKind.Empty.append("vn", "import");
 
     async provideDocumentPasteEdits(
@@ -193,7 +193,7 @@ class VarnPasteProvider implements vscode.DocumentPasteEditProvider {
         const match = pasted.match(/\b(import\s*\{[^}]*\}\s*from\s*["'][^"']+["'];?)/);
         if (!match) return undefined;
         const importLine = match[1].endsWith(";") ? match[1] : `${match[1]};`;
-        const edit = new vscode.DocumentPasteEdit(pasted, "Paste with import hoisted", VarnPasteProvider.kind);
+        const edit = new vscode.DocumentPasteEdit(pasted, "Paste with import hoisted", VnPasteProvider.kind);
         edit.additionalEdit = new vscode.WorkspaceEdit();
         edit.additionalEdit.insert(document.uri, new vscode.Position(0, 0), `${importLine}\n`);
         return [edit];
@@ -207,7 +207,7 @@ const POSTFIX = [
     { trigger: ".try", snippet: "try {\n\t$0\n} catch (e) {\n}" },
 ];
 
-class VarnInlineProvider implements vscode.InlineCompletionItemProvider {
+class VnInlineProvider implements vscode.InlineCompletionItemProvider {
     provideInlineCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,

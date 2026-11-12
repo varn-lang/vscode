@@ -642,7 +642,7 @@
         "vn.cli.path": {
           "type": "string",
           "default": "",
-          "description": "Absolute path to the `vn` binary. Leave empty to auto-detect from VARN_HOME/bin, workspace target/{release,debug}, or PATH.",
+          "description": "Absolute path to the `vn` binary. Leave empty to auto-detect from VN_HOME/bin, workspace target/{release,debug}, or PATH.",
           "scope": "machine-overridable"
         },
         "vn.inlayHints.enabled": {

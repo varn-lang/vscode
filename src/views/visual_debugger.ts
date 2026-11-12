@@ -3,8 +3,8 @@ import { getClient } from "../client.js";
 
 type InspectorMessage = { command: "goToLine"; line?: number } | { command: "refresh" };
 
-export class VarnVisualInspectorPanel {
-    static currentPanel: VarnVisualInspectorPanel | undefined;
+export class VnVisualInspectorPanel {
+    static currentPanel: VnVisualInspectorPanel | undefined;
     static readonly viewType = "vnVisualInspector";
 
     private documentUri: vscode.Uri | undefined;
@@ -14,7 +14,7 @@ export class VarnVisualInspectorPanel {
     static createOrShow(extensionUri: vscode.Uri, documentUri?: vscode.Uri): void {
         const column = vscode.window.activeTextEditor ? vscode.ViewColumn.Beside : vscode.ViewColumn.One;
 
-        const current = VarnVisualInspectorPanel.currentPanel;
+        const current = VnVisualInspectorPanel.currentPanel;
         if (current) {
             current.panel.reveal(column);
             if (documentUri) {
@@ -25,13 +25,13 @@ export class VarnVisualInspectorPanel {
         }
 
         const panel = vscode.window.createWebviewPanel(
-            VarnVisualInspectorPanel.viewType,
+            VnVisualInspectorPanel.viewType,
             "Varn Visual CFG & Debug Inspector",
             column,
             { enableScripts: true, retainContextWhenHidden: false, localResourceRoots: [extensionUri] },
         );
 
-        VarnVisualInspectorPanel.currentPanel = new VarnVisualInspectorPanel(panel, extensionUri, documentUri);
+        VnVisualInspectorPanel.currentPanel = new VnVisualInspectorPanel(panel, extensionUri, documentUri);
     }
 
     constructor(
@@ -121,7 +121,7 @@ export class VarnVisualInspectorPanel {
     }
 
     dispose(): void {
-        VarnVisualInspectorPanel.currentPanel = undefined;
+        VnVisualInspectorPanel.currentPanel = undefined;
         if (this.refreshTimer) clearTimeout(this.refreshTimer);
         this.panel.dispose();
         while (this.disposables.length) this.disposables.pop()?.dispose();
@@ -934,9 +934,9 @@ export class VarnVisualInspectorPanel {
 
 export function registerVisualInspectorSerializer(extensionUri: vscode.Uri): vscode.Disposable {
     try {
-        return vscode.window.registerWebviewPanelSerializer(VarnVisualInspectorPanel.viewType, {
+        return vscode.window.registerWebviewPanelSerializer(VnVisualInspectorPanel.viewType, {
             async deserializeWebviewPanel(panel: vscode.WebviewPanel): Promise<void> {
-                VarnVisualInspectorPanel.currentPanel = new VarnVisualInspectorPanel(
+                VnVisualInspectorPanel.currentPanel = new VnVisualInspectorPanel(
                     panel,
                     extensionUri,
                     vscode.window.activeTextEditor?.document.uri,

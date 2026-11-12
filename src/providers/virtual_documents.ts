@@ -4,7 +4,7 @@ import { errorMessage } from "../utils.js";
 
 const VIRTUAL_SCHEMES = ["vn-bytecode", "vn-ssa"];
 
-export class VarnVirtualDocumentProvider implements vscode.TextDocumentContentProvider {
+export class VnVirtualDocumentProvider implements vscode.TextDocumentContentProvider {
     private readonly changed = new vscode.EventEmitter<vscode.Uri>();
     readonly onDidChange = this.changed.event;
     private readonly pending = new Map<string, ReturnType<typeof setTimeout>>();
@@ -49,7 +49,7 @@ export class VarnVirtualDocumentProvider implements vscode.TextDocumentContentPr
 }
 
 export function registerVirtualDocumentProviders(): vscode.Disposable {
-    const provider = new VarnVirtualDocumentProvider();
+    const provider = new VnVirtualDocumentProvider();
     let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
     return vscode.Disposable.from(

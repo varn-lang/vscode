@@ -180,7 +180,7 @@ function parseAstCli(stdout: string): AstNodeItem[] {
 
 const AST_VIEW_ID = "vn-ast";
 
-export class VarnAstProvider implements vscode.TreeDataProvider<AstNodeItem> {
+export class VnAstProvider implements vscode.TreeDataProvider<AstNodeItem> {
     private readonly changed = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData = this.changed.event;
     private rootNodes: AstNodeItem[] = [];

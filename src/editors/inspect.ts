@@ -4,7 +4,7 @@ import { errorMessage } from "../utils.js";
 
 type InspectMessage = { command: "refresh" } | { command: "copy"; text?: string };
 
-class VarnInspectEditor implements vscode.CustomReadonlyEditorProvider {
+class VnInspectEditor implements vscode.CustomReadonlyEditorProvider {
     private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
 
     constructor(
@@ -72,7 +72,7 @@ class VarnInspectEditor implements vscode.CustomReadonlyEditorProvider {
 export function registerInspectEditors(_context: vscode.ExtensionContext): vscode.Disposable {
     const options = { webviewOptions: { retainContextWhenHidden: false }, supportsMultipleEditorsPerDocument: true };
     return vscode.Disposable.from(
-        vscode.window.registerCustomEditorProvider("vn.bytecode", new VarnInspectEditor("vn.showBytecode", "Bytecode"), options),
-        vscode.window.registerCustomEditorProvider("vn.ssa", new VarnInspectEditor("vn.showSSA", "SSA"), options),
+        vscode.window.registerCustomEditorProvider("vn.bytecode", new VnInspectEditor("vn.showBytecode", "Bytecode"), options),
+        vscode.window.registerCustomEditorProvider("vn.ssa", new VnInspectEditor("vn.showSSA", "SSA"), options),
     );
 }

@@ -18,7 +18,7 @@ function descendants(item: vscode.TestItem): vscode.TestItem[] {
     return found;
 }
 
-class VarnTestController implements vscode.Disposable {
+class VnTestController implements vscode.Disposable {
     private readonly ctrl: vscode.TestController;
     private readonly disposables: vscode.Disposable[];
 
@@ -251,6 +251,6 @@ class VarnTestController implements vscode.Disposable {
     }
 }
 
-export function registerTestController(context: vscode.ExtensionContext): VarnTestController {
-    return new VarnTestController(context);
+export function registerTestController(context: vscode.ExtensionContext): VnTestController {
+    return new VnTestController(context);
 }

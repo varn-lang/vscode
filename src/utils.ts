@@ -3,8 +3,8 @@ import * as fs from "node:fs";
 
 const ANSI_PATTERN = /\u001b\[[0-9;]*[A-Za-z]/g;
 
-export function varnHomeBinPath(binFile: string): string | undefined {
-    const home = process.env.VARN_HOME;
+export function vnHomeBinPath(binFile: string): string | undefined {
+    const home = process.env.VN_HOME;
     if (!home) return undefined;
     return path.join(home, "bin", binFile);
 }
