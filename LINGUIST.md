@@ -58,6 +58,38 @@ Candidates from `varn-lang/varn` (Apache-2.0): `examples/` and `std/`. Pick file
 that show classes, generics, async, pattern matching and decimal and regex
 literals. Link the original source and state the license in the PR.
 
+## Process, read from a clone of github-linguist/linguist (commit d456527)
+
+1. **Grammar in its own repository.** `script/add-grammar <git-url>` adds the
+   grammar as a submodule under `vendor/grammars` and checks it. The license
+   must be on Linguist's allowed list (`vendor/licenses/config.yml`):
+   apache-2.0, bsd-2-clause, bsd-3-clause, cc0-1.0, isc, mit, mpl-2.0, ncsa,
+   permissive, unlicense, wtfpl, zlib. Apache-2.0 qualifies. Submodule URLs
+   must be `https`. Plan: publish `syntaxes/vn.tmLanguage.json` in a small
+   dedicated repo rather than pointing Linguist at this whole extension.
+2. **Entry in `lib/linguist/languages.yml`**, alphabetical, without
+   `language_id`: `type: programming`, `color`, `extensions: [".vn"]`,
+   `tm_scope: source.vn`, `ace_mode: text` (no Ace mode exists), optional
+   `aliases`. The name `Varn`, the alias `vn` and the extension `.vn` are all
+   unclaimed today, so no heuristic is required.
+3. **Samples** in `samples/Varn/`: real-world code, not tutorials or "hello
+   world". State the license of each sample in the PR.
+4. **`script/update-ids`** generates the `language_id`.
+5. **Tests**: additions need matching changes in `test/test_blob.rb`; the suite
+   is `bundle exec rake test` plus `script/cross-validation --test`.
+6. **PR**: the template is mandatory. Its evidence is
+   `NOT is:fork path:*.vn KEYWORDS` with keywords unique to Varn, and it asks
+   for "hundreds of repositories". A color needs a stated rationale.
+
+Search evidence on 2026-11-11: `path:*.vn` with Varn keywords (`"std:test"`,
+`"from \"std:"`) returns 0 outside our own organization, and even
+`repo:varn-lang/varn path:*.vn` returns 0, so GitHub has not indexed the
+repositories yet.
+
+Environment: the suite needs Ruby 3.4 with native gems (`rugged` needs cmake,
+`charlock_holmes` needs ICU). Linguist recommends Codespaces or its dev
+container. A fork is required to open the PR.
+
 ## Once accepted
 
 Delete the TypeScript override from `varn-lang/varn/.gitattributes`.
