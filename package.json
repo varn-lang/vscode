@@ -682,11 +682,6 @@
           "default": true,
           "description": "Show Varn CodeLens actions (Run, Bench, Disasm, AST) at the top of .Varn files."
         },
-        "Varn.hotReload.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically reload the extension when source files change (requires restart for package.json contributes changes)."
-        },
         "Varn.hotReload.watchBinary": {
           "type": "boolean",
           "default": true,

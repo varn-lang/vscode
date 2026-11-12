@@ -319,32 +319,6 @@ export class ExtensionManager {
 
         const config = vscode.workspace.getConfiguration("Varn");
 
-        if (config.get("hotReload.enabled", true)) {
-            const extPath = this.context.extensionPath;
-            const srcPath = path.join(extPath, "src");
-            const isScript = (filename: string | null): boolean => !!filename && filename.endsWith(".js");
-
-            try {
-                this.watchers.push(
-                    fs.watch(extPath, (_event, filename) => {
-                        if (isScript(filename)) this.scheduleReload();
-                    }),
-                );
-            } catch {
-                // the extension folder may not be watchable
-            }
-
-            try {
-                this.watchers.push(
-                    fs.watch(srcPath, { recursive: true }, (_event, filename) => {
-                        if (isScript(filename)) this.scheduleReload();
-                    }),
-                );
-            } catch {
-                // the source folder does not exist in a packaged extension
-            }
-        }
-
         if (config.get("hotReload.watchBinary", true) && this.lspPath) {
             const binDir = path.dirname(this.lspPath);
             const binName = path.basename(this.lspPath);
