@@ -74,4 +74,5 @@ module.exports = [
 ];
 
 module.exports.push(...require("./edge-cases.cjs"));
+module.exports.push(...require("./imports-cases.cjs"));
 module.exports.PRELUDE = PRELUDE;

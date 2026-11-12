@@ -63,8 +63,19 @@ export function resolveCliPath(context: vscode.ExtensionContext): string | undef
     if (fromEnvironment && fs.existsSync(fromEnvironment)) return fromEnvironment;
 
     const binName = `vn${BIN_EXT}`;
-    const found = getBinaryCandidates(context, binName).find((candidate) => fs.existsSync(candidate));
-    return found ?? findOnPath(binName);
+    const candidates = getBinaryCandidates(context, binName).filter((candidate) => fs.existsSync(candidate));
+    const newestBuild = newestBuildOutput(candidates);
+    return newestBuild ?? candidates[0] ?? findOnPath(binName);
+}
+
+function newestBuildOutput(candidates: string[]): string | undefined {
+    const builds = candidates.filter((candidate) => candidate.split(path.sep).includes("target"));
+    let newest: { path: string; modified: number } | undefined;
+    for (const candidate of builds) {
+        const modified = fs.statSync(candidate).mtimeMs;
+        if (!newest || modified > newest.modified) newest = { path: candidate, modified };
+    }
+    return newest?.path;
 }
 
 const SHADOW_DIR = ".vn-shadow";
