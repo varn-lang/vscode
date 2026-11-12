@@ -10,10 +10,8 @@
         "noFallthroughCasesInSwitch": true,
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
-        "allowJs": true,
-        "checkJs": false,
         "skipLibCheck": true,
         "noEmit": true
     },
-    "include": ["extension.*", "src/**/*"]
+    "include": ["extension.ts", "src/**/*.ts"]
 }
