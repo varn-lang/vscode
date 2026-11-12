@@ -164,6 +164,29 @@ export class ExtensionManager {
         const serverPath = resolveServerPath(lspPath);
         log().info(`Language server: ${serverPath}${serverPath === lspPath ? "" : ` (copy of ${lspPath})`}`);
         this.trackClientState(createClient(serverPath, this.lspOutputChannel, LSP_ARGS));
+        this.restartWhenRebuilt(lspPath);
+    }
+
+    private restartWhenRebuilt(binaryPath: string): void {
+        const isBuildOutput = binaryPath.split(path.sep).includes("target") || binaryPath === process.env.VN_CLI_PATH;
+        if (!isBuildOutput) return;
+        let timer: NodeJS.Timeout | undefined;
+        const onChange = (current: fs.Stats, previous: fs.Stats): void => {
+            if (current.mtimeMs === previous.mtimeMs) return;
+            if (!vscode.workspace.getConfiguration("vn").get<boolean>("server.restartOnRebuild", true)) return;
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                log().info(`${binaryPath} was rebuilt: restarting the language server.`);
+                void this.restart();
+            }, 1500);
+        };
+        fs.watchFile(binaryPath, { interval: 2000, persistent: false }, onChange);
+        this.pushDisposable({
+            dispose: () => {
+                clearTimeout(timer);
+                fs.unwatchFile(binaryPath, onChange);
+            },
+        });
     }
 
     private startDebugAdapter(): void {
