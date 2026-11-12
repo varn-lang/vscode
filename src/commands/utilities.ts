@@ -59,22 +59,30 @@ async function runInitProject(context: vscode.ExtensionContext): Promise<void> {
     runInOutputChannel(cliPath, args, getWorkspaceDir(context), "Init: New Project");
 }
 
-/** Run the installer script to download the latest Varn runtime. */
-function runInstaller(context: vscode.ExtensionContext): void {
-    const root = path.resolve(context.extensionPath, "..");
-    const isWin = process.platform === "win32";
-    const script = path.join(root, "scripts", isWin ? "install.ps1" : "install.sh");
+const INSTALL_GUIDE = "https://github.com/varn-lang/varn/blob/main/docs/INSTALL.md";
 
-    if (!fs.existsSync(script)) {
-        void vscode.window.showErrorMessage(`Varn installer script not found: ${script}`);
+/**
+ * Run the installer script of a sibling varn-lang checkout. The script only
+ * exists for Windows and only next to the extension in a development layout;
+ * anywhere else the installation guide is offered.
+ */
+async function runInstaller(context: vscode.ExtensionContext): Promise<void> {
+    const root = path.resolve(context.extensionPath, "..", "varn-lang");
+    const script = path.join(root, "scripts", "install.ps1");
+
+    if (process.platform !== "win32" || !fs.existsSync(script)) {
+        const open = "Open Install Guide";
+        const choice = await vscode.window.showWarningMessage(
+            "No installer script is available here. Follow the installation guide to get the Varn runtime.",
+            open,
+        );
+        if (choice === open) await vscode.env.openExternal(vscode.Uri.parse(INSTALL_GUIDE));
         return;
     }
 
     const terminal = vscode.window.createTerminal({ name: "Varn Install Runtime", cwd: root });
     terminal.show(true);
-    terminal.sendText(
-        isWin ? `powershell -ExecutionPolicy Bypass -File "${script}"` : `chmod +x "${script}" && "${script}"`,
-    );
+    terminal.sendText(`powershell -ExecutionPolicy Bypass -File "${script}"`);
 }
 
 export { runRepl, runDoctor, runCacheClean, runInitProject, runInstaller };
