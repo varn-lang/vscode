@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as os from "node:os";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { BIN_EXT } from "./constants.js";
@@ -49,38 +48,43 @@ export function resolveCliPath(context: vscode.ExtensionContext): string | undef
     return found ?? findOnPath(binName);
 }
 
+const SHADOW_DIR = ".vn-shadow";
+
+/**
+ * Windows locks a running executable, which blocks `cargo build` from replacing
+ * `vn.exe` while the language server runs. The server therefore runs from a copy.
+ * The copy lives beside the original, as vn-shadow does, because the standard
+ * library of a development checkout is found by walking up from the executable.
+ */
 export function resolveServerPath(cliPath: string): string {
+    if (process.platform !== "win32") return cliPath;
     try {
-        const tag = fs.statSync(cliPath).mtimeMs.toString(36).replace(".", "");
-        const dir = path.join(os.tmpdir(), "vn-dev-server");
-        const dest = path.join(dir, `vn-${tag}${BIN_EXT}`);
-        if (!fs.existsSync(dest)) {
-            fs.mkdirSync(dir, { recursive: true });
-            fs.copyFileSync(cliPath, dest);
-            pruneDevCopies(dir, dest);
+        const { size, mtimeMs } = fs.statSync(cliPath);
+        const key = `${size.toString(16)}-${Math.round(mtimeMs).toString(16)}`;
+        const root = path.join(path.dirname(cliPath), SHADOW_DIR);
+        const image = path.join(root, key, path.basename(cliPath));
+        if (!fs.existsSync(image)) {
+            fs.mkdirSync(path.dirname(image), { recursive: true });
+            fs.copyFileSync(cliPath, image);
+            pruneShadowCopies(root, key);
         }
-        return dest;
+        return image;
     } catch {
         return cliPath;
     }
 }
 
-function pruneDevCopies(dir: string, keep: string): void {
-    let entries: string[];
+function pruneShadowCopies(root: string, keep: string): void {
+    let slots: string[];
     try {
-        entries = fs.readdirSync(dir);
+        slots = fs.readdirSync(root);
     } catch {
         return;
     }
-    const copies = entries
-        .filter((name) => name.startsWith("vn-") && name.endsWith(BIN_EXT))
-        .map((name) => path.join(dir, name))
-        .filter((file) => file !== keep)
-        .sort()
-        .reverse();
-    for (const extra of copies.slice(1)) {
+    for (const slot of slots) {
+        if (slot === keep) continue;
         try {
-            fs.unlinkSync(extra);
+            fs.rmSync(path.join(root, slot), { recursive: true, force: true });
         } catch {
             continue;
         }
