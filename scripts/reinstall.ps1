@@ -5,8 +5,8 @@
 .DESCRIPTION
     Dos problemas de entorno que este script evita:
 
-    1. El bundle se compila con rollup (`pnpm build`: rollup + `vsce
-       package --no-dependencies`). El entry `dist/extension.js` ya lleva
+    1. El bundle se compila con esbuild (`pnpm build`: typecheck + esbuild +
+       `vsce package --no-dependencies`). El entry `dist/extension.cjs` ya lleva
        empaquetado `vscode-languageclient`, así el .vsix no necesita
        `node_modules` y se evita el `npm list` de vsce, que truena con
        el layout de pnpm.
@@ -18,7 +18,7 @@
        vivos y para con un mensaje claro en vez de dejar que el usuario lea
        una pared de reintentos.
 
-    Verifica al final que el hash de `src/manager.js` instalado coincida con
+    Verifica al final que el hash de `dist/extension.cjs` instalado coincida con
     el del repo — la única forma confiable de saber que la instalación
     realmente tomó, en vez de confiar en el exit code de `code` (que puede
     reportar éxito con un fallo real en el log, como pasó en esta sesión).
@@ -38,7 +38,7 @@ if ($openCode) {
     exit 1
 }
 
-Write-Host "Empaquetando (pnpm build: rollup + vsce)..." -ForegroundColor Cyan
+Write-Host "Empaquetando (pnpm build: typecheck + esbuild + vsce)..." -ForegroundColor Cyan
 & pnpm build
 if ($LASTEXITCODE -ne 0) {
     throw "pnpm build falló (exit $LASTEXITCODE)"
@@ -59,8 +59,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $installedDir = Join-Path $env:USERPROFILE ".vscode\extensions\varn.$vsixName-$version"
-$installedFile = Join-Path $installedDir "src\manager.js"
-$sourceFile = Join-Path $repoRoot "src\manager.js"
+$installedFile = Join-Path $installedDir "dist\extension.cjs"
+$sourceFile = Join-Path $repoRoot "dist\extension.cjs"
 
 if ((Test-Path $installedFile) -and (Test-Path $sourceFile)) {
     $installedHash = (Get-FileHash $installedFile -Algorithm SHA256).Hash
