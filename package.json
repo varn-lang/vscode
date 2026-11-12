@@ -243,6 +243,11 @@
         "category": "Varn"
       },
       {
+        "command": "vn.showLog",
+        "title": "Show Extension Log",
+        "category": "Varn"
+      },
+      {
         "command": "vn.runFile",
         "title": "Run File",
         "category": "Varn",

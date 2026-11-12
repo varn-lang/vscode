@@ -3,6 +3,7 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import { BIN_EXT } from "./constants.js";
 import { vnHomeBinPath, findOnPath } from "./utils.js";
+import { log } from "./log.js";
 
 type BuildMode = "release" | "debug";
 
@@ -48,6 +49,7 @@ export function resolveCliPath(context: vscode.ExtensionContext): string | undef
     const override = vscode.workspace.getConfiguration("vn").get<string>("cli.path");
     if (override) {
         if (fs.existsSync(override)) return override;
+        log().warn(`vn.cli.path does not exist: ${override}`);
         void vscode.window.showWarningMessage(
             `vn.cli.path not found: ${override}. Falling back to auto-detect.`,
         );

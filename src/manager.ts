@@ -9,6 +9,7 @@ import { showActionsHub } from "./commands/hub.js";
 import { createClient, stopClient, getClient } from "./client.js";
 import { initLanguageFeatures, setLanguageState, refreshLanguageStatus } from "./language.js";
 import { errorMessage } from "./utils.js";
+import { log } from "./log.js";
 import { VnDebugAdapterFactory, VnDebugConfigProvider } from "./debug.js";
 
 import { VnStatusProvider } from "./views/status_view.js";
@@ -85,6 +86,7 @@ export class ExtensionManager {
         if (client) {
             await client.start().catch((err: unknown) => {
                 setLspStatus("stopped");
+                log().error(`Language server failed to start: ${errorMessage(err)}`);
                 void vscode.window.showErrorMessage(`Varn Language Server failed to start: ${errorMessage(err)}`);
             });
         }
@@ -131,7 +133,8 @@ export class ExtensionManager {
     }
 
     private trackClientState(client: LanguageClient): void {
-        client.onDidChangeState(({ newState }) => {
+        client.onDidChangeState(({ oldState, newState }) => {
+            log().info(`Language server: ${State[oldState]} -> ${State[newState]}`);
             if (newState === State.Running) {
                 setLspStatus("running");
                 setLanguageState("running");
@@ -146,18 +149,21 @@ export class ExtensionManager {
     }
 
     private startLanguageServer(): void {
-        this.lspOutputChannel = vscode.window.createOutputChannel("Varn Language Server");
+        this.lspOutputChannel = vscode.window.createOutputChannel("Varn Language Server", { log: true });
         this.pushDisposable(this.lspOutputChannel);
 
         const lspPath = resolveCliPath(this.context);
         if (!lspPath) {
+            log().warn("No vn binary found: the language server is not started.");
             setLspStatus("error");
             void reportMissingBinary();
             return;
         }
         this.lspPath = lspPath;
 
-        this.trackClientState(createClient(resolveServerPath(lspPath), this.lspOutputChannel, LSP_ARGS));
+        const serverPath = resolveServerPath(lspPath);
+        log().info(`Language server: ${serverPath}${serverPath === lspPath ? "" : ` (copy of ${lspPath})`}`);
+        this.trackClientState(createClient(serverPath, this.lspOutputChannel, LSP_ARGS));
     }
 
     private startDebugAdapter(): void {
@@ -248,14 +254,15 @@ export class ExtensionManager {
                     return;
                 }
                 setLspStatus("starting");
-                const channel = this.lspOutputChannel ?? vscode.window.createOutputChannel("Varn Language Server");
+                const channel = this.lspOutputChannel ?? vscode.window.createOutputChannel("Varn Language Server", { log: true });
                 const client = createClient(resolveServerPath(lspPath), channel, LSP_ARGS);
                 this.trackClientState(client);
                 try {
                     await client.start();
                 } catch (err) {
                     setLspStatus("stopped");
-                    void vscode.window.showErrorMessage(`Varn Language Server failed to start: ${errorMessage(err)}`);
+                    log().error(`Language server failed to start: ${errorMessage(err)}`);
+                void vscode.window.showErrorMessage(`Varn Language Server failed to start: ${errorMessage(err)}`);
                 }
             }),
 
@@ -263,6 +270,8 @@ export class ExtensionManager {
                 await stopClient();
                 setLspStatus("stopped");
             }),
+
+            registerCmd("vn.showLog", () => log().show()),
 
             registerCmd("vn.showServerLog", () => {
                 getClient()?.outputChannel.show();

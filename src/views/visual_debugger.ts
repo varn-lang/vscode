@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as fs from "node:fs";
 import { randomBytes } from "node:crypto";
 import { getClient } from "../client.js";
+import { log } from "../log.js";
 
 type InspectorMessage =
     | { command: "ready" }
@@ -106,7 +107,7 @@ export class VnVisualInspectorPanel {
             editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
         } catch (err) {
-            console.error("Failed to jump to line:", err);
+            log().error("Inspector: failed to jump to line", err);
         }
     }
 
@@ -127,7 +128,7 @@ export class VnVisualInspectorPanel {
             });
             if (data) void this.panel.webview.postMessage({ type: "updateData", data });
         } catch (err) {
-            console.error("Error refreshing CFG data:", err);
+            log().error("Inspector: failed to refresh the control-flow graph", err);
         }
     }
 
