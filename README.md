@@ -23,12 +23,19 @@ pnpm build              # typecheck, manifest check, bundle, then vsce package
 |---|---|
 | `pnpm typecheck` | `tsc` with `strict`, no emit |
 | `pnpm check:manifest` | every command in `package.json` is registered exactly once, ids are lowercase |
+| `pnpm check:naming` | `vn` names logic, `Varn` names the brand; fails on `Varn.x`, a bare `"varn"` or `Vn` |
 | `pnpm bundle` | esbuild bundle to `dist/extension.cjs` |
 | `pnpm smoke` | loads the bundle against a generated `vscode` stub and checks `activate`/`deactivate` |
 | `pnpm scan:tests` | runs the test scanner over a Varn checkout (`../varn-lang`) and fails on a missed `describe`/`it` |
 | `pnpm grammar:scan` | tokenizes a Varn checkout with the TextMate grammar and fails on a timeout or `invalid.*` scope |
 
 `scripts/reinstall.ps1` rebuilds the package and reinstalls it into VS Code.
+
+## Naming
+
+`vn` is for logic: language id, command ids, setting keys (`vn.cli.path`), view ids,
+URI schemes, debug and task types, file names, the `vn` program. `Varn` is the
+brand and appears only in text a person reads. `pnpm check:naming` enforces it.
 
 ## Grammar
 
