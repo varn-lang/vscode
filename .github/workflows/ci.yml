@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: Typecheck, manifest, grammar and bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm run check:manifest
+      - run: pnpm run check:naming
+      - run: pnpm run grammar:snapshot
+      - run: pnpm run bundle
+      - run: pnpm run smoke
+      - run: pnpm exec vsce package --no-dependencies --allow-missing-repository
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vn-language-vsix
+          path: "*.vsix"
+
+  integration:
+    name: Integration tests in VS Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: varn-extension
+
+      - uses: actions/checkout@v4
+        with:
+          repository: varn-lang/varn
+          path: varn-lang
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: varn-lang
+
+      - name: Build vn
+        working-directory: varn-lang
+        run: cargo build --profile quick --bin vn
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+          package_json_file: varn-extension/package.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: varn-extension/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: varn-extension
+        run: pnpm install --frozen-lockfile
+
+      - name: Run the extension in VS Code
+        working-directory: varn-extension
+        env:
+          VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
+        run: xvfb-run -a pnpm run test:integration
