@@ -1,0 +1,80 @@
+import * as vscode from "vscode";
+
+class ActionCategoryItem extends vscode.TreeItem {
+    constructor(
+        label: string,
+        collapsibleState: vscode.TreeItemCollapsibleState,
+        readonly actions: readonly ActionDefinition[],
+    ) {
+        super(label, collapsibleState);
+        this.contextValue = "category";
+    }
+}
+
+class ActionTreeItem extends vscode.TreeItem {
+    constructor({ label, icon, command }: ActionDefinition) {
+        super(label, vscode.TreeItemCollapsibleState.None);
+        this.iconPath = new vscode.ThemeIcon(icon);
+        this.command = { title: label, command };
+        this.contextValue = "action";
+    }
+}
+
+interface ActionDefinition {
+    label: string;
+    icon: string;
+    command: string;
+}
+
+const FILE_OPERATIONS: ActionDefinition[] = [
+    { label: "Run File", icon: "play", command: "Varn.runFile" },
+    { label: "Run File in Terminal", icon: "terminal", command: "Varn.runFileInTerminal" },
+    { label: "Check File (Typecheck)", icon: "checklist", command: "Varn.checkFile" },
+    { label: "Build File (Compile)", icon: "package", command: "Varn.buildFile" },
+    { label: "Show Bytecode", icon: "file-binary", command: "Varn.showBytecode" },
+    { label: "Show AST", icon: "symbol-structure", command: "Varn.showAst" },
+    { label: "Benchmark File", icon: "dashboard", command: "Varn.benchFile" },
+];
+
+const DEPENDENCY_MANAGEMENT: ActionDefinition[] = [
+    { label: "Add Dependency", icon: "add", command: "Varn.pkgAdd" },
+    { label: "Remove Dependency", icon: "trash", command: "Varn.pkgRemove" },
+    { label: "Install Dependencies", icon: "cloud-download", command: "Varn.pkgInstall" },
+    { label: "Update Dependencies", icon: "refresh", command: "Varn.pkgUpdate" },
+];
+
+const UTILITIES: ActionDefinition[] = [
+    { label: "Start Interactive REPL", icon: "terminal", command: "Varn.runRepl" },
+    { label: "Doctor (Check Setup)", icon: "pulse", command: "Varn.doctor" },
+    { label: "Init Project", icon: "new-folder", command: "Varn.initProject" },
+    { label: "Clean Cache", icon: "clear-all", command: "Varn.cacheClean" },
+    { label: "Install Runtime", icon: "cloud-download", command: "Varn.installRuntime" },
+];
+
+type ActionNode = ActionCategoryItem | ActionTreeItem;
+
+export class VarnActionsProvider implements vscode.TreeDataProvider<ActionNode> {
+    constructor(private readonly context: vscode.ExtensionContext) {}
+
+    getTreeItem(element: ActionNode): vscode.TreeItem {
+        return element;
+    }
+
+    getChildren(element?: ActionNode): ActionNode[] {
+        if (!element) {
+            return [
+                new ActionCategoryItem("File Operations", vscode.TreeItemCollapsibleState.Expanded, FILE_OPERATIONS),
+                new ActionCategoryItem(
+                    "Dependency Management",
+                    vscode.TreeItemCollapsibleState.Collapsed,
+                    DEPENDENCY_MANAGEMENT,
+                ),
+                new ActionCategoryItem("Utilities", vscode.TreeItemCollapsibleState.Collapsed, UTILITIES),
+            ];
+        }
+        if (element instanceof ActionCategoryItem) {
+            return element.actions.map((action) => new ActionTreeItem(action));
+        }
+        return [];
+    }
+}
