@@ -13,7 +13,7 @@
     {
       "label": "vn: check lsp",
       "type": "shell",
-      "command": "cargo check -p varn-lsp -p varn-dap",
+      "command": "cargo check -p vn-lsp -p vn-dap",
       "options": { "cwd": "${workspaceFolder}/../varn-lang" },
       "group": "build",
       "presentation": { "reveal": "silent", "panel": "dedicated" },
@@ -31,7 +31,7 @@
     {
       "label": "vn: watch check",
       "type": "shell",
-      "command": "cargo watch -x \"check -p varn-lsp -p varn-dap\"",
+      "command": "cargo watch -x \"check -p vn-lsp -p vn-dap\"",
       "options": { "cwd": "${workspaceFolder}/../varn-lang" },
       "group": "none",
       "presentation": { "reveal": "never", "panel": "dedicated" },
