@@ -555,6 +555,70 @@
         {
           "command": "varn.selectEditorRange",
           "when": "false"
+        },
+        {
+          "command": "varn.runFile",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.runFileInTerminal",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.checkFile",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.buildFile",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.showBytecode",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.showAst",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.showTokens",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.benchFile",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.runWithPhases",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.openBytecodeViewer",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.openSSAViewer",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.openVisualInspector",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.diffBytecode",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.runTest",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.runBenchmark",
+          "when": "editorLangId == varn"
+        },
+        {
+          "command": "varn.runMain",
+          "when": "false"
         }
       ]
     },
