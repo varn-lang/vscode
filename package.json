@@ -11,7 +11,8 @@
   },
   "scripts": {
     "bundle": "rollup -c",
-    "build": "rollup -c && vsce package --no-dependencies --allow-missing-repository"
+    "build": "rollup -c && vsce package --no-dependencies --allow-missing-repository",
+    "grammar:scan": "node scripts/scan-grammar.cjs"
   },
   "icon": "icon.png",
   "engines": {
@@ -662,6 +663,8 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.96.0",
-    "rollup": "^4.64.0"
+    "rollup": "^4.64.0",
+    "vscode-textmate": "9.2.0",
+    "vscode-oniguruma": "2.0.1"
   }
 }
