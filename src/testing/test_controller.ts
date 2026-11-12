@@ -3,6 +3,20 @@ import * as path from "node:path";
 import { spawn } from "node:child_process";
 import { resolveCliPath } from "../binary.js";
 import { stripAnsi } from "../utils.js";
+import { scanTests, type ScannedCase } from "./scan.js";
+
+interface FileRun {
+    code: number | null;
+    output: string;
+    elapsedMs: number;
+    launchError?: string;
+}
+
+function descendants(item: vscode.TestItem): vscode.TestItem[] {
+    const found: vscode.TestItem[] = [];
+    item.children.forEach((child) => found.push(child, ...descendants(child)));
+    return found;
+}
 
 class VarnTestController implements vscode.Disposable {
     private readonly ctrl: vscode.TestController;
@@ -60,53 +74,58 @@ class VarnTestController implements vscode.Disposable {
     async discoverDocumentTests(uri: vscode.Uri): Promise<void> {
         try {
             const doc = await vscode.workspace.openTextDocument(uri);
+            const scanned = scanTests(doc.getText());
             const fileId = uri.toString();
+
+            if (scanned.suites.length === 0 && scanned.cases.length === 0) {
+                this.ctrl.items.delete(fileId);
+                return;
+            }
+
             let fileItem = this.ctrl.items.get(fileId);
             if (!fileItem) {
                 fileItem = this.ctrl.createTestItem(fileId, path.basename(uri.fsPath), uri);
                 this.ctrl.items.add(fileItem);
             }
 
-            const currentChildIds = new Set<string>();
-            const lines = doc.getText().split(/\r?\n/);
-            let pendingTestDecorator = false;
-
-            for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-                const line = lines[lineIdx];
-                if (/^\s*@test\b/.test(line)) {
-                    pendingTestDecorator = true;
-                    continue;
+            const wanted = new Map<string, vscode.TestItem>();
+            const seen = new Map<string, number>();
+            const place = (parent: vscode.TestItem, scannedCase: ScannedCase, scope: string): vscode.TestItem => {
+                const key = `${scope}::${scannedCase.title}`;
+                const occurrence = seen.get(key) ?? 0;
+                seen.set(key, occurrence + 1);
+                const id = occurrence === 0 ? `${fileId}::${key}` : `${fileId}::${key}#${occurrence + 1}`;
+                let item = parent.children.get(id);
+                if (!item) {
+                    item = this.ctrl.createTestItem(id, scannedCase.title, uri);
+                    parent.children.add(item);
                 }
-                const match = line.match(/\bfn\s+([a-zA-Z0-9_]+)/);
-                if (match) {
-                    const fnName = match[1];
-                    const col = line.indexOf(fnName);
-                    const isTest = pendingTestDecorator || fnName.startsWith("test_");
-                    pendingTestDecorator = false;
-                    if (!isTest) continue;
-                    const testId = `${fileId}::${fnName}`;
-                    currentChildIds.add(testId);
+                item.range = new vscode.Range(
+                    scannedCase.line,
+                    scannedCase.column,
+                    scannedCase.line,
+                    scannedCase.column + scannedCase.title.length,
+                );
+                wanted.set(id, item);
+                return item;
+            };
 
-                    let testItem = fileItem.children.get(testId);
-                    if (!testItem) {
-                        testItem = this.ctrl.createTestItem(testId, `▶ ${fnName}`, uri);
-                        fileItem.children.add(testItem);
-                    }
-                    testItem.range = new vscode.Range(lineIdx, col, lineIdx, col + fnName.length);
-                    continue;
-                }
-                if (line.trim() !== "" && !/^\s*@/.test(line)) pendingTestDecorator = false;
+            for (const scannedCase of scanned.cases) place(fileItem, scannedCase, "test");
+            for (const suite of scanned.suites) {
+                const suiteItem = place(fileItem, suite, "suite");
+                for (const scannedCase of suite.cases) place(suiteItem, scannedCase, `suite:${suite.title}`);
+                this.prune(suiteItem, wanted);
             }
-
-            const parent = fileItem;
-            parent.children.forEach((child) => {
-                if (!currentChildIds.has(child.id)) parent.children.delete(child.id);
-            });
-
-            if (parent.children.size === 0) this.ctrl.items.delete(fileId);
+            this.prune(fileItem, wanted);
         } catch {
             return;
         }
+    }
+
+    private prune(parent: vscode.TestItem, wanted: Map<string, vscode.TestItem>): void {
+        parent.children.forEach((child) => {
+            if (!wanted.has(child.id)) parent.children.delete(child.id);
+        });
     }
 
     async runHandler(
@@ -123,41 +142,83 @@ class VarnTestController implements vscode.Disposable {
             return;
         }
 
-        const queue: vscode.TestItem[] = [];
-        if (request.include) request.include.forEach((item) => queue.push(item));
-        else this.ctrl.items.forEach((item) => queue.push(item));
+        const roots: vscode.TestItem[] = [];
+        if (request.include) request.include.forEach((item) => roots.push(item));
+        else this.ctrl.items.forEach((item) => roots.push(item));
 
-        while (queue.length > 0 && !token.isCancellationRequested) {
-            const item = queue.shift();
-            if (!item || request.exclude?.includes(item)) continue;
-            if (item.children.size > 0 && !item.uri) continue;
-            await this.runFile(item, item.uri, cliPath, run, token, isBench);
+        const byFile = new Map<string, { uri: vscode.Uri; items: vscode.TestItem[] }>();
+        for (const item of roots) {
+            if (!item.uri || request.exclude?.includes(item)) continue;
+            const key = item.uri.toString();
+            const group = byFile.get(key) ?? { uri: item.uri, items: [] };
+            group.items.push(item);
+            byFile.set(key, group);
+        }
+
+        for (const { uri, items } of byFile.values()) {
+            if (token.isCancellationRequested) break;
+            const nodes = items.flatMap((item) => [item, ...descendants(item)]);
+            nodes.forEach((node) => run.started(node));
+
+            const result = await this.runFile(cliPath, uri, token, isBench);
+            if (!result) {
+                nodes.forEach((node) => run.skipped(node));
+                continue;
+            }
+            this.report(run, nodes, items, result);
         }
 
         run.end();
     }
 
-    async runFile(
-        item: vscode.TestItem,
-        uri: vscode.Uri | undefined,
-        cliPath: string,
-        run: vscode.TestRun,
-        token: vscode.CancellationToken,
-        isBench: boolean,
-    ): Promise<void> {
-        if (!uri || token.isCancellationRequested) {
-            run.skipped(item);
+    private report(run: vscode.TestRun, nodes: vscode.TestItem[], roots: vscode.TestItem[], result: FileRun): void {
+        if (result.launchError) {
+            const message = new vscode.TestMessage(`Failed to launch: ${result.launchError}`);
+            nodes.forEach((node) => run.errored(node, message, result.elapsedMs));
             return;
         }
-        run.started(item);
-        const start = Date.now();
-        const filePath = uri.fsPath;
-        const args = [isBench ? "bench" : "test", filePath];
 
-        await new Promise<void>((resolve) => {
-            const proc = spawn(cliPath, args, { cwd: path.dirname(filePath) });
+        if (result.code === 0) {
+            if (result.output) {
+                roots.forEach((root) => run.appendOutput(`${result.output.replace(/\n/g, "\r\n")}\r\n`, undefined, root));
+            }
+            nodes.forEach((node) => run.passed(node, result.elapsedMs));
+            return;
+        }
+
+        const text = result.output || `Process exited with code ${result.code}`;
+        for (const node of nodes) {
+            const message = new vscode.TestMessage(text);
+            if (node.uri && node.range) message.location = new vscode.Location(node.uri, node.range);
+            run.failed(node, message, result.elapsedMs);
+        }
+    }
+
+    /** `vn test` and `vn bench` work on whole files, so every item of a file shares one process. */
+    private runFile(
+        cliPath: string,
+        uri: vscode.Uri,
+        token: vscode.CancellationToken,
+        isBench: boolean,
+    ): Promise<FileRun | undefined> {
+        const filePath = uri.fsPath;
+        const start = Date.now();
+
+        return new Promise((resolve) => {
+            const proc = spawn(cliPath, [isBench ? "bench" : "test", filePath], { cwd: path.dirname(filePath) });
             let stdout = "";
             let stderr = "";
+            let settled = false;
+            const finish = (value: FileRun | undefined): void => {
+                if (settled) return;
+                settled = true;
+                cancellation.dispose();
+                resolve(value);
+            };
+            const cancellation = token.onCancellationRequested(() => {
+                proc.kill();
+                finish(undefined);
+            });
 
             proc.stdout.on("data", (data: Buffer) => {
                 stdout += data.toString();
@@ -165,31 +226,15 @@ class VarnTestController implements vscode.Disposable {
             proc.stderr.on("data", (data: Buffer) => {
                 stderr += data.toString();
             });
-
             proc.on("close", (code) => {
-                const elapsed = Date.now() - start;
-                const cleanOutput = stripAnsi(`${stdout}\n${stderr}`).trim();
-
-                if (code === 0) {
-                    if (cleanOutput) run.appendOutput(`${cleanOutput.replace(/\n/g, "\r\n")}\r\n`, undefined, item);
-                    run.passed(item, elapsed);
-                } else {
-                    const message = new vscode.TestMessage(cleanOutput || `Process exited with code ${code}`);
-                    if (item.range) message.location = new vscode.Location(uri, item.range);
-                    run.failed(item, message, elapsed);
-                }
-                resolve();
+                finish({
+                    code,
+                    output: stripAnsi(`${stdout}\n${stderr}`).trim(),
+                    elapsedMs: Date.now() - start,
+                });
             });
-
             proc.on("error", (err) => {
-                run.errored(item, new vscode.TestMessage(`Failed to launch: ${err.message}`), Date.now() - start);
-                resolve();
-            });
-
-            token.onCancellationRequested(() => {
-                proc.kill();
-                run.skipped(item);
-                resolve();
+                finish({ code: null, output: "", elapsedMs: Date.now() - start, launchError: err.message });
             });
         });
     }

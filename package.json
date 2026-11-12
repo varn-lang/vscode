@@ -15,7 +15,8 @@
     "grammar:scan": "node scripts/scan-grammar.cjs",
     "smoke": "node scripts/smoke-load.cjs",
     "typecheck": "tsc -p .",
-    "check:manifest": "node scripts/check-manifest.cjs"
+    "check:manifest": "node scripts/check-manifest.cjs",
+    "scan:tests": "node scripts/check-test-scan.mjs"
   },
   "icon": "icon.png",
   "engines": {
