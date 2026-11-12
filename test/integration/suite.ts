@@ -1,6 +1,7 @@
 import * as assert from "node:assert/strict";
 import * as path from "node:path";
 import * as vscode from "vscode";
+import type { VnExtensionApi } from "../../extension.js";
 
 const EXTENSION_ID = "Varn.vn-language";
 const SERVER_TIMEOUT_MS = 90_000;
@@ -156,6 +157,22 @@ test("the sidebar views open without error", async () => {
     for (const id of ["vn-status", "vn-actions", "vn-ast"]) {
         await vscode.commands.executeCommand(`${id}.focus`);
     }
+});
+
+test("the visual inspector webview loads its script and renders the graph", async () => {
+    const extension = await activate();
+    const api = extension.exports as VnExtensionApi;
+    const rendered = new Promise<number>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error("the inspector never reported a render")), 60_000);
+        const subscription = api.inspector.onDidRender((functions) => {
+            clearTimeout(timer);
+            subscription.dispose();
+            resolve(functions);
+        });
+    });
+    await vscode.commands.executeCommand("vn.openVisualInspector", workspaceFile("hello.vn"));
+    const functions = await rendered;
+    assert.ok(functions > 0, `the graph drew ${functions} function(s)`);
 });
 
 test("the Get Started walkthrough opens", async () => {

@@ -3,11 +3,19 @@ import * as fs from "node:fs";
 import { randomBytes } from "node:crypto";
 import { getClient } from "../client.js";
 
-type InspectorMessage = { command: "goToLine"; line?: number } | { command: "refresh" };
+type InspectorMessage =
+    | { command: "ready" }
+    | { command: "rendered"; functions: number }
+    | { command: "goToLine"; line?: number }
+    | { command: "refresh" };
+
+const rendered = new vscode.EventEmitter<number>();
 
 export class VnVisualInspectorPanel {
     static currentPanel: VnVisualInspectorPanel | undefined;
     static readonly viewType = "vnVisualInspector";
+    /** Fires with the number of functions drawn each time the webview renders new data. */
+    static readonly onDidRender = rendered.event;
 
     private documentUri: vscode.Uri | undefined;
     private readonly disposables: vscode.Disposable[] = [];
@@ -44,13 +52,18 @@ export class VnVisualInspectorPanel {
         this.documentUri = documentUri ?? vscode.window.activeTextEditor?.document.uri;
 
         this.panel.webview.html = this.getHtmlForWebview();
-        setTimeout(() => void this.refresh(), 300);
 
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
         this.panel.webview.onDidReceiveMessage(
             async (message: InspectorMessage) => {
                 switch (message.command) {
+                    case "ready":
+                        void this.refresh();
+                        return;
+                    case "rendered":
+                        rendered.fire(message.functions);
+                        return;
                     case "goToLine":
                         if (message.line && this.documentUri) await this.revealLine(this.documentUri, message.line);
                         return;

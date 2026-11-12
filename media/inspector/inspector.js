@@ -74,6 +74,10 @@ window.addEventListener("message", (event) => {
     if (msg.type === "updateData") {
         globalData = msg.data;
         renderFunctions();
+        vscode.postMessage({
+            command: "rendered",
+            functions: globalData.functions ? globalData.functions.length : 0
+        });
     }
 });
 
@@ -338,3 +342,5 @@ function escapeHtml(text) {
     if (!text) return "";
     return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+
+vscode.postMessage({ command: "ready" });
