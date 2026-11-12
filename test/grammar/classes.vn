@@ -1,0 +1,51 @@
+/** A shape with an area. */
+@sealed
+abstract class Shape<T extends Numeric = int> implements Printable {
+    static readonly count: int = 0;
+    private readonly id: int;
+    protected name: str | null = null;
+    abstract area(): T;
+
+    constructor(label: str, size: int = 1) {
+        super();
+    }
+
+    get description(): str {
+        return `${this.label}:${this.size}`;
+    }
+
+    set description(value: str) {
+        this.label = value;
+    }
+
+    static create<U>(value: U): Shape<U> {
+        return new Circle(value);
+    }
+
+    override toString(): str {
+        return this.label;
+    }
+
+    async load(): Promise<void> {}
+
+    *items(): Generator<int> {
+        yield 1;
+    }
+}
+
+struct Point { x: int; y: int }
+interface Named { name: str; greet(): str }
+enum Level { Low = 1, High = 2 }
+type Pair<A, B = A> = { first: A; second: B };
+namespace Geometry {
+    export const pi = 3.14;
+}
+extension Shape on Circle {
+    double(): int { return this.size * 2; }
+}
+extension<T> on readonly T[] {
+    second(): T | null { return this[1]; }
+}
+extension Tools<T extends Hashable> on Set<T> {
+    size2(): int { return this.size * 2; }
+}

@@ -166,13 +166,14 @@
 		"extension-declaration": {
 			"comment": "`extension<T> on Type { ... }`.",
 			"name": "meta.extension.declaration.vn",
-			"begin": "(?<![._$[:alnum:]])(extension)(?![_$[:alnum:]])(?=\\s*(?:<|on\\b))",
+			"begin": "(?<![._$[:alnum:]])(extension)(?![_$[:alnum:]])(?=\\s*(?:<|on\\b|[_$[:alpha:]][_$[:alnum:]]*\\s*(?:<[^{]*>)?\\s+on\\b))",
 			"beginCaptures": {
 				"1": { "name": "storage.type.vn" }
 			},
 			"end": "(?<=\\})|(?=;)",
 			"patterns": [
 				{ "include": "#comment" },
+				{ "match": "(?<![._$[:alnum:]])(?!on\\b)[_$[:alpha:]][_$[:alnum:]]*(?=\\s*(?:<|\\bon\\b))", "name": "entity.name.type.extension.vn" },
 				{ "include": "#generic-parameters" },
 				{ "include": "#heritage" },
 				{ "include": "#class-body" }
