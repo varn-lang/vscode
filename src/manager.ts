@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { State, type LanguageClient } from "vscode-languageclient/node";
 
-import { resolveCliPath, resolveServerPath, LSP_ARGS } from "./binary.js";
+import { BINARY_NOT_FOUND, resolveCliPath, resolveServerPath, LSP_ARGS } from "./binary.js";
 import { initStatusBar, setLspStatus, setStatusProvider, disposeStatusBar } from "./status.js";
 import { showActionsHub } from "./commands/hub.js";
 import { createClient, stopClient, getClient } from "./client.js";
@@ -152,9 +152,7 @@ export class ExtensionManager {
         const lspPath = resolveCliPath(this.context);
         if (!lspPath) {
             setLspStatus("error");
-            void vscode.window.showErrorMessage(
-                "vn binary not found. Build with `cargo build --release --bin vn` or set vn.cli.path.",
-            );
+            void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
             return;
         }
         this.lspPath = lspPath;
@@ -237,7 +235,7 @@ export class ExtensionManager {
                 await stopClient();
                 const lspPath = resolveCliPath(ctx);
                 if (!lspPath) {
-                    void vscode.window.showErrorMessage("vn binary not found. Set vn.cli.path.");
+                    void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
                     return;
                 }
                 setLspStatus("starting");

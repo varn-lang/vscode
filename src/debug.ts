@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { resolveCliPath, resolveServerPath } from "./binary.js";
+import { BINARY_NOT_FOUND, resolveCliPath, resolveServerPath } from "./binary.js";
 
 export class VarnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {
     constructor(private readonly context: vscode.ExtensionContext) {}
@@ -7,9 +7,7 @@ export class VarnDebugAdapterFactory implements vscode.DebugAdapterDescriptorFac
     createDebugAdapterDescriptor(): vscode.DebugAdapterDescriptor | undefined {
         const cliPath = resolveCliPath(this.context);
         if (!cliPath) {
-            void vscode.window.showErrorMessage(
-                "Varn binary not found. Build with `cargo build --release --bin vn` or set vn.cli.path.",
-            );
+            void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
             return undefined;
         }
         return new vscode.DebugAdapterExecutable(resolveServerPath(cliPath), ["dap"]);

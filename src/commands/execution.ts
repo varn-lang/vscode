@@ -1,14 +1,11 @@
 import * as vscode from "vscode";
 import * as path from "node:path";
 import { resolveTargetFile, runInOutputChannel, resolveCliPath, formatTerminalCommand } from "./base.js";
+import { BINARY_NOT_FOUND } from "../binary.js";
 import { updateBuildModeStatusBar } from "../status.js";
 import { VarnVisualInspectorPanel } from "../views/visual_debugger.js";
 
 type TargetUri = vscode.Uri | string | undefined;
-
-const BINARY_NOT_FOUND = "Varn binary not found.";
-const BINARY_NOT_FOUND_WITH_HINT =
-    "Varn binary not found. Build with `cargo build --release --bin vn` or set vn.cli.path.";
 
 const DEBUG_PHASES = [
     "tokens",
@@ -38,13 +35,13 @@ interface Invocation {
     name: string;
 }
 
-function prepare(context: vscode.ExtensionContext, target: TargetUri, notFound = BINARY_NOT_FOUND): Invocation | undefined {
+function prepare(context: vscode.ExtensionContext, target: TargetUri): Invocation | undefined {
     const file = resolveTargetFile(toUri(target));
     if (!file) return undefined;
 
     const cliPath = resolveCliPath(context);
     if (!cliPath) {
-        void vscode.window.showErrorMessage(notFound);
+        void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
         return undefined;
     }
     return { file, cliPath, cwd: path.dirname(file), name: path.basename(file) };
@@ -56,7 +53,7 @@ function runVarnFile(
     uri: TargetUri,
     opts: { terminal: boolean; verbose?: boolean },
 ): void {
-    const run = prepare(context, uri, BINARY_NOT_FOUND_WITH_HINT);
+    const run = prepare(context, uri);
     if (!run) return;
 
     const verbose = opts.verbose ?? vscode.workspace.getConfiguration("vn").get<boolean>("run.verbose") ?? false;

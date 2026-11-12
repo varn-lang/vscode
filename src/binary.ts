@@ -7,6 +7,9 @@ import { varnHomeBinPath, findOnPath } from "./utils.js";
 
 type BuildMode = "release" | "debug";
 
+export const BINARY_NOT_FOUND =
+    "The `vn` binary was not found. Build it with `cargo build --release --bin vn` or set vn.cli.path.";
+
 function targetCandidates(root: string, binName: string, mode: BuildMode): string[] {
     const preferred = path.join(root, "target", mode, binName);
     const fallback = path.join(root, "target", mode === "release" ? "debug" : "release", binName);

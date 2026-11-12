@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { runInOutputChannel, resolveCliPath } from "./base.js";
+import { BINARY_NOT_FOUND } from "../binary.js";
 
 function getWorkspaceDir(context: vscode.ExtensionContext): string {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? context.extensionPath;
@@ -7,7 +8,7 @@ function getWorkspaceDir(context: vscode.ExtensionContext): string {
 
 function requireCli(context: vscode.ExtensionContext): string | undefined {
     const cliPath = resolveCliPath(context);
-    if (!cliPath) void vscode.window.showErrorMessage("Varn binary not found.");
+    if (!cliPath) void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
     return cliPath;
 }
 

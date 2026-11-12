@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
-import { resolveCliPath } from "../binary.js";
+import { BINARY_NOT_FOUND, resolveCliPath } from "../binary.js";
 import { errorMessage, stripAnsi } from "../utils.js";
 import { getClient } from "../client.js";
 
@@ -112,7 +112,7 @@ function getAstForFileCli(context: vscode.ExtensionContext, filePath: string): P
     return new Promise((resolve, reject) => {
         const cliPath = resolveCliPath(context);
         if (!cliPath) {
-            reject(new Error("Varn CLI not found"));
+            reject(new Error(BINARY_NOT_FOUND));
             return;
         }
 

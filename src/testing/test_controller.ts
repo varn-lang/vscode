@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
-import { resolveCliPath } from "../binary.js";
+import { BINARY_NOT_FOUND, resolveCliPath } from "../binary.js";
 import { stripAnsi } from "../utils.js";
 import { scanTests, type ScannedCase } from "./scan.js";
 
@@ -137,7 +137,7 @@ class VarnTestController implements vscode.Disposable {
         const cliPath = resolveCliPath(this.context);
 
         if (!cliPath) {
-            void vscode.window.showErrorMessage("Varn binary not found.");
+            void vscode.window.showErrorMessage(BINARY_NOT_FOUND);
             run.end();
             return;
         }
