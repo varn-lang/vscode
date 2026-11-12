@@ -17,7 +17,8 @@
     "typecheck": "tsc -p .",
     "check:manifest": "node scripts/check-manifest.cjs",
     "scan:tests": "node scripts/check-test-scan.mjs",
-    "check:naming": "node scripts/check-naming.cjs"
+    "check:naming": "node scripts/check-naming.cjs",
+    "test:integration": "pnpm run bundle && node scripts/run-integration.mjs"
   },
   "icon": "icon.png",
   "engines": {
@@ -706,6 +707,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/vscode": "1.109.0",
+    "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^4.1.0",
     "esbuild": "^0.28.2",
     "typescript": "^7.0.2",

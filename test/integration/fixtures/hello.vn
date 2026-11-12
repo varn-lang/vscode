@@ -1,0 +1,5 @@
+function greet(name: str): str {
+    return `hello ${name}`;
+}
+
+print(greet("vn"));

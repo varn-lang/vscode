@@ -3,3 +3,5 @@ node_modules/
 stage-flat/
 stage-vsix/
 dist/
+out/
+.vscode-test/

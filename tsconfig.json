@@ -13,5 +13,5 @@
         "skipLibCheck": true,
         "noEmit": true
     },
-    "include": ["extension.ts", "src/**/*.ts"]
+    "include": ["extension.ts", "src/**/*.ts", "test/**/*.ts"]
 }
