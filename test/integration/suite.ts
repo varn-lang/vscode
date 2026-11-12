@@ -312,6 +312,20 @@ test("every parameter is a parameter, including callbacks, and the default theme
     assert.equal(defaults["editor.semanticTokenColorCustomizations"].rules.parameter.underline, true);
 });
 
+test("VS Code applies the underline default to vn documents", async () => {
+    await activate();
+    const document = await vscode.workspace.openTextDocument(workspaceFile("semantic.vn"));
+    const config = vscode.workspace.getConfiguration("editor", document);
+    const effective = config.get<{ rules?: Record<string, { underline?: boolean }> }>("semanticTokenColorCustomizations");
+    assert.equal(effective?.rules?.parameter?.underline, true, `effective customizations: ${JSON.stringify(effective)}`);
+    assert.equal(config.get("semanticHighlighting.enabled"), true);
+    const textMate = config.get<{ textMateRules?: { scope: string; settings: { fontStyle?: string } }[] }>("tokenColorCustomizations");
+    assert.ok(
+        textMate?.textMateRules?.some((rule) => rule.scope === "variable.parameter.vn" && rule.settings.fontStyle === "underline"),
+        "the TextMate fallback underlines declared parameters",
+    );
+});
+
 test("semantic tokens carry declaration, static and readonly modifiers", async () => {
     await activate();
     const tokens = await semanticTokensOf("semantic.vn");

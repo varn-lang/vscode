@@ -846,6 +846,16 @@
               "underline": true
             }
           }
+        },
+        "editor.tokenColorCustomizations": {
+          "textMateRules": [
+            {
+              "scope": "variable.parameter.vn",
+              "settings": {
+                "fontStyle": "underline"
+              }
+            }
+          ]
         }
       }
     }
