@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { State, type LanguageClient } from "vscode-languageclient/node";
 
-import { reportMissingBinary, resolveCliPath, resolveServerPath, LSP_ARGS } from "./binary.js";
+import { INSTALL_GUIDE, reportMissingBinary, resolveCliPath, resolveServerPath, LSP_ARGS } from "./binary.js";
 import { initStatusBar, setLspStatus, setStatusProvider, disposeStatusBar } from "./status.js";
 import { showActionsHub } from "./commands/hub.js";
 import { createClient, stopClient, getClient } from "./client.js";
@@ -185,6 +185,11 @@ export class ExtensionManager {
         );
 
         this.pushDisposable(
+            vscode.workspace.onDidChangeConfiguration((event) => {
+                if (!event.affectsConfiguration("vn")) return;
+                actionsProvider.refresh();
+                statusProvider.refresh();
+            }),
             vscode.window.onDidChangeActiveTextEditor(() => void astProvider.refresh(), null, this.context.subscriptions),
             vscode.workspace.onDidSaveTextDocument(
                 (doc) => {
@@ -223,6 +228,7 @@ export class ExtensionManager {
             stdlibFeatures,
 
             registerCmd("vn.openStdModule", () => openStdModule()),
+            registerCmd("vn.openInstallGuide", () => vscode.env.openExternal(vscode.Uri.parse(INSTALL_GUIDE))),
 
             registerCmd("vn.reloadExtension", async () => {
                 await this.restart();

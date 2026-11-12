@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { resolveCliPath } from "../binary.js";
 
 class ActionCategoryItem extends vscode.TreeItem {
     constructor(
@@ -54,7 +55,14 @@ const UTILITIES: ActionDefinition[] = [
 type ActionNode = ActionCategoryItem | ActionTreeItem;
 
 export class VnActionsProvider implements vscode.TreeDataProvider<ActionNode> {
+    private readonly changed = new vscode.EventEmitter<void>();
+    readonly onDidChangeTreeData = this.changed.event;
+
     constructor(private readonly context: vscode.ExtensionContext) {}
+
+    refresh(): void {
+        this.changed.fire();
+    }
 
     getTreeItem(element: ActionNode): vscode.TreeItem {
         return element;
@@ -62,6 +70,7 @@ export class VnActionsProvider implements vscode.TreeDataProvider<ActionNode> {
 
     getChildren(element?: ActionNode): ActionNode[] {
         if (!element) {
+            if (!resolveCliPath(this.context)) return [];
             return [
                 new ActionCategoryItem("File Operations", vscode.TreeItemCollapsibleState.Expanded, FILE_OPERATIONS),
                 new ActionCategoryItem(

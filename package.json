@@ -416,6 +416,12 @@
         "title": "Run Benchmark",
         "category": "Varn",
         "icon": "$(dashboard)"
+      },
+      {
+        "command": "vn.openInstallGuide",
+        "title": "Open Install Guide",
+        "category": "Varn",
+        "icon": "$(book)"
       }
     ],
     "problemMatchers": [
@@ -676,7 +682,13 @@
           "description": "Preferred build mode for `vn` binaries when auto-detecting from the workspace target directory."
         }
       }
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "vn-actions",
+        "contents": "The `vn` binary was not found, so Varn cannot run, check or build your code.\n[Open Install Guide](command:vn.openInstallGuide)\n[Set vn.cli.path](command:workbench.action.openSettings?%5B%22vn.cli.path%22%5D)\nAfter installing, the actions appear here."
+      }
+    ]
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"
