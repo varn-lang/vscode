@@ -19,7 +19,7 @@ let diagCounts: DiagnosticCounts = { errors: 0, warnings: 0 };
 
 export function initLanguageFeatures(context: vscode.ExtensionContext): void {
     langStatus = vscode.languages.createLanguageStatusItem("varn.status", { language: "varn" });
-    langStatus.command = { title: "Varn Actions", command: "Varn.showActionsHub" };
+    langStatus.command = { title: "Varn Actions", command: "varn.showActionsHub" };
     refreshLanguageStatus();
     context.subscriptions.push(langStatus);
 
