@@ -1,0 +1,25 @@
+namespace Cli {
+    export function parse(raw?: str[]): int { return 0 }
+    export const VERSION: str = "1"
+}
+export extension<T> on ReadonlyArray<T> {
+    declare flat(): ReadonlyArray<T>
+}
+class Node {
+    value: int
+    next: Node? = null
+    private count: int = 0
+    constructor(value: int, next: Node? = null) { this.value = value }
+    bump(): () => int { return () => 1 }
+}
+class User(public id: int, private role: str = "guest") {}
+export class Computed<T> extends Readable<T> implements Observer {}
+function read(cb: (x: int) => void, opts: { limit: int } = { limit: 1 }): void {}
+for (const (key, val) of entries) {}
+const box: { id: int } = d as { id: int }
+const kind = value::type
+const Anonymous = class { }
+const text = """raw "quoted" \ text"""
+type Signed = -1 | 1
+export declare function log(...args: dynamic[]): void
+export declare function warn(...args: dynamic[]): void

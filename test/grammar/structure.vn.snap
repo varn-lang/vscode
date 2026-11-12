@@ -1,0 +1,278 @@
+1: namespace Cli {
+    "namespace" meta.namespace.declaration.vn storage.type.vn
+    "Cli" meta.namespace.declaration.vn entity.name.namespace.vn
+    "{" meta.namespace.declaration.vn punctuation.section.namespace-body.begin.vn
+2:     export function parse(raw?: str[]): int { return 0 }
+    "export" meta.namespace.declaration.vn keyword.control.export.vn
+    "function" meta.namespace.declaration.vn meta.function.declaration.vn storage.type.function.vn
+    "parse" meta.namespace.declaration.vn meta.function.declaration.vn entity.name.function.vn
+    "(" meta.namespace.declaration.vn meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "raw" meta.namespace.declaration.vn meta.function.declaration.vn variable.parameter.vn
+    "?" meta.namespace.declaration.vn meta.function.declaration.vn keyword.operator.optional.vn
+    ":" meta.namespace.declaration.vn meta.function.declaration.vn punctuation.separator.annotation.vn
+    "str" meta.namespace.declaration.vn meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "[" meta.namespace.declaration.vn meta.function.declaration.vn punctuation.definition.type.brackets.begin.vn
+    "]" meta.namespace.declaration.vn meta.function.declaration.vn punctuation.definition.type.brackets.end.vn
+    ")" meta.namespace.declaration.vn meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.namespace.declaration.vn meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.namespace.declaration.vn meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" meta.namespace.declaration.vn punctuation.section.block.begin.vn
+    "return" meta.namespace.declaration.vn keyword.control.vn
+    "0" meta.namespace.declaration.vn constant.numeric.decimal.vn
+    "}" meta.namespace.declaration.vn punctuation.section.block.end.vn
+3:     export const VERSION: str = "1"
+    "export" meta.namespace.declaration.vn keyword.control.export.vn
+    "const" meta.namespace.declaration.vn meta.var.expr.const.vn storage.type.vn
+    "VERSION" meta.namespace.declaration.vn meta.var.expr.const.vn variable.other.constant.vn
+    ":" meta.namespace.declaration.vn meta.var.expr.const.vn punctuation.separator.annotation.vn
+    "str" meta.namespace.declaration.vn meta.var.expr.const.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "=" meta.namespace.declaration.vn keyword.operator.assignment.vn
+    "\"" meta.namespace.declaration.vn string.quoted.double.vn
+    "1" meta.namespace.declaration.vn string.quoted.double.vn
+    "\"" meta.namespace.declaration.vn string.quoted.double.vn
+4: }
+    "}" meta.namespace.declaration.vn punctuation.section.namespace-body.end.vn
+5: export extension<T> on ReadonlyArray<T> {
+    "export" keyword.control.export.vn
+    "extension" meta.extension.declaration.vn storage.type.vn
+    "<" meta.extension.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "T" meta.extension.declaration.vn entity.name.type.vn
+    ">" meta.extension.declaration.vn punctuation.definition.typeparameters.end.vn
+    "on" meta.extension.declaration.vn storage.modifier.vn
+    "ReadonlyArray" meta.extension.declaration.vn entity.name.type.vn
+    "<" meta.extension.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "T" meta.extension.declaration.vn entity.name.type.vn
+    ">" meta.extension.declaration.vn punctuation.definition.typeparameters.end.vn
+    "{" meta.extension.declaration.vn punctuation.section.class-body.begin.vn
+6:     declare flat(): ReadonlyArray<T>
+    "declare" meta.extension.declaration.vn storage.modifier.vn
+    "flat" meta.extension.declaration.vn meta.method.declaration.vn entity.name.function.vn
+    "(" meta.extension.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.begin.vn
+    ")" meta.extension.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.extension.declaration.vn meta.method.declaration.vn punctuation.separator.annotation.vn
+    "ReadonlyArray" meta.extension.declaration.vn meta.method.declaration.vn entity.name.type.vn
+    "<" meta.extension.declaration.vn meta.method.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "T" meta.extension.declaration.vn meta.method.declaration.vn entity.name.type.vn
+    ">" meta.extension.declaration.vn meta.method.declaration.vn punctuation.definition.typeparameters.end.vn
+7: }
+    "}" meta.extension.declaration.vn punctuation.section.class-body.end.vn
+8: class Node {
+    "class" meta.class.declaration.vn storage.type.vn
+    "Node" meta.class.declaration.vn entity.name.type.vn
+    "{" meta.class.declaration.vn punctuation.section.class-body.begin.vn
+9:     value: int
+    "value" meta.class.declaration.vn variable.other.property.vn
+    ":" meta.class.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.class.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+10:     next: Node? = null
+    "next" meta.class.declaration.vn variable.other.property.vn
+    ":" meta.class.declaration.vn punctuation.separator.annotation.vn
+    "Node" meta.class.declaration.vn entity.name.type.vn
+    "?" meta.class.declaration.vn keyword.operator.type.optional.vn
+    "=" meta.class.declaration.vn keyword.operator.assignment.vn
+    "null" meta.class.declaration.vn constant.language.vn
+11:     private count: int = 0
+    "private" meta.class.declaration.vn storage.modifier.vn
+    "count" meta.class.declaration.vn variable.other.property.vn
+    ":" meta.class.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.class.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "=" meta.class.declaration.vn keyword.operator.assignment.vn
+    "0" meta.class.declaration.vn constant.numeric.decimal.vn
+12:     constructor(value: int, next: Node? = null) { this.value = value }
+    "constructor" meta.class.declaration.vn meta.method.declaration.vn storage.type.function.constructor.vn
+    "(" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.begin.vn
+    "value" meta.class.declaration.vn meta.method.declaration.vn variable.parameter.vn
+    ":" meta.class.declaration.vn meta.method.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.class.declaration.vn meta.method.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "," meta.class.declaration.vn meta.method.declaration.vn punctuation.separator.comma.vn
+    "next" meta.class.declaration.vn meta.method.declaration.vn variable.parameter.vn
+    ":" meta.class.declaration.vn meta.method.declaration.vn punctuation.separator.annotation.vn
+    "Node" meta.class.declaration.vn meta.method.declaration.vn entity.name.type.vn
+    "?" meta.class.declaration.vn meta.method.declaration.vn keyword.operator.type.optional.vn
+    "=" meta.class.declaration.vn meta.method.declaration.vn keyword.operator.assignment.vn
+    "null" meta.class.declaration.vn meta.method.declaration.vn constant.language.vn
+    ")" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.end.vn
+    "{" meta.class.declaration.vn punctuation.section.block.begin.vn
+    "this" meta.class.declaration.vn variable.language.vn
+    "." meta.class.declaration.vn punctuation.accessor.vn
+    "value" meta.class.declaration.vn variable.other.property.vn
+    "=" meta.class.declaration.vn keyword.operator.assignment.vn
+    "value" meta.class.declaration.vn variable.other.readwrite.vn
+    "}" meta.class.declaration.vn punctuation.section.block.end.vn
+13:     bump(): () => int { return () => 1 }
+    "bump" meta.class.declaration.vn meta.method.declaration.vn entity.name.function.vn
+    "(" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.begin.vn
+    ")" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.class.declaration.vn meta.method.declaration.vn punctuation.separator.annotation.vn
+    "(" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.type.parens.begin.vn
+    ")" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.type.parens.end.vn
+    "=>" meta.class.declaration.vn meta.method.declaration.vn keyword.operator.type.arrow.vn
+    "int" meta.class.declaration.vn meta.method.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" meta.class.declaration.vn punctuation.section.block.begin.vn
+    "return" meta.class.declaration.vn keyword.control.vn
+    "(" meta.class.declaration.vn punctuation.section.parens.vn
+    ")" meta.class.declaration.vn punctuation.section.parens.vn
+    "=>" meta.class.declaration.vn keyword.operator.arrow.vn
+    "1" meta.class.declaration.vn constant.numeric.decimal.vn
+    "}" meta.class.declaration.vn punctuation.section.block.end.vn
+14: }
+    "}" meta.class.declaration.vn punctuation.section.class-body.end.vn
+15: class User(public id: int, private role: str = "guest") {}
+    "class" meta.class.declaration.vn storage.type.vn
+    "User" meta.class.declaration.vn entity.name.type.vn
+    "(" meta.class.declaration.vn punctuation.definition.parameters.begin.vn
+    "public" meta.class.declaration.vn storage.modifier.vn
+    "id" meta.class.declaration.vn variable.parameter.vn
+    ":" meta.class.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.class.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "," meta.class.declaration.vn punctuation.separator.comma.vn
+    "private" meta.class.declaration.vn storage.modifier.vn
+    "role" meta.class.declaration.vn variable.parameter.vn
+    ":" meta.class.declaration.vn punctuation.separator.annotation.vn
+    "str" meta.class.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "=" meta.class.declaration.vn keyword.operator.assignment.vn
+    "\"" meta.class.declaration.vn string.quoted.double.vn
+    "guest" meta.class.declaration.vn string.quoted.double.vn
+    "\"" meta.class.declaration.vn string.quoted.double.vn
+    ")" meta.class.declaration.vn punctuation.definition.parameters.end.vn
+    "{" meta.class.declaration.vn punctuation.section.class-body.begin.vn
+    "}" meta.class.declaration.vn punctuation.section.class-body.end.vn
+16: export class Computed<T> extends Readable<T> implements Observer {}
+    "export" keyword.control.export.vn
+    "class" meta.class.declaration.vn storage.type.vn
+    "Computed" meta.class.declaration.vn entity.name.type.vn
+    "<" meta.class.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "T" meta.class.declaration.vn entity.name.type.vn
+    ">" meta.class.declaration.vn punctuation.definition.typeparameters.end.vn
+    "extends" meta.class.declaration.vn storage.modifier.vn
+    "Readable" meta.class.declaration.vn entity.name.type.vn
+    "<" meta.class.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "T" meta.class.declaration.vn entity.name.type.vn
+    ">" meta.class.declaration.vn punctuation.definition.typeparameters.end.vn
+    "implements" meta.class.declaration.vn storage.modifier.vn
+    "Observer" meta.class.declaration.vn entity.name.type.vn
+    "{" meta.class.declaration.vn punctuation.section.class-body.begin.vn
+    "}" meta.class.declaration.vn punctuation.section.class-body.end.vn
+17: function read(cb: (x: int) => void, opts: { limit: int } = { limit: 1 }): void {}
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "read" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "cb" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "(" meta.function.declaration.vn punctuation.definition.type.parens.begin.vn
+    "x" meta.function.declaration.vn variable.other.property.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ")" meta.function.declaration.vn punctuation.definition.type.parens.end.vn
+    "=>" meta.function.declaration.vn keyword.operator.type.arrow.vn
+    "void" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "," meta.function.declaration.vn punctuation.separator.comma.vn
+    "opts" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "{" meta.function.declaration.vn meta.type.object.vn punctuation.definition.type.object.begin.vn
+    "limit" meta.function.declaration.vn meta.type.object.vn variable.other.property.vn
+    ":" meta.function.declaration.vn meta.type.object.vn punctuation.separator.annotation.vn
+    "int" meta.function.declaration.vn meta.type.object.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "}" meta.function.declaration.vn meta.type.object.vn punctuation.definition.type.object.end.vn
+    "=" meta.function.declaration.vn keyword.operator.assignment.vn
+    "{" meta.function.declaration.vn punctuation.section.braces.vn
+    "limit" meta.function.declaration.vn variable.other.property.vn
+    ":" meta.function.declaration.vn punctuation.separator.colon.vn
+    "1" meta.function.declaration.vn constant.numeric.decimal.vn
+    "}" meta.function.declaration.vn punctuation.section.braces.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "void" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" punctuation.section.braces.vn
+    "}" punctuation.section.braces.vn
+18: for (const (key, val) of entries) {}
+    "for" keyword.control.vn
+    "(" punctuation.section.parens.vn
+    "const" meta.binding.destructuring.vn storage.type.vn
+    "(" meta.binding.destructuring.vn meta.binding.tuple.vn punctuation.definition.binding.begin.vn
+    "key" meta.binding.destructuring.vn meta.binding.tuple.vn variable.other.readwrite.vn
+    "," meta.binding.destructuring.vn meta.binding.tuple.vn punctuation.separator.comma.vn
+    "val" meta.binding.destructuring.vn meta.binding.tuple.vn variable.other.readwrite.vn
+    ")" meta.binding.destructuring.vn meta.binding.tuple.vn punctuation.definition.binding.end.vn
+    "of" keyword.operator.expression.vn
+    "entries" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+    "{" punctuation.section.braces.vn
+    "}" punctuation.section.braces.vn
+19: const box: { id: int } = d as { id: int }
+    "const" meta.var.expr.const.vn storage.type.vn
+    "box" meta.var.expr.const.vn variable.other.constant.vn
+    ":" meta.var.expr.const.vn punctuation.separator.annotation.vn
+    "{" meta.var.expr.const.vn meta.type.object.vn punctuation.definition.type.object.begin.vn
+    "id" meta.var.expr.const.vn meta.type.object.vn variable.other.property.vn
+    ":" meta.var.expr.const.vn meta.type.object.vn punctuation.separator.annotation.vn
+    "int" meta.var.expr.const.vn meta.type.object.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "}" meta.var.expr.const.vn meta.type.object.vn punctuation.definition.type.object.end.vn
+    "=" keyword.operator.assignment.vn
+    "d" variable.other.readwrite.vn
+    "as" keyword.control.cast.vn
+    "{" meta.type.object.vn punctuation.definition.type.object.begin.vn
+    "id" meta.type.object.vn variable.other.property.vn
+    ":" meta.type.object.vn punctuation.separator.annotation.vn
+    "int" meta.type.object.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "}" meta.type.object.vn punctuation.definition.type.object.end.vn
+20: const kind = value::type
+    "const" meta.var.expr.const.vn storage.type.vn
+    "kind" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "value" variable.other.property.vn
+    "::" punctuation.accessor.namespace.vn
+    "type" variable.other.property.vn
+21: const Anonymous = class { }
+    "const" meta.var.expr.const.vn storage.type.vn
+    "Anonymous" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "class" meta.class.declaration.vn storage.type.vn
+    "{" meta.class.declaration.vn punctuation.section.class-body.begin.vn
+    "}" meta.class.declaration.vn punctuation.section.class-body.end.vn
+22: const text = """raw "quoted" \ text"""
+    "const" meta.var.expr.const.vn storage.type.vn
+    "text" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "\"\"\"" string.quoted.triple.vn punctuation.definition.string.begin.vn
+    "raw \"quoted\" \\ text" string.quoted.triple.vn
+    "\"\"\"" string.quoted.triple.vn punctuation.definition.string.end.vn
+23: type Signed = -1 | 1
+    "type" storage.type.vn
+    "Signed" entity.name.type.vn
+    "=" keyword.operator.assignment.vn
+    "-" keyword.operator.arithmetic.vn
+    "1" constant.numeric.decimal.vn
+    "|" keyword.operator.type.union.vn
+    "1" constant.numeric.decimal.vn
+24: export declare function log(...args: dynamic[]): void
+    "export" keyword.control.export.vn
+    "declare" storage.modifier.vn
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "log" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "..." meta.function.declaration.vn keyword.operator.rest.vn
+    "args" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "dynamic" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "[" meta.function.declaration.vn punctuation.definition.type.brackets.begin.vn
+    "]" meta.function.declaration.vn punctuation.definition.type.brackets.end.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "void" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+25: export declare function warn(...args: dynamic[]): void
+    "export" keyword.control.export.vn
+    "declare" storage.modifier.vn
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "warn" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "..." meta.function.declaration.vn keyword.operator.rest.vn
+    "args" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "dynamic" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "[" meta.function.declaration.vn punctuation.definition.type.brackets.begin.vn
+    "]" meta.function.declaration.vn punctuation.definition.type.brackets.end.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "void" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+26: 
