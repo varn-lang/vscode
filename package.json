@@ -22,7 +22,8 @@
     "grammar:snapshot": "node scripts/check-grammar-snapshots.cjs",
     "grammar:lexer": "node scripts/check-grammar-lexer.cjs",
     "semantic:coverage": "node scripts/check-semantic-coverage.cjs",
-    "audit:completion": "node scripts/audit-completion.cjs"
+    "audit:completion": "node scripts/audit-completion.cjs",
+    "audit:completion:corpus": "node scripts/audit-completion-corpus.cjs"
   },
   "icon": "icon.png",
   "engines": {

@@ -35,4 +35,6 @@ module.exports = [
     { name: "member completion keeps working mid line", code: "const n = p.‸ + 1;", includes: ["name", "greet"] },
     { name: "two dots are a range, not postfix", code: "const r = 0..‸", excludes: ["let", "const", "if"] },
     { name: "decimal literal is not postfix", code: "const f = 1.‸", excludes: ["let", "const", "if"] },
+    { name: "inherited from a core class", code: "class V extends Error { constructor(m: str) { super(m); this.‸ } }", includes: ["message", "name"] },
+    { name: "inherited from a core class on an instance", code: "class V2 extends Error {}\nconst v = new V2(\"x\"); v.‸", includes: ["message", "name"] },
 ];

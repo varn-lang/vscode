@@ -38,7 +38,7 @@ module.exports = [
     { name: "namespace members", code: "Geometry.‸", includes: ["pi", "area"] },
     { name: "extension methods", code: "const s = \"x\"; s.‸", includes: ["shout"] },
     { name: "optional chain on nullable", code: "maybe?.‸", includes: ["length"] },
-    { name: "narrowed by is", code: "if (id is str) { id.‸ }", includes: ["length"], known: "the checker does not record the narrowed receiver of a member it cannot find" },
+    { name: "narrowed by is", code: "if (id is str) { id.‸ }", includes: ["length"] },
     { name: "narrowed by null check", code: "if (maybe != null) { maybe.‸ }", includes: ["length"] },
     { name: "interface member", code: "function f(n: Named): str { return n.‸ }", includes: ["name", "greet"] },
     { name: "lambda parameter inferred", code: "people.map(x => x.‸)", includes: ["name", "greet"] },

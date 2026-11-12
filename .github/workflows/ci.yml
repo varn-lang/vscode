@@ -99,3 +99,11 @@ jobs:
         env:
           VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
         run: pnpm run audit:completion
+
+      - name: Completion finds the real member at every member access of the corpus
+        working-directory: varn-extension
+        env:
+          VN_CLI_PATH: ${{ github.workspace }}/varn-lang/target/quick/vn
+        run: |
+          pnpm run audit:completion:corpus ../varn-lang/std -- --limit 200 --per-file 6 --min 99
+          pnpm run audit:completion:corpus ../varn-lang/tests -- --limit 150 --per-file 6 --min 99
