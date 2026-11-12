@@ -11,14 +11,15 @@
   },
   "scripts": {
     "bundle": "node scripts/bundle.mjs",
-    "build": "pnpm run typecheck && pnpm run check:manifest && pnpm run check:naming && pnpm run bundle && vsce package --no-dependencies --allow-missing-repository",
+    "build": "pnpm run typecheck && pnpm run check:manifest && pnpm run check:naming && pnpm run grammar:snapshot && pnpm run bundle && vsce package --no-dependencies --allow-missing-repository",
     "grammar:scan": "node scripts/scan-grammar.cjs",
     "smoke": "node scripts/smoke-load.cjs",
     "typecheck": "tsc -p .",
     "check:manifest": "node scripts/check-manifest.cjs",
     "scan:tests": "node scripts/check-test-scan.mjs",
     "check:naming": "node scripts/check-naming.cjs",
-    "test:integration": "pnpm run bundle && node scripts/run-integration.mjs"
+    "test:integration": "pnpm run bundle && node scripts/run-integration.mjs",
+    "grammar:snapshot": "node scripts/check-grammar-snapshots.cjs"
   },
   "icon": "icon.png",
   "engines": {

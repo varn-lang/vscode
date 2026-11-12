@@ -1,0 +1,54 @@
+1: class Shape implements Drawable {
+    "class" meta.class.declaration.vn storage.type.vn
+    "Shape" meta.class.declaration.vn entity.name.type.vn
+    "implements" meta.class.declaration.vn storage.modifier.vn
+    "Drawable" meta.class.declaration.vn entity.name.type.vn
+    "{" meta.class.declaration.vn punctuation.section.class-body.begin.vn
+2:     area(): float { return 1.0 }
+    "area" meta.class.declaration.vn meta.method.declaration.vn entity.name.function.vn
+    "(" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.begin.vn
+    ")" meta.class.declaration.vn meta.method.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.class.declaration.vn meta.method.declaration.vn punctuation.separator.annotation.vn
+    "float" meta.class.declaration.vn meta.method.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "{" meta.class.declaration.vn punctuation.section.block.begin.vn
+    "return" meta.class.declaration.vn keyword.control.vn
+    "1.0" meta.class.declaration.vn constant.numeric.decimal.vn
+    "}" meta.class.declaration.vn punctuation.section.block.end.vn
+3: }
+    "}" meta.class.declaration.vn punctuation.section.class-body.end.vn
+4: async function load(path: str): Task<str> {
+    "async" meta.function.declaration.vn storage.modifier.async.vn
+    "function" meta.function.declaration.vn storage.type.function.vn
+    "load" meta.function.declaration.vn entity.name.function.vn
+    "(" meta.function.declaration.vn punctuation.definition.parameters.begin.vn
+    "path" meta.function.declaration.vn variable.parameter.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "str" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ")" meta.function.declaration.vn punctuation.definition.parameters.end.vn
+    ":" meta.function.declaration.vn punctuation.separator.annotation.vn
+    "Task" meta.function.declaration.vn support.class.builtin.vn entity.name.type.class.vn
+    "<" meta.function.declaration.vn punctuation.definition.typeparameters.begin.vn
+    "str" meta.function.declaration.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ">" meta.function.declaration.vn punctuation.definition.typeparameters.end.vn
+    "{" punctuation.section.braces.vn
+5:     return await read(path)
+    "return" keyword.control.vn
+    "await" keyword.control.vn
+    "read" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "path" variable.other.readwrite.vn
+    ")" punctuation.section.parens.vn
+6: }
+    "}" punctuation.section.braces.vn
+7: const point = new Point(1, 2)
+    "const" meta.var.expr.const.vn storage.type.vn
+    "point" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "new" keyword.operator.new.vn
+    "Point" entity.name.type.vn
+    "(" punctuation.section.parens.vn
+    "1" constant.numeric.decimal.vn
+    "," punctuation.separator.comma.vn
+    "2" constant.numeric.decimal.vn
+    ")" punctuation.section.parens.vn
+8: 

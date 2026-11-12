@@ -1,0 +1,7 @@
+class Shape implements Drawable {
+    area(): float { return 1.0 }
+}
+async function load(path: str): Task<str> {
+    return await read(path)
+}
+const point = new Point(1, 2)

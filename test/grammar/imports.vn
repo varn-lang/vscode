@@ -1,0 +1,6 @@
+import { a, b } from "./x.vn"
+import "./side-effect"
+const meta = import.meta.main
+export async function run(tx: Sender<int>): Task<void> {
+    await tx.send(import.meta.main)
+}

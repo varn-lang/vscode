@@ -1,0 +1,36 @@
+1: const re = /ab+c/i
+    "const" meta.var.expr.const.vn storage.type.vn
+    "re" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "/" punctuation.definition.string.begin.vn
+    "ab+c" string.regexp.vn
+    "/" punctuation.definition.string.end.vn
+    "i" keyword.other.regexp-flag.vn
+2: const half = total / 2 / 5
+    "const" meta.var.expr.const.vn storage.type.vn
+    "half" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "total" variable.other.readwrite.vn
+    "/" keyword.operator.arithmetic.vn
+    "2" constant.numeric.decimal.vn
+    "/" keyword.operator.arithmetic.vn
+    "5" constant.numeric.decimal.vn
+3: x /= 2
+    "x" variable.other.readwrite.vn
+    "/=" keyword.operator.assignment.vn
+    "2" constant.numeric.decimal.vn
+4: expect(/[/]x/.test("/x"))
+    "expect" entity.name.function.call.vn
+    "(" punctuation.section.parens.vn
+    "/" punctuation.definition.string.begin.vn
+    "[/]x" string.regexp.vn
+    "/" punctuation.definition.string.end.vn
+    "." punctuation.accessor.vn
+    "test" entity.name.function.member.vn
+    "(" punctuation.section.parens.vn
+    "\"" string.quoted.double.vn
+    "/x" string.quoted.double.vn
+    "\"" string.quoted.double.vn
+    ")" punctuation.section.parens.vn
+    ")" punctuation.section.parens.vn
+5: 

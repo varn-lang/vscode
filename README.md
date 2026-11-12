@@ -27,6 +27,8 @@ pnpm build              # typecheck, manifest check, bundle, then vsce package
 | `pnpm bundle` | esbuild bundle to `dist/extension.cjs` |
 | `pnpm smoke` | loads the bundle against a generated `vscode` stub and checks `activate`/`deactivate` |
 | `pnpm scan:tests` | runs the test scanner over a Varn checkout (`../varn-lang`) and fails on a missed `describe`/`it` |
+| `pnpm grammar:snapshot` | tokenizes `test/grammar/*.vn` and compares with the recorded scopes (`-- --update` re-records) |
+| `pnpm test:integration` | bundles, starts the installed VS Code with a temporary profile and runs `test/integration` against a built `vn` (set `VN_CLI_PATH` to choose one) |
 | `pnpm grammar:scan` | tokenizes a Varn checkout with the TextMate grammar and fails on a timeout or `invalid.*` scope |
 
 `scripts/reinstall.ps1` rebuilds the package and reinstalls it into VS Code.

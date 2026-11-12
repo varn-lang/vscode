@@ -1,0 +1,4 @@
+const re = /ab+c/i
+const half = total / 2 / 5
+x /= 2
+expect(/[/]x/.test("/x"))

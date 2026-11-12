@@ -47,10 +47,13 @@ in this repository. Nothing here should be submitted before that exists.
 - [x] Fixed from the first scan: `import` without a trailing `;` never closed and
       left the rest of the file mis-scoped; the decimal suffix is `d` (the lexer
       has `n` and `d`, not `m`); regex literals were scanned as division.
-- [ ] 31 kinds of span remain unscoped (about 0.04% of tokens), mostly punctuation
-      inside object and mapped types such as `type Partial<T> = { [K in keyof T]?: T[K] }`
-      in `crates/varn-builtins/src/modules/core/types/aliases/aliases.vn`.
-- [ ] Scope snapshot tests so grammar changes are reviewed.
+- [x] Type aliases, object, mapped, conditional and function types are scoped, and
+      `import.meta` no longer opens an import declaration. 5 kinds of span remain
+      unscoped in 814 000 tokens, all in `tests/errors/` fixtures whose tokens are
+      invalid on purpose (`1e`, `12abc`, `0x`, `#`, `¤`). `pnpm run grammar:scan -- --detail`
+      lists the lines.
+- [x] Scope snapshot tests: `pnpm run grammar:snapshot` tokenizes `test/grammar/*.vn`
+      and compares with the recorded `.snap` files; `-- --update` re-records them.
 
 ## Samples
 

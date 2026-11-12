@@ -4,7 +4,9 @@ const cp = require("child_process");
 const vt = require("vscode-textmate");
 const onig = require("vscode-oniguruma");
 
-const corpusRoot = path.resolve(process.argv[2] || "../varn-lang");
+const positional = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+const corpusRoot = path.resolve(positional[0] || "../varn-lang");
+const detail = process.argv.includes("--detail");
 const grammarPath = path.resolve(__dirname, "../syntaxes/vn.tmLanguage.json");
 const scopeName = "source.vn";
 const topCount = 25;
@@ -45,7 +47,10 @@ function scanFile(grammar, file, totals) {
       if (!text.trim()) continue;
       totals.tokens += 1;
       const where = `${file}:${index + 1}`;
-      if (token.scopes.length === 1) bump(totals.unscoped, text, where);
+      if (token.scopes.length === 1) {
+        bump(totals.unscoped, text, where);
+        totals.unscopedLines.set(line.trim(), where);
+      }
       if (token.scopes.some((scope) => scope.startsWith("invalid"))) bump(totals.invalid, text, where);
     }
   });
@@ -68,11 +73,17 @@ function report(title, map) {
 (async () => {
   const grammar = await loadGrammar();
   const files = listCorpus();
-  const totals = { lines: 0, tokens: 0, stoppedEarly: [], unscoped: new Map(), invalid: new Map() };
+  const totals = { lines: 0, tokens: 0, stoppedEarly: [], unscoped: new Map(), invalid: new Map(), unscopedLines: new Map() };
   files.forEach((file) => scanFile(grammar, file, totals));
   console.log(`files=${files.length} lines=${totals.lines} tokens=${totals.tokens}`);
   report("unscoped", totals.unscoped);
   report("invalid", totals.invalid);
+  if (detail) {
+    console.log(`
+lines with an unscoped span: ${totals.unscopedLines.size}`);
+    for (const [line, where] of totals.unscopedLines) console.log(`  ${where}
+      ${line.slice(0, 140)}`);
+  }
   if (totals.stoppedEarly.length) console.log("\nstopped early:", totals.stoppedEarly.slice(0, 10));
   process.exit(totals.stoppedEarly.length || totals.invalid.size ? 1 : 0);
 })();

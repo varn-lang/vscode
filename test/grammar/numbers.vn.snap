@@ -1,0 +1,31 @@
+1: const a = 1_000
+    "const" meta.var.expr.const.vn storage.type.vn
+    "a" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "1_000" constant.numeric.decimal.vn
+2: const b = 0xFF
+    "const" meta.var.expr.const.vn storage.type.vn
+    "b" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "0xFF" constant.numeric.hex.vn
+3: const c = 0b101
+    "const" meta.var.expr.const.vn storage.type.vn
+    "c" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "0b101" constant.numeric.binary.vn
+4: const d = 10n
+    "const" meta.var.expr.const.vn storage.type.vn
+    "d" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "10n" constant.numeric.decimal.vn
+5: const e = 1.5d
+    "const" meta.var.expr.const.vn storage.type.vn
+    "e" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "1.5d" constant.numeric.decimal.vn
+6: const f = 1.5e-3
+    "const" meta.var.expr.const.vn storage.type.vn
+    "f" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "1.5e-3" constant.numeric.decimal.vn
+7: 

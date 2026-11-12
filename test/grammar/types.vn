@@ -1,0 +1,10 @@
+export type Partial<T> = { [K in keyof T]?: T[K] }
+export type Handler = (req: Request) => Task<Response>
+export type ReturnType<T> = T extends (...args: dynamic[]) => infer R ? R : never
+type Todo = { text: str, done: bool }
+type Cache<V> = {
+    key: str;
+    value: V;
+}
+type Pair = [int, str]
+const next = 1

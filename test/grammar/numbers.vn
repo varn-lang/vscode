@@ -1,0 +1,6 @@
+const a = 1_000
+const b = 0xFF
+const c = 0b101
+const d = 10n
+const e = 1.5d
+const f = 1.5e-3

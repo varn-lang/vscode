@@ -1,0 +1,110 @@
+1: export type Partial<T> = { [K in keyof T]?: T[K] }
+    "export" keyword.control.export.vn
+    "type" storage.type.vn
+    "Partial" entity.name.type.vn
+    "<" punctuation.definition.typeparameters.begin.vn
+    "T" entity.name.type.vn
+    ">" punctuation.definition.typeparameters.end.vn
+    "=" keyword.operator.assignment.vn
+    "{" meta.type.object.vn punctuation.definition.type.object.begin.vn
+    "[" meta.type.object.vn punctuation.definition.type.brackets.begin.vn
+    "K" meta.type.object.vn entity.name.type.vn
+    "in" meta.type.object.vn keyword.operator.type.vn
+    "keyof" meta.type.object.vn keyword.operator.type.vn
+    "T" meta.type.object.vn entity.name.type.vn
+    "]" meta.type.object.vn punctuation.definition.type.brackets.end.vn
+    "?" meta.type.object.vn keyword.operator.type.optional.vn
+    ":" meta.type.object.vn keyword.operator.ternary.vn
+    "T" meta.type.object.vn entity.name.type.vn
+    "[" meta.type.object.vn punctuation.definition.type.brackets.begin.vn
+    "K" meta.type.object.vn entity.name.type.vn
+    "]" meta.type.object.vn punctuation.definition.type.brackets.end.vn
+    "}" meta.type.object.vn punctuation.definition.type.object.end.vn
+2: export type Handler = (req: Request) => Task<Response>
+    "export" keyword.control.export.vn
+    "type" storage.type.vn
+    "Handler" entity.name.type.vn
+    "=" keyword.operator.assignment.vn
+    "(" punctuation.definition.type.parens.begin.vn
+    "req" variable.other.property.vn
+    ":" punctuation.separator.annotation.vn
+    "Request" entity.name.type.vn
+    ")" punctuation.definition.type.parens.end.vn
+    "=>" keyword.operator.type.arrow.vn
+    "Task" support.class.builtin.vn entity.name.type.class.vn
+    "<" punctuation.definition.typeparameters.begin.vn
+    "Response" entity.name.type.vn
+    ">" punctuation.definition.typeparameters.end.vn
+3: export type ReturnType<T> = T extends (...args: dynamic[]) => infer R ? R : never
+    "export" keyword.control.export.vn
+    "type" storage.type.vn
+    "ReturnType" entity.name.type.vn
+    "<" punctuation.definition.typeparameters.begin.vn
+    "T" entity.name.type.vn
+    ">" punctuation.definition.typeparameters.end.vn
+    "=" keyword.operator.assignment.vn
+    "T" entity.name.type.vn
+    "extends" keyword.operator.type.vn
+    "(" punctuation.definition.type.parens.begin.vn
+    "..." keyword.operator.spread.vn
+    "args" variable.other.property.vn
+    ":" punctuation.separator.annotation.vn
+    "dynamic" support.type.primitive.vn entity.name.type.primitive.vn
+    "[" punctuation.definition.type.brackets.begin.vn
+    "]" punctuation.definition.type.brackets.end.vn
+    ")" punctuation.definition.type.parens.end.vn
+    "=>" keyword.operator.type.arrow.vn
+    "infer" keyword.operator.type.vn
+    "R" entity.name.type.vn
+    "?" keyword.operator.type.optional.vn
+    "R" entity.name.type.vn
+    ":" keyword.operator.ternary.vn
+    "never" support.type.primitive.vn entity.name.type.primitive.vn
+4: type Todo = { text: str, done: bool }
+    "type" storage.type.vn
+    "Todo" entity.name.type.vn
+    "=" keyword.operator.assignment.vn
+    "{" meta.type.object.vn punctuation.definition.type.object.begin.vn
+    "text" meta.type.object.vn variable.other.property.vn
+    ":" meta.type.object.vn punctuation.separator.annotation.vn
+    "str" meta.type.object.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "," meta.type.object.vn punctuation.type.vn
+    "done" meta.type.object.vn variable.other.property.vn
+    ":" meta.type.object.vn punctuation.separator.annotation.vn
+    "bool" meta.type.object.vn support.type.primitive.vn entity.name.type.primitive.vn
+    "}" meta.type.object.vn punctuation.definition.type.object.end.vn
+5: type Cache<V> = {
+    "type" storage.type.vn
+    "Cache" entity.name.type.vn
+    "<" punctuation.definition.typeparameters.begin.vn
+    "V" entity.name.type.vn
+    ">" punctuation.definition.typeparameters.end.vn
+    "=" keyword.operator.assignment.vn
+    "{" meta.type.object.vn punctuation.definition.type.object.begin.vn
+6:     key: str;
+    "key" meta.type.object.vn variable.other.property.vn
+    ":" meta.type.object.vn punctuation.separator.annotation.vn
+    "str" meta.type.object.vn support.type.primitive.vn entity.name.type.primitive.vn
+    ";" meta.type.object.vn punctuation.separator.type.vn
+7:     value: V;
+    "value" meta.type.object.vn variable.other.property.vn
+    ":" meta.type.object.vn punctuation.separator.annotation.vn
+    "V" meta.type.object.vn entity.name.type.vn
+    ";" meta.type.object.vn punctuation.separator.type.vn
+8: }
+    "}" meta.type.object.vn punctuation.definition.type.object.end.vn
+9: type Pair = [int, str]
+    "type" storage.type.vn
+    "Pair" entity.name.type.vn
+    "=" keyword.operator.assignment.vn
+    "[" punctuation.definition.type.brackets.begin.vn
+    "int" support.type.primitive.vn entity.name.type.primitive.vn
+    "," punctuation.type.vn
+    "str" support.type.primitive.vn entity.name.type.primitive.vn
+    "]" punctuation.definition.type.brackets.end.vn
+10: const next = 1
+    "const" meta.var.expr.const.vn storage.type.vn
+    "next" meta.var.expr.const.vn variable.other.constant.vn
+    "=" keyword.operator.assignment.vn
+    "1" constant.numeric.decimal.vn
+11: 
